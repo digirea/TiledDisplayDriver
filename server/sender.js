@@ -6,42 +6,25 @@
 	
 	var Sender = function () {},
 		operator,
-		metabinary = require('./metabinary.js');
+		metabinary = require('./metabinary.js'),
+		Command = require('./command.js');
 	
 	function setOperator(ope) {
 		operator = ope;
 	}
 	
-	function registerEvent(connection) {
-		connection.on('message', function (message) {
+	function registerEvent(ws_connection) {
+		ws_connection.on('message', function (message) {
 			var request;
 			if (message.type === 'utf8' && message.utf8Data === 'view') { return; }
 			
 			if (message.type === 'utf8') {
 				request = JSON.parse(message.utf8Data);
 
-				if (request.name === 'reqGetMetaData') {
-					//console.log("reqGetMetaData:" + request.type + '/' + request.id);
-					operator.getMetaData(request.type, request.id, function (type, id, reply) {
-						if (reply) {
-							connection.send(JSON.stringify(reply));
-						}
-					});
-				} else if (request.name === 'reqGetContent') {
-					//console.log("reqGetContent:" + request.type + ":" + request.id);
-					operator.getMetaData(request.type, request.id, function (meta) {
-						var metaStr = "";
-						if (meta) {
-							metaStr = JSON.stringify(meta);
-							operator.getContent(meta.type, meta.id, function (data) {
-								var buffer;
-								if (data) {
-									buffer = metabinary.createMetaBinary(metaStr, data);
-									connection.sendBytes(buffer);
-								}
-							});
-						}
-					});
+				if (request.command === Command.reqGetMetaData) {
+					operator.commandGetMetaData(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqGetContent) {
+					operator.commandGetContent(null, ws_connection, request, function () {});
 				}
 			}
 		});

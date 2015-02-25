@@ -13,6 +13,7 @@
 		contentPrefix = "content:",
 		metabinary = require('./metabinary.js'),
 		util = require('./util.js'),
+		Command = require('./command.js'),
 		path = require('path'),
 		fs = require('fs'),
 		phantomjs = require('phantomjs'),
@@ -178,132 +179,196 @@
 		});
 	}
 	
+	/// send metadata with command using socket.io or ws.
+	function sendMetaData(command, metaData, socket, ws_connection) {
+		metaData.command = command;
+		if (socket) {
+			socket.emit(command, JSON.stringify(metaData));
+		} else if (ws_connection) {
+			ws_connection.send(Command.doneUpdateContent, JSON.stringify(metaData));
+		}
+	}
+	
+	/// send binary with command using socket.io or ws.
+	function sendBinary(command, binary, socket, ws_connection) {
+		if (socket) {
+			socket.emit(command, binary);
+		} else if (ws_connection) {
+			ws_connection.sendBytes(binary);
+		}
+	}
+	
+	/// do addContent command
+	function commandAddContent(socket, ws_connection, metaData, binaryData, endCallback) {
+		console.log("commandAddContent");
+		if (metaData.type === 'url') {
+			renderURL(binaryData, function (image) {
+				if (image) {
+					//console.log(Command.doneAddContent);
+					addContent(metaData, image, function (metaData, contentData) {
+						sendMetaData(Command.doneAddContent, metaData, socket, ws_connection);
+						endCallback();
+					});
+				}
+			});
+		} else {
+			//console.log(Command.reqAddContent + ":" + metaData);
+			addContent(metaData, binaryData, function (metaData, contentData) {
+				sendMetaData(Command.doneAddContent, metaData, socket, ws_connection);
+				endCallback();
+			});
+		}
+	}
+	
+	/// do GetContent command
+	function commandGetContent(socket, ws_connection, json, endCallback) {
+		//console.log("commandGetContent:" + json.id);
+		getMetaData(json.type, json.id, function (meta) {
+			var metaStr = "";
+			if (meta) {
+				meta.command = Command.doneGetContent;
+				metaStr = JSON.stringify(meta);
+				getContent(meta.type, meta.id, function (reply) {
+					var binary = metabinary.createMetaBinary(metaStr, reply);
+					sendBinary(Command.doneGetContent, binary, socket, ws_connection);
+					endCallback();
+				});
+			}
+		});
+	}
+	
+	/// do GetMetaData command
+	function commandGetMetaData(socket, ws_connection, json, endCallback) {
+		//console.log("commandGetMetaData:" + json.type + "/" + json.id);
+		getMetaData(json.type, json.id, function (metaData) {
+			sendMetaData(Command.doneGetMetaData, metaData, socket, ws_connection);
+			endCallback();
+		});
+	}
+	
+	/// do DeleteContent command
+	function commandDeleteContent(socket, ws_connection, json, endCallback) {
+		//console.log("commandDeleteContent:" + json.id);
+		deleteContent(json.id, function (id) {
+			socket.emit(Command.doneDeleteContent, JSON.stringify({"id" : id}));
+			endCallback();
+		});
+	}
+	
+	/// do UpdateContent command
+	function commandUpdateContent(socket, ws_connection, metaData, binaryData, endCallback) {
+		//console.log("commandUpdateContent");
+		updateContent(metaData.id, binaryData, function (id) {
+			socket.emit(Command.doneUpdateContent, JSON.stringify({"id" : id}));
+			endCallback();
+		});
+	}
+	
+	/// do UpdateTransform command
+	function commandUpdateTransform(socket, ws_connection, json, endCallback) {
+		//console.log("commandUpdateTransform:" + json.id);
+		textClient.exists(metadataPrefix + json.id, function (err, exist) {
+			if (exist) {
+				textClient.hmset(metadataPrefix + json.id, json, function () {
+					socket.emit(Command.doneUpdateTransform, JSON.stringify(json));
+					endCallback();
+				});
+			}
+		});
+	}
+	
 	/// register socket.io events
+	/// @param socket
+	/// @param io
+	/// @param ws display's ws connection
 	function registerEvent(socket, io, ws) {
 		
 		function update() {
-			ws.broadcast("update");
-			io.sockets.emit('update');
+			ws.broadcast(Command.update);
+			io.sockets.emit(Command.update);
 		}
 		
 		function updateTransform() {
-			ws.broadcast("updateTransform");
-			io.sockets.emit('updateTransform');
+			ws.broadcast(Command.updateTransform);
+			io.sockets.emit(Command.updateTransform);
 		}
 		
-		socket.on('reqAddContent', function (data) {
-			metabinary.loadMetaBinary(data, function (metaData, content) {
-				if (metaData.type === 'url') {
-					renderURL(content, function (image) {
-						if (image) {
-							console.log("doneAddContent");
-							addContent(metaData, image, function (metaData, contentData) {
-								socket.emit('doneAddContent', JSON.stringify(metaData));
-								update();
-							});
-						}
-					});
-				} else {
-					console.log("addcontent:" + metaData);
-					addContent(metaData, content, function (metaData, contentData) {
-						socket.emit('doneAddContent', JSON.stringify(metaData));
-						update();
-					});
-				}
+		socket.on(Command.reqAddContent, function (data) {
+			metabinary.loadMetaBinary(data, function (metaData, binaryData) {
+				commandAddContent(socket, null, metaData, binaryData, update);
 			});
 		});
 		
-		socket.on('reqGetContent', function (data) {
+		socket.on(Command.reqGetContent, function (data) {
 			var json = JSON.parse(data);
-			console.log("reqGetContent:" + json.id);
-			getMetaData(json.type, json.id, function (meta) {
-				var metaStr = "";
-				if (meta) {
-					metaStr = JSON.stringify(meta);
-					getContent(meta.type, meta.id, function (reply) {
-						var binary = metabinary.createMetaBinary(metaStr, reply);
-						socket.emit('doneGetContent', binary);
-					});
-				}
-			});
+			commandGetContent(socket, null, JSON.parse(data), function () {});
 		});
 		
-		socket.on('reqGetMetaData', function (data) {
-			var json = JSON.parse(data);
-			//console.log("reqGetMetaData:" + type + '/' + id);
-			getMetaData(json.type, json.id, function (reply) {
-				socket.emit('doneGetMetaData', JSON.stringify(reply));
-			});
+		socket.on(Command.reqGetMetaData, function (data) {
+			commandGetMetaData(socket, null, JSON.parse(data), function () {});
 		});
 
-		socket.on('reqDeleteContent', function (data) {
-			var json = JSON.parse(data);
-			console.log("reqDeleteContent:" + json.id);
-			deleteContent(json.id, function (id) {
-				socket.emit('doneDeleteContent', JSON.stringify({"id" : id}));
-				update();
-			});
+		socket.on(Command.reqDeleteContent, function (data) {
+			commandDeleteContent(socket, null, JSON.parse(data), update);
 		});
 		
-		socket.on('reqUpdateContent', function (data) {
-			console.log("reqUpdateContent");
+		socket.on(Command.reqUpdateContent, function (data) {
 			metabinary.loadMetaBinary(data, function (metaData, binaryData) {
-				updateContent(metaData.id, binaryData, function (id) {
-					socket.emit('doneUpdateContent', JSON.stringify({"id" : id}));
-					updateTransform();
-				});
+				commandUpdateContent(socket, null, metaData, binaryData, updateTransform);
 			});
 		});
 		
-		socket.on('reqUpdateTransform', function (data) {
-			var json = JSON.parse(data);
-			//console.log("reqUpdateTransform:" + id);
-			textClient.exists(metadataPrefix + json.id, function (err, exist) {
-				if (exist) {
-					textClient.hmset(metadataPrefix + json.id, json, function () {
-						socket.emit('doneUpdateTransform', JSON.stringify(json));
-						updateTransform();
-					});
-				}
-			});
+		socket.on(Command.reqUpdateTransform, function (data) {
+			commandUpdateTransform(socket, null, JSON.parse(data), updateTransform);
 		});
 		
 		getSessionList();
 	}
 	
 	/// register websockets events
-	function registerWSEvent(connection) {
-		connection.on('message', function (message) {
+	/// @param ws_connection controller's ws connection
+	/// @param io
+	/// @param ws display's ws instance
+	function registerWSEvent(ws_connection, io, ws) {
+		
+		function update() {
+			ws.broadcast(Command.update);
+			io.sockets.emit(Command.update);
+		}
+		
+		function updateTransform() {
+			ws.broadcast(Command.updateTransform);
+			io.sockets.emit(Command.updateTransform);
+		}
+		
+		ws_connection.on('message', function (message) {
 			var request;
 			if (message.type === 'utf8' && message.utf8Data === 'view') { return; }
 			
 			if (message.type === 'utf8') {
+				// json
 				request = JSON.parse(message.utf8Data);
-				//console.log(request);
-
-				if (request.name === 'reqGetMetaData') {
-					//console.log("reqGetMetaData:" + request.type + '/' + request.id);
-					getMetaData(request.type, request.id, function (reply) {
-						if (reply) {
-							connection.send(JSON.stringify(reply));
-						}
-					});
-				} else if (request.name === 'reqGetContent') {
-					console.log("reqGetContent:" + request.type + ":" + request.id);
-					getMetaData(request.type, request.id, function (meta) {
-						var metaStr = "";
-						if (meta) {
-							metaStr = JSON.stringify(meta);
-							getContent(meta.type, meta.id, function (data) {
-								var buffer;
-								if (data) {
-									buffer = metabinary.createMetaBinary(metaStr, data);
-									connection.sendBytes(buffer);
-								}
-							});
-						}
-					});
+				if (request.command === Command.reqGetMetaData) {
+					commandGetMetaData(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqGetContent) {
+					commandGetContent(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqUpdateTransform) {
+					commandUpdateTransform(null, ws_connection, request, updateTransform);
 				}
+			} else {
+				// binary
+				metabinary.loadMetaBinary(message, function (metaData, binaryData) {
+					if (metaData && metaData.hasOwnProperty('command')) {
+						request = metaData.command;
+						if (request === Command.reqAddContent) {
+							commandAddContent(null, ws_connection, metaData, binaryData, update);
+						} else if (request === Command.reqDeleteContent) {
+							commandDeleteContent(null, ws_connection, metaData, update);
+						} else if (request === Command.reqUpdateContent) {
+							commandUpdateContent(null, ws_connection, metaData, binaryData, updateTransform);
+						}
+					}
+				});
 			}
 		});
 	}
@@ -323,7 +388,7 @@
 	Operator.prototype.registerEvent = registerEvent;
 	Operator.prototype.registerWSEvent = registerWSEvent;
 	Operator.prototype.registerUUID = registerUUID;
-	Operator.prototype.getContent = getContent;
-	Operator.prototype.getMetaData = getMetaData;
+	Operator.prototype.commandGetContent = commandGetContent;
+	Operator.prototype.commandGetMetaData = commandGetMetaData;
 	module.exports = new Operator();
 }());

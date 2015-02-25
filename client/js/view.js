@@ -23,7 +23,7 @@
 		if (updateType === 'all') {
 			previewArea.innerHTML = "";
 		}
-		client.send(JSON.stringify({ name: 'reqGetContent', type: 'all', id: ''}));
+		client.send(JSON.stringify({ command : 'reqGetContent', type: 'all', id: ''}));
 	}
 	
 	/// initialize.

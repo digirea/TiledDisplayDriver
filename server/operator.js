@@ -52,6 +52,9 @@
 				"height" : "0"
 			};
 		}
+		if (metaData.hasOwnProperty('command')) {
+			delete metaData.command;
+		}
 		textClient.hmset(metadataPrefix + id, metaData, function (err) {
 			if (err) {
 				console.log(err);
@@ -265,13 +268,9 @@
 	/// do UpdateTransform command
 	function commandUpdateTransform(socket, ws_connection, json, endCallback) {
 		//console.log("commandUpdateTransform:" + json.id);
-		textClient.exists(metadataPrefix + json.id, function (err, exist) {
-			if (exist) {
-				textClient.hmset(metadataPrefix + json.id, json, function () {
-					socket.emit(Command.doneUpdateTransform, JSON.stringify(json));
-					endCallback();
-				});
-			}
+		setMetaData(json.type, json.id, json, function () {
+			socket.emit(Command.doneUpdateTransform, JSON.stringify(json));
+			endCallback();
 		});
 	}
 	

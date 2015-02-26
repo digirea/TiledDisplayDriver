@@ -7,7 +7,8 @@ var fs = require('fs'),
 	util = require('./util'),
 	operator = require('./operator.js'),
 	sender = require('./sender.js'),
-	port = 8080;
+	port = 8080,
+	currentVersion = "v1";
 
 console.log(operator);
 
@@ -43,6 +44,10 @@ ws.on('request', function (request) {
 	var connection = request.accept(null, request.origin);
 	console.log((new Date()) + " ServerImager Connection accepted.");
 	
+	if (request.resourceURL.pathname.indexOf(currentVersion) < 0) {
+		console.log('invalid version');
+		return;
+	}
 	connection.on('message', function (message) {
 		if (message.type === 'utf8') {
 			//console.log("got text" + data);
@@ -108,26 +113,12 @@ io.sockets.on('connection', function (socket) {
 	"use strict";
 	console.log("[CONNECT] ID=" + socket.id);
 	
-	socket.on('reqRegisterEvent', function (page) {
-		if (page === 'controller') {
+	socket.on('reqRegisterEvent', function (apiVersion) {
+		if (apiVersion === currentVersion) {
 			operator.registerEvent(socket, io, ws);
 			io.sockets.emit('update');
 		}
 	});
-	
-	/*
-	socket.on("update", function (type) {
-		//console.log("UPDATE!");
-		if (type === 'transform') {
-			ws.broadcast("updateTransform");
-			io.sockets.emit('updateTransform');
-		} else {
-			ws.broadcast("update");
-			io.sockets.emit('update');
-		}
-	});
-	*/
-	
 	socket.on('disconnect', function () {
 		console.log("disconnect:" + socket.id);
 	});
@@ -155,6 +146,10 @@ ws2.on('request', function (request) {
 	var connection = request.accept(null, request.origin);
 	console.log((new Date()) + " ServerImager Connection accepted.");
 	
+	if (request.resourceURL.pathname.indexOf(currentVersion) < 0) {
+		console.log('invalid version');
+		return;
+	}
 	operator.registerWSEvent(connection, io, ws);
 	
 	connection.on('message', function (message) {

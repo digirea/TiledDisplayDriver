@@ -17,7 +17,7 @@
 	
 	socket.on('connect', function () {
 		console.log("connect");
-		socket.emit('reqRegisterEvent', "controller");
+		socket.emit('reqRegisterEvent', "v1");
 	});
 	
 	

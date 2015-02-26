@@ -5,7 +5,7 @@
 	"use strict";
 
 	console.log(location);
-	var client = new WebSocket("ws://" + location.hostname + ":8081/"),
+	var client = new WebSocket("ws://" + location.hostname + ":8081/v1/"),
 		updateType = "all";
 	
 	client.onopen = function () {

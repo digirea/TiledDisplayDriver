@@ -155,12 +155,13 @@ ws2.on('request', function (request) {
 	var connection = request.accept(null, request.origin);
 	console.log((new Date()) + " ServerImager Connection accepted.");
 	
+	operator.registerWSEvent(connection, io, ws);
+	
 	connection.on('message', function (message) {
 		if (message.type === 'utf8') {
 			//console.log("got text" + data);
 			if (message.utf8Data === "view") {
 				console.log("register" + message.utf8Data);
-				operator.registerWSEvent(connection, io, ws);
 			}
 		}
 	});

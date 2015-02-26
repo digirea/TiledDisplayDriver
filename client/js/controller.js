@@ -86,6 +86,12 @@
 		elem.style.top = Number(metaData.posy) + "px";
 		elem.style.width = Number(metaData.width) + "px";
 		elem.style.height = Number(metaData.height) + "px";
+		if (metaData.width < 10) {
+			elem.style.width = "";
+		}
+		if (metaData.height < 10) {
+			elem.style.height = "";
+		}
 	}
 	
 	function onManipulatorMove(evt) {

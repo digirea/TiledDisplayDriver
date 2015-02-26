@@ -14,9 +14,10 @@
 	/// -  { id: 1, posx: 0, ...}  - metadata (json string)
 	/// -  0xfefefe                - binarydata (blob)
 	/// --------------------------------------------------------
-	function createMetaBinary(metaStr, binary) {
+	function createMetaBinary(metaData, binary) {
 		var buffer,
-			pos = 0;
+			pos = 0,
+			metaStr = JSON.stringify(metaData);
 		if (!metaStr || !binary) { return; }
 		//console.log('binary size:' + binary.length);
 		//console.log('meta size:' + metaStr.length);

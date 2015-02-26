@@ -48,8 +48,8 @@
 				"type" : type,
 				"posx" : "0",
 				"posy" : "0",
-				"width" : "100",
-				"height" : "100"
+				"width" : "0",
+				"height" : "0"
 			};
 		}
 		textClient.hmset(metadataPrefix + id, metaData, function (err) {
@@ -185,7 +185,7 @@
 		if (socket) {
 			socket.emit(command, JSON.stringify(metaData));
 		} else if (ws_connection) {
-			ws_connection.send(Command.doneUpdateContent, JSON.stringify(metaData));
+			ws_connection.sendUTF(JSON.stringify(metaData));
 		}
 	}
 	
@@ -224,12 +224,10 @@
 	function commandGetContent(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetContent:" + json.id);
 		getMetaData(json.type, json.id, function (meta) {
-			var metaStr = "";
 			if (meta) {
 				meta.command = Command.doneGetContent;
-				metaStr = JSON.stringify(meta);
 				getContent(meta.type, meta.id, function (reply) {
-					var binary = metabinary.createMetaBinary(metaStr, reply);
+					var binary = metabinary.createMetaBinary(meta, reply);
 					sendBinary(Command.doneGetContent, binary, socket, ws_connection);
 					endCallback();
 				});
@@ -357,10 +355,11 @@
 				}
 			} else {
 				// binary
-				metabinary.loadMetaBinary(message, function (metaData, binaryData) {
+				metabinary.loadMetaBinary(message.binaryData, function (metaData, binaryData) {
 					if (metaData && metaData.hasOwnProperty('command')) {
 						request = metaData.command;
 						if (request === Command.reqAddContent) {
+							console.log(Command.reqAddContent);
 							commandAddContent(null, ws_connection, metaData, binaryData, update);
 						} else if (request === Command.reqDeleteContent) {
 							commandDeleteContent(null, ws_connection, metaData, update);

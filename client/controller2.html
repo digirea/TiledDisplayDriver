@@ -53,6 +53,25 @@
 	</div>
 </div>
 
+<div id="rightArea" class="rightArea">
+	<p class="content_id">
+		<span>Content ID：</span><span id="content_id" >No Content Selected.</span>
+	</p>
+	<div class="content_transform">
+		<div class="content_transform_axis">
+			X: <input type="text" class="content_transform_input" id="content_transform_x" value="0"><span class="content_transform_pixel">px</span>
+		</div>
+		<div class="content_transform_axis">
+			Y: <input type="text" class="content_transform_input" id="content_transform_y" value="0"><span class="content_transform_pixel">px</span>
+		</div>
+		<div class="content_transform_axis">
+			W: <input type="text" class="content_transform_input" id="content_transform_w" value="0"><span class="content_transform_pixel">px</span>
+		</div>
+		<div class="content_transform_axis">
+			H: <input type="text" class="content_transform_input" id="content_transform_h" value="0"><span class="content_transform_pixel">px</span>
+		</div>
+	</div>
+</div>
 <!--div id="drop_zone">ここにファイルをドロップ</div-->
 	
 <!--img src="" id="image_preview" /-->
@@ -63,8 +82,14 @@
 		window.animtab.create('left', {
 				'leftTab' : { min : '0px', max : 'auto' },
 			}, {
-				'leftArea' : { min : '0px', max : '280px' },
-			}, '>', '<'
+				'leftArea' : { min : '0px', max : '250px' },
+			}, 'Contents'
+		);
+		window.animtab.create('right', {
+				'rightTab' : { min : '0px', max : 'auto' },
+			}, {
+				'rightArea' : { min : '0px', max : '250px' },
+			}, 'Property'
 		);
 	</script>
 </body>

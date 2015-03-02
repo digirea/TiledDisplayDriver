@@ -4,18 +4,82 @@
     -khtml-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
-    user-select: none;
+    user-select: none
 }
 
 .leftArea {
 	background-color: rgba(200, 200, 200, 0.9);
 	position : absolute;
 	height : 800px;
-	width : 270px;
+	width : 250px;
+}
+
+
+.rightArea {
+	background-color: rgba(200, 200, 200, 0.9);
+	position : absolute;
+	height : 800px;
+	width : 250px;
+	right : 0px;
+}
+
+.rightTab {
+	background-color: rgba(100, 100, 100, 0.5);
+	padding: 3px;
+
+	border: solid 1px;
+	border-radius:1px;
+	
+	-moz-transform-origin: 85% 50%;
+	-webkit-transform-origin: 85% 50%;
+	-o-transform-origin: 85% 50%;
+	-ms-transform-origin: 85% 50%;
+	transform-origin: 85% 50%;
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(-90deg);
+	-o-transform: rotate(-90deg);
+	-ms-transform: rotate(-90deg);
+	transform: rotate(-90deg);
 }
 
 .leftTab {
-	left : 300px;
-	width: 20px;
-	height: 80px;
+	background-color: rgba(100, 100, 100, 0.5);
+	padding: 3px;
+
+	border: solid 1px;
+	border-radius:1px;
+	
+	-moz-transform-origin: 20% 70%;
+	-webkit-transform-origin: 20% 70%;
+	-o-transform-origin: 20% 70%;
+	-ms-transform-origin: 20% 70%;
+	transform-origin: 20% 70%;
+	-moz-transform: rotate(90deg);
+	-webkit-transform: rotate(90deg);
+	-o-transform: rotate(90deg);
+	-ms-transform: rotate(90deg);
+	transform: rotate(90deg);
 }
+
+.content_id {
+	position: relative;
+	left: 20px;
+}
+
+.content_transform_axis {
+	padding-top: 10px;
+	padding-left: 30px;
+}
+
+.content_transform_input {
+	position: absolute;
+	left: 50px;
+	width: 100px;
+	text-align: center;
+}
+
+.content_transform_pixel {
+	position: absolute;
+	left: 160px;
+}
+

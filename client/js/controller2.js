@@ -104,6 +104,18 @@
 		//console.log("assignRect:" + JSON.stringify(rect));
 	}
 	
+	function assignContentProperty(metaData) {
+		var transx = document.getElementById('content_transform_x'),
+			transy = document.getElementById('content_transform_y'),
+			transw = document.getElementById('content_transform_w'),
+			transh = document.getElementById('content_transform_h');
+		
+		transx.value = parseInt(metaData.posx, 10);
+		transy.value = parseInt(metaData.posy, 10);
+		transw.value = parseInt(metaData.width, 10);
+		transh.value = parseInt(metaData.height, 10);
+	}
+	
 	function assignMetaData(elem, metaData) {
 		var rect = vscreen.transform(
 			parseInt(metaData.posx, 10),
@@ -284,8 +296,10 @@
 				offset;
 			document.getElementById('delete_content_id').innerHTML = id;
 			document.getElementById('update_content_id').innerHTML = id;
+			document.getElementById('content_id').innerHTML = id;
 			document.getElementById('content_delete_button').disabled = false;
 			document.getElementById('update_image_input').disabled = false;
+			assignContentProperty(metaDataDict[id]);
 			// erase last border
 			if (lastDraggingID) {
 				elem = document.getElementById(lastDraggingID);
@@ -432,6 +446,9 @@
 		var json = JSON.parse(data);
 		metaDataDict[json.id] = json;
 		assignMetaData(document.getElementById(json.id), json);
+		if (draggingID === json.id) {
+			assignContentProperty(json);
+		}
 	});
 	
 	/// content data updated
@@ -599,7 +616,7 @@
 		fileInput.addEventListener('change', openImage, false);
 		
 		console.log("clientHeight:" + document.documentElement.clientHeight);
-		vscreen.createWhole(1000, 900, document.documentElement.clientWidth / 2, document.documentElement.clientHeight / 2, 0.3);
+		vscreen.createWhole(1000, 2500, document.documentElement.clientWidth / 2, document.documentElement.clientHeight / 2, 0.3);
 		//vscreen.addScreen('hoge', 100, 0, 800, 600);
 		//vscreen.addScreen('moga', 300, 300, 800, 600);
 		vscreen.dump();

@@ -19,11 +19,15 @@
 	/// update all contants
 	function update() {
 		var previewArea = document.getElementById('preview_area');
-		console.log("update");
+		
 		if (updateType === 'all') {
+			console.log("update all");
 			previewArea.innerHTML = "";
+			client.send(JSON.stringify({ command : 'reqGetContent', type: 'all', id: ''}));
+		} else {
+			console.log("update transform");
+			client.send(JSON.stringify({ command : 'reqGetMetaData', type: 'all', id: ''}));
 		}
-		client.send(JSON.stringify({ command : 'reqGetContent', type: 'all', id: ''}));
 	}
 	
 	/// initialize.

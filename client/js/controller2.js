@@ -206,6 +206,7 @@
 			//console.log("metaDataTransed:" + JSON.stringify(metaDataTransed));
 			metaData = transInv(metaDataTransed);
 			assignMetaData(elem, metaData);
+			metaDataDict[lastDraggingID] = metaData;
 			socket.emit('reqUpdateTransform', JSON.stringify(metaData));
 		}
 	}

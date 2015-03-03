@@ -21,35 +21,36 @@
 		return (p - c) / vscreen_scale + c;
 	}
 	
+	function setSizeWhole(w, h, s) {
+		vscreen_rect = {
+			x : scalePos(center_x - w * 0.5, center_x),
+			y : scalePos(center_y - h * 0.5, center_y),
+			w : w * s,
+			h : h * s,
+			orgX : center_x - w * 0.5,
+			orgY : center_y - h * 0.5,
+			orgW : w,
+			orgH : h
+		};
+	}
+	
 	/// create whole virtual screen
 	function createWhole(w, h, cx, cy, s) {
 		center_x = cx;
 		center_y = cy;
 		vscreen_scale = s;
-		vscreen_rect = {
-			x : scalePos(cx - w * 0.5, cx),
-			y : scalePos(cy - h * 0.5, cy),
-			w : w * s,
-			h : h * s,
-			orgX : cx - w * 0.5,
-			orgY : cy - h * 0.5,
-			orgW : w,
-			orgH : h
-		};
+		setSizeWhole(w, h, s);
 	}
 	
 	function getWhole() {
 		return vscreen_rect;
 	}
 	
-	function setPosWhole(x, y) {
-		
+	function setCenterWhole(x, y) {
+		center_x = x;
+		center_y = y;
+		setSizeWhole(vscreen_rect.orgW, vscreen_rect.orgH, vscreen_scale);
 	}
-	
-	function setSizeWhole(w, h) {
-		
-	}
-	
 	
 	/// add single screen
 	function addScreen(id, x, y, w, h) {
@@ -120,7 +121,7 @@
 	window.vscreen = new Vscreen();
 	window.vscreen.createWhole = createWhole;
 	window.vscreen.getWhole = getWhole;
-	window.vscreen.setPosWhole = setPosWhole;
+	window.vscreen.setCenterWhole = setCenterWhole;
 	window.vscreen.setSizeWhole = setSizeWhole;
 	window.vscreen.addScreen = addScreen;
 	window.vscreen.getScreen = getScreen;

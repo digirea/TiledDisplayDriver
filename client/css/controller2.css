@@ -1,22 +1,46 @@
 * {
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    -khtml-user-select: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    user-select: none
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none
+	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
 
 .leftArea {
-	background-color: rgba(200, 200, 200, 0.9);
 	position : absolute;
 	height : 800px;
 	width : 250px;
 }
 
+.nav-tabs > li.active > a,
+.nav-tabs > li.active > a:hover, 
+.nav-tabs > li.active > a:focus {
+	color: rgba(230, 230, 230, 0.9);
+	background-color: rgba(100, 100, 100, 0.5);
+}
+
+.content_tab {
+	border: solid;
+	border-color: rgba(100, 100, 100, 0.5);
+	background-color: rgba(230, 230, 230, 0.9);
+	display: block;
+	height: 100%;
+}
+
+.display_tab {
+	border: solid;
+	border-color: rgba(100, 100, 100, 0.5);
+	background-color: rgba(230, 230, 230, 0.9);
+	display: none;
+	height: 100%;
+}
 
 .rightArea {
-	background-color: rgba(200, 200, 200, 0.9);
+	border: solid;
+	border-color: rgba(100, 100, 100, 0.5);
+	background-color: rgba(230, 230, 230, 0.9);
 	position : absolute;
 	height : 800px;
 	width : 250px;
@@ -49,11 +73,11 @@
 	border: solid 1px;
 	border-radius:1px;
 	
-	-moz-transform-origin: 20% 70%;
-	-webkit-transform-origin: 20% 70%;
-	-o-transform-origin: 20% 70%;
-	-ms-transform-origin: 20% 70%;
-	transform-origin: 20% 70%;
+	-moz-transform-origin: 10% 70%;
+	-webkit-transform-origin: 10% 70%;
+	-o-transform-origin: 10% 70%;
+	-ms-transform-origin: 10% 70%;
+	transform-origin: 10% 70%;
 	-moz-transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
@@ -66,20 +90,13 @@
 	left: 20px;
 }
 
-.content_transform_axis {
+.input-group {
+	width: 200px;
 	padding-top: 10px;
-	padding-left: 30px;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
-.content_transform_input {
-	position: absolute;
-	left: 50px;
-	width: 100px;
+.form-control {
 	text-align: center;
 }
-
-.content_transform_pixel {
-	position: absolute;
-	left: 160px;
-}
-

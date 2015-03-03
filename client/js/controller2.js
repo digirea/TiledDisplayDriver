@@ -1,4 +1,4 @@
-/*jslint devel:true*/
+/*jslint devel:true */
 /*global io, socket, FileReader, Uint8Array, Blob, URL, event */
 
 (function (metabinary, vscreen) {
@@ -585,18 +585,52 @@
 		
 		wholeElem.style.border = 'solid';
 		wholeElem.style.zIndex = -1;
+		wholeElem.className = "screen";
 		assignScreenRect(wholeElem, whole);
 		document.body.appendChild(wholeElem);
 		
 		for (s in screens) {
 			if (screens.hasOwnProperty(s)) {
 				screenElem = document.createElement('span');
+				screenElem.className = "screen";
 				screenElem.style.border = 'solid';
 				screenElem.style.zIndex = -1;
 				assignScreenRect(screenElem, screens[s]);
 				document.body.appendChild(screenElem);
 			}
 		}
+	}
+	
+	function updateScreen(scale) {
+		var resolutionWidth = document.getElementById('resolution_width'),
+			resolutionHeight = document.getElementById('resolution_height'),
+			w = parseInt(resolutionWidth.value, 10),
+			h = parseInt(resolutionHeight.value, 10),
+			cx = document.documentElement.clientWidth / 2,
+			cy = document.documentElement.clientHeight / 2,
+			screens = document.body.getElementsByClassName('screen'),
+			ww = w,
+			i,
+			metaData,
+			elem;
+		
+		if (w !== ww) {
+			return "NaN";
+		}
+		vscreen.createWhole(resolutionWidth.value, resolutionHeight.value, cx, cy, scale);
+		for (i = 0; i < screens.length; i = i + 1) {
+			document.body.removeChild(screens.item(i));
+		}
+		for (i in metaDataDict) {
+			if (metaDataDict.hasOwnProperty(i)) {
+				metaData = metaDataDict[i];
+				elem = document.getElementById(metaData.id);
+				if (elem) {
+					assignMetaData(elem, metaData);
+				}
+			}
+		}
+		addScreenRect();
 	}
 	
 	function init() {
@@ -606,8 +640,18 @@
 			contentDeleteButton = document.getElementById('content_delete_button'),
 			fileInput = document.getElementById('file_input'),
 			dropZone = document.getElementById('drop_zone'),
-			updateImageInput = document.getElementById('update_image_input');
-		
+			updateImageInput = document.getElementById('update_image_input'),
+			displayTab = document.getElementById('display_tab'),
+			displayTabTitle = document.getElementById('display_tab_title'),
+			contentTab = document.getElementById('content_tab'),
+			contentTabTitle = document.getElementById('content_tab_title'),
+			resolutionWidth = document.getElementById('resolution_width'),
+			resolutionHeight = document.getElementById('resolution_height'),
+			timer = null,
+			scale = 0.5;
+			
+		resolutionWidth.value = 1000;
+		resolutionHeight.value = 900;
 		textSendButton.onclick = sendText;
 		urlSendButton.onclick = sendURL;
 		reloadButton.onclick = update;
@@ -615,12 +659,37 @@
 		updateImageInput.addEventListener('change', replaceImage, false);
 		fileInput.addEventListener('change', openImage, false);
 		
+		displayTabTitle.onclick = function () {
+			contentTab.style.display = "none";
+			displayTab.style.display = "block";
+			contentTabTitle.className = "";
+			displayTabTitle.className = "active";
+		};
+		contentTabTitle.onclick = function () {
+			displayTab.style.display = "none";
+			contentTab.style.display = "block";
+			contentTabTitle.className = "active";
+			displayTabTitle.className = "";
+		};
+		resolutionWidth.onchange = function () {
+			updateScreen(scale);
+		};
+		
+		// resize event
+		window.onresize = function () {
+			if (!timer) {
+				clearTimeout(timer);
+			}
+			timer = setTimeout(function () {
+				updateScreen(scale);
+			}, 200);
+		};
+		
 		console.log("clientHeight:" + document.documentElement.clientHeight);
-		vscreen.createWhole(1000, 2500, document.documentElement.clientWidth / 2, document.documentElement.clientHeight / 2, 0.3);
+		updateScreen(scale);
 		//vscreen.addScreen('hoge', 100, 0, 800, 600);
 		//vscreen.addScreen('moga', 300, 300, 800, 600);
 		vscreen.dump();
-		addScreenRect();
 	}
 	
 	window.onload = init;

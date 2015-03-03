@@ -636,7 +636,6 @@
 	function init() {
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),
-			reloadButton = document.getElementById('reload_button'),
 			contentDeleteButton = document.getElementById('content_delete_button'),
 			fileInput = document.getElementById('file_input'),
 			dropZone = document.getElementById('drop_zone'),
@@ -654,7 +653,6 @@
 		resolutionHeight.value = 900;
 		textSendButton.onclick = sendText;
 		urlSendButton.onclick = sendURL;
-		reloadButton.onclick = update;
 		contentDeleteButton.onclick = deleteContent;
 		updateImageInput.addEventListener('change', replaceImage, false);
 		fileInput.addEventListener('change', openImage, false);
@@ -674,6 +672,9 @@
 		resolutionWidth.onchange = function () {
 			updateScreen(scale);
 		};
+		resolutionHeight.onchange = function () {
+			updateScreen(scale);
+		};
 		
 		// resize event
 		window.onresize = function () {
@@ -687,8 +688,6 @@
 		
 		console.log("clientHeight:" + document.documentElement.clientHeight);
 		updateScreen(scale);
-		//vscreen.addScreen('hoge', 100, 0, 800, 600);
-		//vscreen.addScreen('moga', 300, 300, 800, 600);
 		vscreen.dump();
 	}
 	

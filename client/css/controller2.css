@@ -100,3 +100,17 @@
 .form-control {
 	text-align: center;
 }
+
+.download_button {
+	width:32px;
+	height:32px;
+	position: absolute;
+	left: 5px;
+	bottom: 5px;
+	background-image:url("../image/download.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	border: none;
+	background-color: transparent;
+}
+

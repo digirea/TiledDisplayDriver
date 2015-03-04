@@ -13,11 +13,16 @@
 		operator = ope;
 	}
 	
-	function registerEvent(ws_connection) {
+	function registerWSEvent(ws_connection, io, ws) {
 		ws_connection.on('message', function (message) {
 			var request;
 			if (message.type === 'utf8' && message.utf8Data === 'view') { return; }
 			
+			function update() {
+				ws.broadcast(Command.update);
+				io.sockets.emit(Command.update);
+			}
+
 			if (message.type === 'utf8') {
 				request = JSON.parse(message.utf8Data);
 
@@ -28,13 +33,13 @@
 				} else if (request.command === Command.reqGetWindow) {
 					operator.commandGetWindow(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqRegisterWindow) {
-					operator.commandRegisterWindow(null, ws_connection, request, function () {});
+					operator.commandRegisterWindow(null, ws_connection, request, update);
 				}
 			}
 		});
 	}
 	
-	Sender.prototype.registerEvent = registerEvent;
+	Sender.prototype.registerWSEvent = registerWSEvent;
 	Sender.prototype.setOperator = setOperator;
 	module.exports = new Sender();
 }());

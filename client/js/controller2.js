@@ -794,6 +794,11 @@
 		socket.emit('reqGetMetaData', JSON.stringify({type: "all", id: ""}));
 	});
 	
+	socket.on('updateWindow', function () {
+		console.log('updateWindow');
+		//update();
+	});
+	
 	socket.on('update', function () {
 		update();
 	});

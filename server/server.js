@@ -63,7 +63,7 @@ ws.on('request', function (request) {
 			if (message.utf8Data === "view") {
 				sender.setOperator(operator);
 				console.log("register" + message.utf8Data);
-				sender.registerEvent(connection);
+				sender.registerWSEvent(connection, io, ws);
 				ws.broadcast("update");
 			}
 		}

@@ -167,14 +167,30 @@
 		});
 	}
 	
-	function updateContent(id, data, endCallback) {
-		console.log("updateContent:" + id);
-		client.set(contentPrefix + id, data, function (err, reply) {
+	function updateContent(metaData, data, endCallback) {
+		var contentData = null;
+		console.log("updateContent:" + metaData.id);
+		if (metaData.type === 'text') {
+			contentData = data;
+			metaData.mime = "text/plain";
+		} else if (metaData.type === 'image') {
+			contentData = data;
+			metaData.mime = util.detectImageType(data);
+		} else if (metaData.type === 'url') {
+			contentData = data;
+			metaData.mime = util.detectImageType(data);
+		} else {
+			console.log("Error undefined type:" + metaData.type);
+		}
+		
+		client.set(contentPrefix + metaData.id, contentData, function (err, reply) {
 			if (err) {
 				console.log("Error on updateContent:" + err);
 			} else {
 				redis.print(err, reply);
-				endCallback(id);
+				setMetaData(metaData.type, metaData.id, metaData, function (metaData) {
+					endCallback(metaData.id);
+				});
 			}
 		});
 	}
@@ -264,7 +280,7 @@
 	/// do UpdateContent command
 	function commandUpdateContent(socket, ws_connection, metaData, binaryData, endCallback) {
 		//console.log("commandUpdateContent");
-		updateContent(metaData.id, binaryData, function (id) {
+		updateContent(metaData, binaryData, function (id) {
 			socket.emit(Command.doneUpdateContent, JSON.stringify({"id" : id}));
 			endCallback();
 		});

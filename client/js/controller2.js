@@ -40,13 +40,13 @@
 	}
 	
 	function updateTransform(metaData) {
-		console.log(JSON.stringify(metaData));
+		//console.log(JSON.stringify(metaData));
 		if (metaData.type === "window") {
 			// window
-			console.log("reqUpdateWindow");
+			//console.log("reqUpdateWindow");
 			socket.emit('reqUpdateWindow', JSON.stringify(metaData));
 		} else {
-			console.log("reqUpdateTransform");
+			//console.log("reqUpdateTransform");
 			socket.emit('reqUpdateTransform', JSON.stringify(metaData));
 		}
 	}
@@ -112,7 +112,7 @@
 	}
 	
 	function assignContentProperty(metaData) {
-		console.log("assingcontent:" + JSON.stringify(metaData));
+		//console.log("assingcontent:" + JSON.stringify(metaData));
 		var transx = document.getElementById('content_transform_x'),
 			transy = document.getElementById('content_transform_y'),
 			transw = document.getElementById('content_transform_w'),
@@ -490,7 +490,6 @@
 		var json = JSON.parse(data);
 		if (json.type === "window") { return; }
 		metaDataDict[json.id] = json;
-		console.log("doneGetMetaData: " + data);
 		assignMetaData(document.getElementById(json.id), json);
 		if (draggingID === json.id) {
 			assignContentProperty(json);

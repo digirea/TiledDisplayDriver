@@ -250,7 +250,7 @@
 		});
 	}
 	
-	function unregisterWindow(socketid, endCallback) {
+	function unregisterWindow(socketid) {
 		var id;
 		if (socketidToHash.hasOwnProperty(socketid)) {
 			id = socketidToHash[socketid];
@@ -260,7 +260,6 @@
 				} else {
 					console.log("unregister window socketid:" + socketid + ", id:" + id);
 				}
-				endCallback();
 			});
 		}
 	}

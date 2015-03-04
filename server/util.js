@@ -171,6 +171,11 @@ function generateUUID(callback) {
 	});
 }
 
+function generateUUID8() {
+	'use strict';
+	return generateUUID().slice(0, 8);
+}
+
 function detectImageType(binary) {
 	"use strict";
 	if (!binary || binary.length < 4) { return "unknown"; }
@@ -192,6 +197,7 @@ function detectImageType(binary) {
 	return "unknown";
 }
 module.exports.generateUUID = generateUUID;
+module.exports.generateUUID8 = generateUUID8;
 module.exports.getExtention = getExtention;
 module.exports.getFiles = getFiles;
 module.exports.removeFile = removeFile;

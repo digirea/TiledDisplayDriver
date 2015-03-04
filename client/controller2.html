@@ -26,7 +26,7 @@
 		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
 			<ul class="nav navbar-nav">
 				<li class="active"><a href="#">Controller <span class="sr-only">(current)</span></a></li>
-				<li><a href="view.html">Display</a></li>
+				<li><a href="view2.html">Display</a></li>
 			</ul>
 		</div>
 	</div>
@@ -55,6 +55,13 @@
 				</span>
 			</div>
 
+			<div class="col-lg-2">
+				<span class="input-group">
+					<span class="input-group-addon">display scale</span>
+					<input type="text" class="form-control" id="display_scale" placeholder="scale" aria-describedby="sizing-addon2" value=0.5>
+				</span>
+			</div>
+			
 			<div class="col-lg-2">
 				<span class="dropdown">
 					Snap Setting
@@ -104,6 +111,11 @@
 			<p>コンテンツ削除</p>
 			<span>ID:</span><span id="delete_content_id" >No Content Selected.</span>
 			<input type="button" value="Delete" id="content_delete_button" disabled></input>
+		</div>
+		<hr>
+		<div>
+			<p>ウィンドウ全て削除</p>
+			<input type="button" value="Delete" id="delete_all_window"></input>
 		</div>
 		<hr>
 		<div>

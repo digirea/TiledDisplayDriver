@@ -25,6 +25,10 @@
 					operator.commandGetMetaData(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqGetContent) {
 					operator.commandGetContent(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqGetWindow) {
+					operator.commandGetWindow(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqRegisterWindow) {
+					operator.commandRegisterWindow(null, ws_connection, request, function () {});
 				}
 			}
 		});

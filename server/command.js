@@ -13,6 +13,9 @@
 		reqDeleteContent : "reqDeleteContent",
 		reqUpdateContent : "reqUpdateContent",
 		reqUpdateTransform : "reqUpdateTransform",
+		reqRegisterWindow : "reqRegisterWindow",
+		reqGetWindow : "reqGetWindow",
+		reqUpdateWindow : "reqUpdateWindow",
 		
 		// result command
 		doneAddContent : "doneAddContent",
@@ -21,10 +24,14 @@
 		doneDeleteContent : "doneDeleteContent",
 		doneUpdateContent : "doneUpdateContent",
 		doneUpdateTransform : "doneUpdateTransform",
+		doneRegisterWindow : "doneRegisterWindow",
+		doneGetWindow : "doneGetWindow",
+		doneUpdateWindow : "doneUpdateWindow",
 		
 		// update request from server
 		update : "update",
-		updateTransform : "updateTransform"
+		updateTransform : "updateTransform",
+		updateWindow : "updateWindow"
 	};
 	
 	module.exports = Command;

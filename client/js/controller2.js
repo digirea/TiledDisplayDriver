@@ -14,7 +14,8 @@
 		dragOffsetTop = 0,
 		dragOffsetLeft = 0,
 		metaDataDict = {},
-		imageScale = 1.0 / 2.0;
+		//windowDataDict = {},
+		displayScale = 0.5;
 	
 	socket.on('connect', function () {
 		console.log("connect");
@@ -25,28 +26,34 @@
 	/// get image from server
 	function update() {
 		socket.emit('reqGetContent', JSON.stringify({type: "all", id: ""}));
+		socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
 	}
 	
-	socket.on('doneUpdateTransform', function (reply) {
-	});
+	/// delete content
+	function deleteContent() {
+		var contentID = document.getElementById('delete_content_id');
+		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
+	}
 	
-	socket.on('doneDeleteContent', function (reply) {
-		console.log("doneDeleteContent");
-		var json = JSON.parse(reply),
-			previewArea = document.getElementById('preview_area'),
-			contentID = document.getElementById('delete_content_id'),
-			deleted = document.getElementById(json.id);
-		previewArea.removeChild(deleted);
-		contentID.innerHTML = "No Content Selected.";
-		document.getElementById('content_delete_button').disabled = true;
-	});
+	function addContent(binary) {
+		socket.emit('reqAddContent', binary);
+	}
 	
-	socket.on('doneUpdateContent', function (reply) {
-		var updateContentID = document.getElementById('update_content_id');
-		updateContentID.innerHTML = "No Content Selected.";
-		document.getElementById('update_image_input').disabled = true;
-		update();
-	});
+	function updateTransform(metaData) {
+		console.log(JSON.stringify(metaData));
+		if (metaData.type === "window") {
+			// window
+			console.log("reqUpdateWindow");
+			socket.emit('reqUpdateWindow', JSON.stringify(metaData));
+		} else {
+			console.log("reqUpdateTransform");
+			socket.emit('reqUpdateTransform', JSON.stringify(metaData));
+		}
+	}
+	
+	function updateContent(binary) {
+		socket.emit('reqUpdateContent', binary);
+	}
 	
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
@@ -105,6 +112,7 @@
 	}
 	
 	function assignContentProperty(metaData) {
+		console.log("assingcontent:" + JSON.stringify(metaData));
 		var transx = document.getElementById('content_transform_x'),
 			transy = document.getElementById('content_transform_y'),
 			transw = document.getElementById('content_transform_w'),
@@ -208,8 +216,9 @@
 			}
 			metaData = transInv(metaDataTransed);
 			assignMetaData(elem, metaData);
+			console.log("lastDraggingID:" + lastDraggingID);
 			metaDataDict[lastDraggingID] = metaData;
-			socket.emit('reqUpdateTransform', JSON.stringify(metaData));
+			updateTransform(metaData);
 		}
 	}
 	
@@ -309,67 +318,112 @@
 			evt.stopPropagation();
 			evt.preventDefault();
 		};
-		window.document.onmousedown = function (evt) {
+	}
+	
+	// add content mousedown event
+	window.document.addEventListener("mousedown", function (evt) {
+		var elem,
+			metaData;
+		// erase last border
+		if (lastDraggingID && !draggingManip) {
+			elem = document.getElementById(lastDraggingID);
+			metaData = metaDataDict[lastDraggingID];
+			if (metaData.type !== "window") {
+				elem.style.border = "";
+			}
+			elem.style.zIndex = 0;
+			lastDraggingID = null;
+			removeManipulator();
+		}
+	});
+	
+	// add content mousemove event
+	window.document.addEventListener("mousemove", function (evt) {
+		var i,
+			metaData,
+			metaTemp,
+			elem,
+			pos;
+		evt = (evt) || window.event;
+		if (draggingID) {
+			// translate
+			elem = document.getElementById(draggingID);
+			metaData = metaDataDict[draggingID];
+			metaData.posx = evt.clientX - dragOffsetLeft;
+			metaData.posy = evt.clientY - dragOffsetTop;
+
+			//console.log("onmousemove:" + JSON.stringify(metaData));
+			metaTemp = transPosInv(metaData);
+
+			//console.log("onmousemove" + JSON.stringify(metaTemp));
+			assignMetaData(elem, metaTemp);
+			moveManipulator(manipulators, elem);
+
+			updateTransform(metaTemp);
+			evt.stopPropagation();
+			evt.preventDefault();
+		} else if (lastDraggingID) {
+			// scaling
+			elem = document.getElementById(lastDraggingID);
+			onManipulatorMove(evt);
+			moveManipulator(manipulators, elem);
+			evt.stopPropagation();
+			evt.preventDefault();
+		}
+	});
+	
+	// add content mouseup event
+	window.document.addEventListener("mouseup", function () {
+		var previewArea = document.getElementById('preview_area'),
+			metaData,
+			elem;
+		if (draggingID) {
+			metaData = metaDataDict[draggingID];
+			updateTransform(metaData);
+		}
+		if (draggingManip && lastDraggingID) {
+			metaData = metaDataDict[lastDraggingID];
+			updateTransform(metaData);
+		} else {
+			lastDraggingID = draggingID;
+			draggingID = null;
+		}
+		draggingManip = null;
+		dragOffsetTop = 0;
+		dragOffsetLeft = 0;
+	});
+	
+	function setupWindow(elem, id) {
+		elem.onmousedown = function (evt) {
+			var previewArea = document.getElementById('preview_area'),
+				elem,
+				offset;
+			//document.getElementById('delete_content_id').innerHTML = id;
+			//document.getElementById('update_content_id').innerHTML = id;
+			//document.getElementById('content_id').innerHTML = id;
+			document.getElementById('content_delete_button').disabled = true;
+			document.getElementById('update_image_input').disabled = true;
+			console.log(JSON.stringify(metaDataDict));
+			console.log(id);
+			assignContentProperty(metaDataDict[id]);
 			// erase last border
-			if (lastDraggingID && !draggingManip) {
+			if (lastDraggingID) {
 				elem = document.getElementById(lastDraggingID);
 				elem.style.border = "";
 				elem.style.zIndex = 0;
 				lastDraggingID = null;
-				removeManipulator();
 			}
-		};
-		window.document.onmousemove = function (evt) {
-			var i,
-				metaData,
-				metaTemp,
-				elem,
-				pos;
+			draggingID = id;
+			elem = document.getElementById(id);
 			evt = (evt) || window.event;
-			if (draggingID) {
-				// translate
-				elem = document.getElementById(draggingID);
-				metaData = metaDataDict[draggingID];
-				metaData.posx = evt.clientX - dragOffsetLeft;
-				metaData.posy = evt.clientY - dragOffsetTop;
-				
-				//console.log("onmousemove:" + JSON.stringify(metaData));
-				metaTemp = transPosInv(metaData);
-				
-				//console.log("onmousemove" + JSON.stringify(metaTemp));
-				assignMetaData(elem, metaTemp);
-				moveManipulator(manipulators, elem);
-				
-				socket.emit('reqUpdateTransform', JSON.stringify(metaTemp));
-				evt.stopPropagation();
-				evt.preventDefault();
-			} else if (lastDraggingID) {
-				// scaling
-				elem = document.getElementById(lastDraggingID);
-				onManipulatorMove(evt);
-				moveManipulator(manipulators, elem);
-				evt.stopPropagation();
-				evt.preventDefault();
-			}
-		};
-		window.document.onmouseup = function () {
-			var previewArea = document.getElementById('preview_area'),
-				metaData,
-				elem;
-			if (draggingID) {
-				metaData = metaDataDict[draggingID];
-				socket.emit('reqUpdateTransform', JSON.stringify(metaData));
-			}
-			if (draggingManip && lastDraggingID) {
-				metaData = metaDataDict[lastDraggingID];
-				socket.emit('reqUpdateTransform', JSON.stringify(metaData));
-			} else {
-				lastDraggingID = draggingID;
-				draggingID = null;
-			}
-			draggingManip = null;
-			dragOffsetTop = 0;
-			dragOffsetLeft = 0;
+			console.log(elem);
+			dragOffsetTop = evt.clientY - elem.offsetTop;
+			dragOffsetLeft = evt.clientX - elem.offsetLeft;
+			elem.style.border = "solid 2px black";
+			elem.style.zIndex = 1;
+			showManipulator(elem);
+			evt.stopPropagation();
+			evt.preventDefault();
 		};
 	}
 	
@@ -402,7 +456,7 @@
 		currentContent = elem;
 		console.log(textInput.value);
 		
-		socket.emit('reqAddContent', binary);
+		addContent(binary);
 	}
 	
 	/// send url to server
@@ -420,7 +474,7 @@
 		currentContent = img;
 		console.log(urlInput.value);
 		
-		socket.emit('reqAddContent', binary);
+		addContent(binary);
 	}
 	
 	/// send image to server
@@ -428,13 +482,15 @@
 		var metaData = {type : "image", posx : 0, posy : 0, width : width, height: height},
 			binary = metabinary.createMetaBinary(metaData, imagebinary);
 		console.log("sendImage");
-		socket.emit('reqAddContent', binary);
+		addContent(binary);
 	}
 	
 	/// meta data updated
 	socket.on('doneGetMetaData', function (data) {
 		var json = JSON.parse(data);
+		if (json.type === "window") { return; }
 		metaDataDict[json.id] = json;
+		console.log("doneGetMetaData: " + data);
 		assignMetaData(document.getElementById(json.id), json);
 		if (draggingID === json.id) {
 			assignContentProperty(json);
@@ -501,20 +557,6 @@
 		});
 	});
 	
-	socket.on('updateTransform', function () {
-		socket.emit('reqGetMetaData', JSON.stringify({type: "all", id: ""}));
-	});
-	
-	socket.on('update', function () {
-		update();
-	});
-	
-	/// delete content
-	function deleteContent() {
-		var contentID = document.getElementById('delete_content_id');
-		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
-	}
-	
 	/// open image file
 	function openImage(evt) {
 		var files = evt.target.files,
@@ -561,7 +603,7 @@
 		fileReader.onloadend = function (e) {
 			if (e.target.result) {
 				binary = metabinary.createMetaBinary({type : "image", id : id}, e.target.result);
-				socket.emit('reqUpdateContent', binary);
+				updateContent(binary);
 			}
 		};
 		for (i = 0, file = files[i]; file; i = i + 1, file = files[i]) {
@@ -578,6 +620,8 @@
 			wholeElem = document.createElement('span'),
 			screenElem;
 		
+		console.log("screens:" + JSON.stringify(vscreen));
+		
 		wholeElem.style.border = 'solid';
 		wholeElem.style.zIndex = -1;
 		wholeElem.className = "screen";
@@ -586,12 +630,15 @@
 		
 		for (s in screens) {
 			if (screens.hasOwnProperty(s)) {
-				screenElem = document.createElement('span');
+				screenElem = document.createElement('div');
 				screenElem.className = "screen";
+				screenElem.id = s;
+				console.log("screenElemID:" + screenElem.id);
 				screenElem.style.border = 'solid';
 				screenElem.style.zIndex = -1;
 				assignScreenRect(screenElem, screens[s]);
 				document.body.appendChild(screenElem);
+				setupWindow(screenElem, s);
 			}
 		}
 	}
@@ -613,15 +660,17 @@
 			return "NaN";
 		}
 		vscreen.createWhole(resolutionWidth.value, resolutionHeight.value, cx, cy, scale);
-		for (i = 0; i < screens.length; i = i + 1) {
+		for (i = screens.length - 1; i >= 0; i = i - 1) {
 			document.body.removeChild(screens.item(i));
 		}
 		for (i in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(i)) {
 				metaData = metaDataDict[i];
-				elem = document.getElementById(metaData.id);
-				if (elem) {
-					assignMetaData(elem, metaData);
+				if (metaData.type !== "window") {
+					elem = document.getElementById(metaData.id);
+					if (elem) {
+						assignMetaData(elem, metaData);
+					}
 				}
 			}
 		}
@@ -641,8 +690,9 @@
 			contentTabTitle = document.getElementById('content_tab_title'),
 			resolutionWidth = document.getElementById('resolution_width'),
 			resolutionHeight = document.getElementById('resolution_height'),
-			timer = null,
-			scale = 0.5;
+			displayScaleElem = document.getElementById('display_scale'),
+			deleteAllWindow = document.getElementById('delete_all_window'), // for debug
+			timer = null;
 			
 		resolutionWidth.value = 1000;
 		resolutionHeight.value = 900;
@@ -665,26 +715,90 @@
 			displayTabTitle.className = "";
 		};
 		resolutionWidth.onchange = function () {
-			updateScreen(scale);
+			updateScreen(displayScale);
 		};
 		resolutionHeight.onchange = function () {
-			updateScreen(scale);
+			updateScreen(displayScale);
+		};
+		displayScaleElem.onchange = function () {
+			displayScale = parseFloat(displayScaleElem.value);
+			if (displayScale < 0) {
+				displayScale = 0.01;
+			} else if (displayScale > 1.0) {
+				displayScale = 1.0;
+			}
+			updateScreen(displayScale);
+		};
+		
+		// for debug
+		deleteAllWindow.onclick = function () {
+			socket.emit('debugDeleteWindowAll');
 		};
 		
 		// resize event
 		window.onresize = function () {
-			if (!timer) {
+			if (timer) {
 				clearTimeout(timer);
 			}
 			timer = setTimeout(function () {
-				updateScreen(scale);
+				removeManipulator();
+				updateScreen(displayScale);
 			}, 200);
 		};
 		
 		console.log("clientHeight:" + document.documentElement.clientHeight);
-		updateScreen(scale);
+		updateScreen(displayScale);
 		vscreen.dump();
 	}
+	
+	socket.on('doneUpdateTransform', function (reply) {
+	});
+	
+	socket.on('doneDeleteContent', function (reply) {
+		console.log("doneDeleteContent");
+		var json = JSON.parse(reply),
+			previewArea = document.getElementById('preview_area'),
+			contentID = document.getElementById('delete_content_id'),
+			deleted = document.getElementById(json.id);
+		previewArea.removeChild(deleted);
+		contentID.innerHTML = "No Content Selected.";
+		document.getElementById('content_delete_button').disabled = true;
+	});
+	
+	socket.on('doneUpdateContent', function (reply) {
+		var updateContentID = document.getElementById('update_content_id');
+		updateContentID.innerHTML = "No Content Selected.";
+		document.getElementById('update_image_input').disabled = true;
+		update();
+	});
+	
+	socket.on('doneGetWindow', function (reply) {
+		var windowData = JSON.parse(reply);
+		console.log('doneGetWindow:' + reply);
+		
+		if (windowData.hasOwnProperty('posx')) {
+			windowData.posx = parseInt(windowData.posx, 10);
+		} else {
+			windowData.posx = 0;
+		}
+		if (windowData.hasOwnProperty('posy')) {
+			windowData.posy = parseInt(windowData.posy, 10);
+		} else {
+			windowData.posy = 0;
+		}
+		metaDataDict[windowData.id] = windowData;
+		vscreen.addScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
+		updateScreen(displayScale);
+	});
+	
+	socket.on('updateTransform', function () {
+		socket.emit('reqGetMetaData', JSON.stringify({type: "all", id: ""}));
+	});
+	
+	socket.on('update', function () {
+		update();
+	});
+	
 	
 	window.onload = init;
 

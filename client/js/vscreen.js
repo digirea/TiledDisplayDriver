@@ -55,6 +55,7 @@
 	/// add single screen
 	function addScreen(id, x, y, w, h) {
 		screens[id] = {
+			id : id,
 			x : x,
 			y : y,
 			w : w * vscreen_scale,

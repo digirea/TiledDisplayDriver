@@ -9,8 +9,10 @@
 		client = redis.createClient(6379, '127.0.0.1', {'return_buffers': true}),
 		textClient = redis.createClient(6379, '127.0.0.1', {'return_buffers': false}),
 		contentIDStr = "content_id",
+		windowIDStr = "window_id",
 		metadataPrefix = "metadata:",
 		contentPrefix = "content:",
+		windowPrefix = "window:",
 		metabinary = require('./metabinary.js'),
 		util = require('./util.js'),
 		Command = require('./command.js'),
@@ -18,7 +20,8 @@
 		fs = require('fs'),
 		phantomjs = require('phantomjs'),
 		frontPrefix = "tiled_server:",
-		uuidPrefix = "invalid:";
+		uuidPrefix = "invalid:",
+		socketidToHash = {};
 	
 	client.on('error', function (err) {
 		console.log('Error ' + err);
@@ -30,6 +33,9 @@
 				path.normalize("./capture.js"),
 				output,
 				url ];
+		console.dir("Phantomjs:" + JSON.stringify(phantomjs));
+		console.log("Phantomjs path:" + phantomjs.binPath);
+		
 		util.launchApp(command, null, function () {
 			if (fs.existsSync(output)) {
 				console.log("output found");
@@ -40,8 +46,42 @@
 		});
 	}
 	
+	function generateContentID(endCallback) {
+		var id = util.generateUUID8();
+		console.log("newid: " + id);
+		client.exists(contentPrefix + id, function (err, doesExist) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			if (doesExist === 1) {
+				generateContentID(endCallback);
+			} else {
+				endCallback(id);
+			}
+		});
+	}
+	
+	function generateWindowID(endCallback) {
+		var id = util.generateUUID8();
+		console.log("newid: " + id);
+		client.exists(windowPrefix + id, function (err, doesExist) {
+			if (err) {
+				console.log(err);
+				return;
+			}
+			if (doesExist === 1) {
+				generateWindowID(endCallback);
+			} else {
+				endCallback(id);
+			}
+		});
+	}
+	
 	function setMetaData(type, id, data, endCallback) {
 		var metaData = data;
+		
+		//console.log("setMetaData:" + JSON.stringify(data));
 		if (!metaData) {
 			metaData = {
 				"id" : id,
@@ -51,6 +91,10 @@
 				"width" : "0",
 				"height" : "0"
 			};
+		}
+		if (metaData.type === "window") {
+			console.log("invalid matadata.");
+			return;
 		}
 		if (metaData.hasOwnProperty('command')) {
 			delete metaData.command;
@@ -110,22 +154,18 @@
 		
 		console.log("mime:" + metaData.mime);
 		
-		textClient.incr(contentIDStr, function (err, id) {
-			if (err) {
-				console.log(err);
-			} else {
-				client.set(contentPrefix + id, contentData, function (err, reply) {
-					if (err) {
-						console.log("Error on addContent:" + err);
-					} else {
-						redis.print(err, reply);
-						metaData.id = id;
-						setMetaData(metaData.type, id, metaData, function (metaData) {
-							endCallback(metaData, contentData);
-						});
-					}
-				});
-			}
+		generateContentID(function (id) {
+			client.set(contentPrefix + id, contentData, function (err, reply) {
+				if (err) {
+					console.log("Error on addContent:" + err);
+				} else {
+					redis.print(err, reply);
+					metaData.id = id;
+					setMetaData(metaData.type, id, metaData, function (metaData) {
+						endCallback(metaData, contentData);
+					});
+				}
+			});
 		});
 	}
 	
@@ -192,6 +232,67 @@
 					endCallback(metaData.id);
 				});
 			}
+		});
+	}
+	
+	function registerWindow(socketid, windowData, endCallback) {
+		generateWindowID(function (id) {
+			socketidToHash[socketid] = id;
+			console.log("registerWindow: " + id);
+			windowData.id = id;
+			windowData.socketid = socketid;
+			windowData.orgWidth = windowData.width;
+			windowData.orgHeight = windowData.height;
+			windowData.type = "window";
+			textClient.hmset(windowPrefix + id, windowData, function (err, reply) {
+				endCallback(windowData);
+			});
+		});
+	}
+	
+	function unregisterWindow(socketid, endCallback) {
+		var id;
+		if (socketidToHash.hasOwnProperty(socketid)) {
+			id = socketidToHash[socketid];
+			client.del(windowPrefix + id, function (err) {
+				if (err) {
+					console.log(err);
+				} else {
+					console.log("unregister window socketid:" + socketid + ", id:" + id);
+				}
+				endCallback();
+			});
+		}
+	}
+	
+	function getWindow(windowData, endCallback) {
+		if (windowData.hasOwnProperty('type') && windowData.type === 'all') {
+			console.log("getWindowAll");
+			textClient.keys(windowPrefix + '*', function (err, replies) {
+				replies.forEach(function (id, index) {
+					console.log("getWindowAllID:" + id);
+					textClient.hgetall(id, function (err, reply) {
+						if (!err) {
+							endCallback(reply);
+						} else {
+							console.log(err);
+						}
+					});
+				});
+			});
+		} else {
+			textClient.hgetall(windowPrefix + windowData.id, function (err, data) {
+				if (data) {
+					endCallback(data);
+				}
+			});
+		}
+	}
+	
+	function updateWindow(socketid, windowData, endCallback) {
+		if (!windowData.hasOwnProperty("id")) { return; }
+		textClient.hmset(windowPrefix + windowData.id, windowData, function (err, reply) {
+			endCallback(windowData);
 		});
 	}
 	
@@ -295,6 +396,38 @@
 		});
 	}
 	
+	/// do RegisterWindow command
+	function commandRegisterWindow(socket, ws_connection, json, endCallback) {
+		console.log("commandRegisterWindow : " + JSON.stringify(json));
+		var id = -1;
+		if (socket) { id = socket.id; }
+		if (ws_connection) { id = ws_connection.id; }
+		registerWindow(id, json, function (windowData) {
+			sendMetaData(Command.doneRegisterWindow, windowData, socket, ws_connection);
+			endCallback();
+		});
+	}
+	
+	/// do GetWindow command
+	function commandGetWindow(socket, ws_connection, json, endCallback) {
+		//console.log("commandGetWindow : " + JSON.stringify(json));
+		getWindow(json, function (windowData) {
+			sendMetaData(Command.doneGetWindow, windowData, socket, ws_connection);
+			endCallback();
+		});
+	}
+	
+	/// do UpdateWindow command
+	function commandUpdateWindow(socket, ws_connection, json, endCallback) {
+		var id = -1;
+		if (socket) { id = socket.id; }
+		if (ws_connection) { id = ws_connection.id; }
+		updateWindow(id, json, function (windowData) {
+			sendMetaData(Command.doneUpdateWindow, windowData, socket, ws_connection);
+			endCallback();
+		});
+	}
+	
 	/// register socket.io events
 	/// @param socket
 	/// @param io
@@ -309,6 +442,11 @@
 		function updateTransform() {
 			ws.broadcast(Command.updateTransform);
 			io.sockets.emit(Command.updateTransform);
+		}
+		
+		function updateWindow() {
+			ws.broadcast(Command.updateWindow);
+			io.sockets.emit(Command.updateWindow);
 		}
 		
 		socket.on(Command.reqAddContent, function (data) {
@@ -339,6 +477,31 @@
 		socket.on(Command.reqUpdateTransform, function (data) {
 			commandUpdateTransform(socket, null, JSON.parse(data), updateTransform);
 		});
+
+		socket.on(Command.reqRegisterWindow, function (data) {
+			commandRegisterWindow(socket, null, JSON.parse(data), updateWindow);
+		});
+		
+		socket.on(Command.reqGetWindow, function (data) {
+			commandGetWindow(socket, null, JSON.parse(data), function () {});
+		});
+		
+		socket.on(Command.reqUpdateWindow, function (data) {
+			commandUpdateWindow(socket, null, JSON.parse(data), updateWindow);
+		});
+		
+		socket.on('debugDeleteWindowAll', function () {
+			client.keys(windowPrefix + '*', function (err, replies) {
+				var multi = textClient.multi();
+				replies.forEach(function (reply, index) {
+					multi.del(reply);
+				});
+				multi.exec(function (err, data) {
+					console.log("debugDeleteWindowAll");
+					updateWindow();
+				});
+			});
+		});
 		
 		getSessionList();
 	}
@@ -359,6 +522,11 @@
 			io.sockets.emit(Command.updateTransform);
 		}
 		
+		function updateWindow() {
+			ws.broadcast(Command.updateWindow);
+			io.sockets.emit(Command.updateWindow);
+		}
+		
 		ws_connection.on('message', function (message) {
 			var request;
 			if (message.type === 'utf8' && message.utf8Data === 'view') { return; }
@@ -372,6 +540,12 @@
 					commandGetContent(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqUpdateTransform) {
 					commandUpdateTransform(null, ws_connection, request, updateTransform);
+				} else if (request.command === Command.reqRegisterWindow) {
+					commandRegisterWindow(null, ws_connection, request, updateWindow);
+				} else if (request.command === Command.reqGetWindow) {
+					commandGetWindow(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqUpdateWindow) {
+					commandUpdateWindow(null, ws_connection, request, updateWindow);
 				}
 			} else {
 				// binary
@@ -392,22 +566,30 @@
 		});
 	}
 	
+	/// @param id server's id
 	function registerUUID(id) {
 		uuidPrefix = id + ":";
 		client.sadd(frontPrefix + 'sessions', id);
 		contentIDStr = frontPrefix + "s:" + uuidPrefix + contentIDStr;
+		windowIDStr = frontPrefix + "s:" + uuidPrefix + windowIDStr;
 		contentPrefix = frontPrefix + "s:" + uuidPrefix + contentPrefix;
 		metadataPrefix = frontPrefix + "s:" + uuidPrefix + metadataPrefix;
-		console.log("idstr;" + contentIDStr);
-		console.log("idstr;" + contentPrefix);
-		console.log("idstr;" + metadataPrefix);
+		windowPrefix = frontPrefix + "s:" + uuidPrefix + windowPrefix;
+		console.log("idstr:" + contentIDStr);
+		console.log("idstr:" + contentPrefix);
+		console.log("idstr:" + metadataPrefix);
+		console.log("idstr:" + windowPrefix);
 		textClient.setnx(contentIDStr, 0);
+		textClient.setnx(windowIDStr, 0);
 	}
 	
 	Operator.prototype.registerEvent = registerEvent;
 	Operator.prototype.registerWSEvent = registerWSEvent;
 	Operator.prototype.registerUUID = registerUUID;
+	Operator.prototype.unregisterWindow = unregisterWindow;
 	Operator.prototype.commandGetContent = commandGetContent;
 	Operator.prototype.commandGetMetaData = commandGetMetaData;
+	Operator.prototype.commandGetWindow = commandGetWindow;
+	Operator.prototype.commandRegisterWindow = commandRegisterWindow;
 	module.exports = new Operator();
 }());

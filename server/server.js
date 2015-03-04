@@ -8,7 +8,10 @@ var fs = require('fs'),
 	operator = require('./operator.js'),
 	sender = require('./sender.js'),
 	port = 8080,
-	currentVersion = "v1";
+	currentVersion = "v1",
+	ws_connections = {},
+	ws2_connections = {},
+	id_counter = 0;
 
 console.log(operator);
 
@@ -41,13 +44,19 @@ var ws = new WebSocket.server({ httpServer : seserver,
 
 ws.on('request', function (request) {
 	"use strict";
-	var connection = request.accept(null, request.origin);
-	console.log((new Date()) + " ServerImager Connection accepted.");
-	
+	var connection = null;
 	if (request.resourceURL.pathname.indexOf(currentVersion) < 0) {
 		console.log('invalid version');
 		return;
 	}
+	connection = request.accept(null, request.origin);
+	console.log((new Date()) + " ServerImager Connection accepted : " + id_counter);
+	
+	// save connection with id
+	connection.id = id_counter;
+	ws_connections.id_counter = connection;
+	id_counter = id_counter + 1;
+	
 	connection.on('message', function (message) {
 		if (message.type === 'utf8') {
 			//console.log("got text" + data);
@@ -61,7 +70,9 @@ ws.on('request', function (request) {
 	});
 	
 	connection.on('close', function () {
-		console.log('connection closed');
+		delete ws_connections[connection.id];
+		operator.unregisterWindow(connection.id);
+		console.log('connection closed :' + connection.id);
 	});
 	
 });
@@ -143,13 +154,20 @@ var ws2 = new WebSocket.server({ httpServer : wsopserver,
 
 ws2.on('request', function (request) {
 	"use strict";
-	var connection = request.accept(null, request.origin);
-	console.log((new Date()) + " ServerImager Connection accepted.");
-	
+	var connection = null;
 	if (request.resourceURL.pathname.indexOf(currentVersion) < 0) {
 		console.log('invalid version');
 		return;
 	}
+	
+	connection = request.accept(null, request.origin);
+	console.log((new Date()) + " ServerImager Connection accepted : " + id_counter);
+	
+	// save connection with id
+	connection.id = id_counter;
+	ws2_connections.id_counter = connection;
+	id_counter = id_counter + 1;
+	
 	operator.registerWSEvent(connection, io, ws);
 	
 	connection.on('message', function (message) {
@@ -162,9 +180,43 @@ ws2.on('request', function (request) {
 	});
 	
 	connection.on('close', function () {
-		console.log('connection closed');
+		delete ws2_connections[connection.id];
+		operator.unregisterWindow(connection.id);
+		console.log('connection closed :' + connection.id);
 	});
 	
+});
+
+//----------------------------------------------------------------------------------------
+
+function unregisterAllWindow(endCallback) {
+	"use strict";
+	var id;
+	for (id in ws_connections) {
+		if (ws_connections.hasOwnProperty(id)) {
+			operator.unregisterWindow(id);
+		}
+	}
+	for (id in ws2_connections) {
+		if (ws2_connections.hasOwnProperty(id)) {
+			operator.unregisterWindow(id);
+		}
+	}
+}
+
+// unregister all window
+process.on('exit', function () {
+	"use strict";
+	console.log("exit");
+});
+
+process.on('SIGINT', function () {
+	"use strict";
+	console.log("SIGINT");
+	unregisterAllWindow();
+	setTimeout(function () {
+		process.exit();
+	}, 500);
 });
 
 //----------------------------------------------------------------------------------------

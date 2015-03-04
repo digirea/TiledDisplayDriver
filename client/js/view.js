@@ -56,7 +56,9 @@
 		var previewArea = document.getElementById('preview_area'),
 			tagName,
 			blob,
-			elem;
+			elem,
+			mime = "image/jpeg";
+		
 		console.log("id=" + metaData.id);
 
 		if (metaData.type === 'text') {
@@ -77,7 +79,10 @@
 			elem.innerHTML = contentData;
 		} else {
 			// contentData is blob
-			blob = new Blob([contentData], {type: "image/jpeg"});
+			if (metaData.hasOwnProperty('mime')) {
+				mime = metaData.mime;
+			}
+			blob = new Blob([contentData], {type: mime});
 			if (elem && blob) {
 				elem.src = URL.createObjectURL(blob);
 			}

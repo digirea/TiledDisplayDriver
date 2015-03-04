@@ -356,7 +356,8 @@
 			var previewArea = document.getElementById('preview_area'),
 				elem,
 				tagName,
-				blob;
+				blob,
+				mime = "image/jpeg";
 			
 			metaDataDict[metaData.id] = metaData;
 			
@@ -381,7 +382,10 @@
 				elem.innerHTML = contentData;
 			} else {
 				// contentData is blob
-				blob = new Blob([contentData], {type: "image/jpeg"});
+				if (metaData.hasOwnProperty('mime')) {
+					mime = metaData.mime;
+				}
+				blob = new Blob([contentData], {type: mime});
 				if (elem && blob) {
 					elem.src = URL.createObjectURL(blob);
 				}

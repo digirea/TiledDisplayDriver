@@ -171,6 +171,26 @@ function generateUUID(callback) {
 	});
 }
 
+function detectImageType(binary) {
+	"use strict";
+	if (!binary || binary.length < 4) { return "unknown"; }
+	//console.log(binary[0]);
+	//console.log(binary[1]);
+	//console.log(binary[2]);
+	if (binary[0] === 0xff && binary[1] === 0xd8 && binary[2] === 0xff) {
+		return "image/jpeg";
+	}
+	if (binary[0] === 0x89 && binary[1] === 0x50 && binary[2] === 0x4e && binary[3] === 0x47) {
+		return "image/png";
+	}
+	if (binary[0] === 0x47 && binary[1] === 0x49 && binary[2] === 0x46) {
+		return "image/gif";
+	}
+	if (binary[0] === 0x42 && binary[1] === 0x4d) {
+		return "image/bmp";
+	}
+	return "unknown";
+}
 module.exports.generateUUID = generateUUID;
 module.exports.getExtention = getExtention;
 module.exports.getFiles = getFiles;
@@ -180,3 +200,4 @@ module.exports.mkdirSync = mkdirSync;
 module.exports.launchApp = launchApp;
 module.exports.isRelative = isRelative;
 module.exports.kill = kill;
+module.exports.detectImageType = detectImageType;

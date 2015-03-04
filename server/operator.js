@@ -97,13 +97,18 @@
 		var contentData = null;
 		if (metaData.type === 'text') {
 			contentData = data;
+			metaData.mime = "text/plain";
 		} else if (metaData.type === 'image') {
 			contentData = data;
+			metaData.mime = util.detectImageType(data);
 		} else if (metaData.type === 'url') {
 			contentData = data;
+			metaData.mime = util.detectImageType(data);
 		} else {
 			console.log("Error undefined type:" + metaData.type);
 		}
+		
+		console.log("mime:" + metaData.mime);
 		
 		textClient.incr(contentIDStr, function (err, id) {
 			if (err) {

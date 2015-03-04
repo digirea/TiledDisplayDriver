@@ -79,7 +79,6 @@
 				target,
 				id;
 			if (dragging === "yes") {
-				console.log("set isMoving true");
 				isMoving[separator] = true;
 				
 				if (direction === 'left') {
@@ -188,9 +187,6 @@
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
-		isMoving[separatorElem] = false;
-		setupSeparator(direction, separatorElem, button, targets, whstr, createAnimateButton);
-		
 		function createAnimateButton(e) {
 			var i = 0,
 				id,
@@ -241,6 +237,9 @@
 				}
 			}
 		}
+		
+		isMoving[separatorElem] = false;
+		setupSeparator(direction, separatorElem, button, targets, whstr, createAnimateButton);
 		
 		function createButton(direction, targets) {
 			separatorElem.addEventListener('click', function () {

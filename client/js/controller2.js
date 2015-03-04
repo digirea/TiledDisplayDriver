@@ -173,13 +173,10 @@
 			ydiff,
 			elem,
 			metaData,
-			metaDataTransed,
-			temp,
-			temp2;
+			metaDataTransed;
 		if (draggingManip && lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
-			//console.log("metaData:" + JSON.stringify(metaData));
 			metaDataTransed = trans(metaData);
 			lastx = metaDataTransed.posx;
 			lasty = metaDataTransed.posy;
@@ -187,18 +184,14 @@
 			lasth = metaDataTransed.height;
 			
 			if (draggingManip.id === '_manip_0' || draggingManip.id === '_manip_1') {
-				temp = vscreen.transform(evt.clientX, evt.clientY);
-				px = temp.x - dragOffsetLeft;
-				py = temp.y - dragOffsetTop;
+				px = evt.clientX - dragOffsetLeft;
+				py = evt.clientY - dragOffsetTop;
 				currentw = lastw - (px - lastx);
 			} else {
-				temp = vscreen.transform(evt.clientX, evt.clientY);
-				px = (temp.x - lastw) - dragOffsetLeft;
-				py = (temp.y) - dragOffsetTop;
+				px = evt.clientX - lastw - dragOffsetLeft;
+				py = evt.clientY - dragOffsetTop;
 				currentw = lastw + (px - lastx);
 			}
-			//console.log("currentw:" + currentw);
-			
 			if (currentw < 20) { return; }
 			currenth = lasth * (currentw / lastw);
 			ydiff = lasth * (currentw / lastw - 1.0);
@@ -206,16 +199,13 @@
 			metaDataTransed.width = currentw;
 			metaDataTransed.height = lasth * (currentw / lastw);
 			if (draggingManip.id === '_manip_0') {
-				metaDataTransed.posx = (lastx + (px - lastx));
+				metaDataTransed.posx = px;
 				metaDataTransed.posy = (lasty - ydiff);
 			} else if (draggingManip.id === '_manip_1') {
-				metaDataTransed.posx = (lastx + (px - lastx));
+				metaDataTransed.posx = px;
 			} else if (draggingManip.id === '_manip_3') {
 				metaDataTransed.posy = (lasty - ydiff);
 			}
-			//console.log("lasth:" + lasth);
-			//console.log("lastw:" + lastw);
-			//console.log("metaDataTransed:" + JSON.stringify(metaDataTransed));
 			metaData = transInv(metaDataTransed);
 			assignMetaData(elem, metaData);
 			metaDataDict[lastDraggingID] = metaData;
@@ -457,7 +447,8 @@
 			var previewArea = document.getElementById('preview_area'),
 				elem,
 				tagName,
-				blob;
+				blob,
+				mime = "image/jpeg";
 			
 			metaDataDict[metaData.id] = metaData;
 			console.log("doneGetContent:" + JSON.stringify(metaData));
@@ -484,7 +475,11 @@
 				assignMetaData(elem, metaData);
 			} else {
 				// contentData is blob
-				blob = new Blob([contentData], {type: "image/jpeg"});
+				if (metaData.hasOwnProperty('mime')) {
+					mime = metaData.mime;
+					console.log("mime:" + mime);
+				}
+				blob = new Blob([contentData], {type: mime});
 				if (elem && blob) {
 					elem.src = URL.createObjectURL(blob);
 					
@@ -497,7 +492,7 @@
 							console.log("naturalHeight:" + elem.naturalHeight);
 							metaData.height = elem.naturalHeight;
 						}
-						console.log("onload:" + JSON.stringify(metaData));
+						//console.log("onload:" + JSON.stringify(metaData));
 						assignMetaData(elem, metaData);
 					};
 				}

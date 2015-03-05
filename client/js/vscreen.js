@@ -32,6 +32,9 @@
 			orgW : w,
 			orgH : h
 		};
+		console.log("center_x:" + center_x);
+		console.log("center_x:" + center_y);
+		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
 	}
 	
 	/// create whole virtual screen

@@ -387,11 +387,7 @@
 			metaData = metaDataDict[draggingID];
 			metaData.posx = evt.clientX - dragOffsetLeft;
 			metaData.posy = evt.clientY - dragOffsetTop;
-
-			//console.log("onmousemove:" + JSON.stringify(metaData));
 			metaTemp = transPosInv(metaData);
-
-			//console.log("onmousemove" + JSON.stringify(metaTemp));
 			assignMetaData(elem, metaTemp);
 			moveManipulator(manipulators, elem);
 
@@ -415,11 +411,11 @@
 			elem;
 		if (draggingID) {
 			metaData = metaDataDict[draggingID];
-			updateTransform(metaData);
+			//updateTransform(metaData);
 		}
 		if (draggingManip && lastDraggingID) {
 			metaData = metaDataDict[lastDraggingID];
-			updateTransform(metaData);
+			//updateTransform(metaData);
 		} else {
 			lastDraggingID = draggingID;
 			draggingID = null;
@@ -588,7 +584,7 @@
 		for (i in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(i)) {
 				metaData = metaDataDict[i];
-				if (metaData.type !== "window") {
+				if (metaData.type !== windowType) {
 					elem = document.getElementById(metaData.id);
 					if (elem) {
 						assignMetaData(elem, metaData);

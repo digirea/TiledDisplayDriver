@@ -1,14 +1,15 @@
 /*jslint devel:true*/
 /*global io, socket, WebSocket, Blob, URL, FileReader, DataView, Uint8Array */
 
-(function (metabinary) {
+(function (metabinary, vscreen) {
 	"use strict";
 
 	console.log(location);
 	var client = new WebSocket("ws://" + location.hostname + ":8081/v1/"),
 		updateType = "all",
 		timer,
-		windowData = null;
+		windowData = null,
+		metaDataDict = {};
 	
 	function getWindowSize() {
 		return {
@@ -18,16 +19,18 @@
 	}
 	
 	function registerWindow() {
-		var wh = getWindowSize();
-		client.send(JSON.stringify({ command : 'reqAddWindow', width : wh.width, height : wh.height}));
+		var wh = getWindowSize(),
+			cx = wh.width / 2.0,
+			cy = wh.height / 2.0;
+		vscreen.createWhole(wh.width, wh.height, cx, cy, 1.0);
+		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height}));
 	}
 	
-	function updateWindow() {
-		var wh = getWindowSize();
-		if (windowData && windowData.hasOwnProperty("id")) {
-			windowData.command = 'reqUpdateWindow';
-			client.send(JSON.stringify(windowData));
-		}
+	function updateWholeWindow() {
+		var wh = getWindowSize(),
+			cx = wh / 2.0,
+			cy = wh / 2.0;
+		vscreen.createWhole(wh.width, wh.height, cx, cy, 1.0);
 	}
 	
 	client.onopen = function () {
@@ -57,17 +60,27 @@
 		}
 	}
 	
+	function assignRect(elem, rect, withoutWidth, withoutHeight) {
+		elem.style.position = 'absolute';
+		elem.style.left = parseInt(rect.x, 10) + 'px';
+		elem.style.top = parseInt(rect.y, 10) + 'px';
+		if (!withoutWidth && rect.w) {
+			elem.style.width = parseInt(rect.w, 10) + 'px';
+		}
+		if (!withoutHeight && rect.h) {
+			elem.style.height = parseInt(rect.h, 10) + 'px';
+		}
+	}
+	
 	function assignMetaData(elem, metaData) {
-		elem.style.left = Number(metaData.posx) + "px";
-		elem.style.top = Number(metaData.posy) + "px";
-		elem.style.width = Number(metaData.width) + "px";
-		elem.style.height = Number(metaData.height) + "px";
-		if (metaData.width < 10) {
-			elem.style.width = "";
-		}
-		if (metaData.height < 10) {
-			elem.style.height = "";
-		}
+		var rect = vscreen.transform(
+			parseInt(metaData.posx, 10),
+			parseInt(metaData.posy, 10),
+			parseInt(metaData.width, 10),
+			parseInt(metaData.height, 10)
+		);
+		console.log("assingrect" + JSON.stringify(rect));
+		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
 	}
 	
 	function assignMetaBinary(metaData, contentData) {
@@ -108,8 +121,43 @@
 		assignMetaData(elem, metaData);
 	}
 	
-	function setWindowOffset(windowData) {
-		//console.log("setWindowOffset:" + JSON.stringify(windowData));
+	function trans(metaData) {
+		var result = JSON.parse(JSON.stringify(metaData)),
+			rect = vscreen.transform(parseFloat(metaData.posx, 10),
+				parseFloat(metaData.posy, 10),
+				parseFloat(metaData.width),
+				parseFloat(metaData.height));
+		result.posx = rect.x;
+		result.posy = rect.y;
+		result.width = rect.w;
+		result.height = rect.h;
+		return result;
+	}
+	
+	function resizeViewport(windowData) {
+		var wh = getWindowSize(),
+			cx = wh.width / 2.0,
+			cy = wh.height / 2.0,
+			scale,
+			id,
+			metaTemp;
+		vscreen.clearScreenAll();
+		//vscreen.addScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
+		scale = 1.0;
+		vscreen.createWhole(parseFloat(windowData.width),
+			parseFloat(windowData.height),
+			parseFloat(windowData.width) / 2.0 - parseFloat(windowData.posx) / 2.0,
+			parseFloat(windowData.height) / 2.0 - parseFloat(windowData.posy) / 2.0, scale);
+		
+		console.log("windowData:" + JSON.stringify(windowData));
+		console.log("setWindowOffset:" + JSON.stringify(vscreen.getWhole()));
+		
+		for (id in metaDataDict) {
+			if (metaDataDict.hasOwnProperty(id)) {
+				metaTemp = trans(metaDataDict[id]);
+				assignMetaData(document.getElementById(id), metaTemp);
+			}
+		}
 	}
 	
 	client.onmessage = function (message) {
@@ -138,15 +186,17 @@
 						return;
 					} else if (json.command === "doneGetWindow") {
 						windowData = json;
-						setWindowOffset(windowData);
+						resizeViewport(windowData);
 						return;
 					}
 				}
+				metaDataDict[json.id] = json;
 				assignMetaData(document.getElementById(json.id), json);
 			}
 		} else if (message.data instanceof Blob) {
 			//console.log("found blob");
 			metabinary.loadMetaBinary(message.data, function (metaData, contentData) {
+				metaDataDict[metaData.id] = metaData;
 				assignMetaBinary(metaData, contentData);
 			});
 		}
@@ -162,10 +212,10 @@
 				clearTimeout(timer);
 			}
 			timer = setTimeout(function () {
-				updateWindow();
+				updateWholeWindow();
 			}, 200);
 		};
 	}
 	
 	window.onload = init;
-}(window.metabinary));
+}(window.metabinary, window.vscreen));

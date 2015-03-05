@@ -15,7 +15,8 @@
 		dragOffsetLeft = 0,
 		metaDataDict = {},
 		//windowDataDict = {},
-		displayScale = 0.5;
+		displayScale = 0.5,
+		windowType = "window";
 	
 	socket.on('connect', function () {
 		console.log("connect");
@@ -41,7 +42,7 @@
 	
 	function updateTransform(metaData) {
 		//console.log(JSON.stringify(metaData));
-		if (metaData.type === "window") {
+		if (metaData.type === windowType) {
 			// window
 			//console.log("reqUpdateWindow");
 			socket.emit('reqUpdateWindow', JSON.stringify(metaData));
@@ -288,36 +289,76 @@
 		}
 	}
 	
-	function setupContent(elem, id) {
-		elem.onmousedown = function (evt) {
-			var previewArea = document.getElementById('preview_area'),
-				elem,
-				offset;
+	/// select content or window
+	function select(id) {
+		var elem,
+			metaData = metaDataDict[id];
+		
+		assignContentProperty(metaDataDict[id]);
+		draggingID = id;
+		elem = document.getElementById(id);
+		elem.style.border = "solid 2px black";
+		if (metaData.type === windowType) {
+			document.getElementById('content_delete_button').disabled = true;
+			document.getElementById('update_image_input').disabled = true;
+		} else {
 			document.getElementById('delete_content_id').innerHTML = id;
 			document.getElementById('update_content_id').innerHTML = id;
 			document.getElementById('content_id').innerHTML = id;
 			document.getElementById('content_delete_button').disabled = false;
 			document.getElementById('update_image_input').disabled = false;
-			assignContentProperty(metaDataDict[id]);
-			// erase last border
-			if (lastDraggingID) {
-				elem = document.getElementById(lastDraggingID);
+		}
+		if (elem.style.zIndex === "") {
+			elem.style.zIndex = 0;
+		}
+		document.getElementById('content_transform_z').value = elem.style.zIndex;
+		showManipulator(elem);
+	}
+	
+	/// unselect content or window
+	function unselect() {
+		var elem,
+			metaData;
+		if (lastDraggingID) {
+			elem = document.getElementById(lastDraggingID);
+			metaData = metaDataDict[lastDraggingID];
+			if (metaData.type !== windowType) {
 				elem.style.border = "";
-				elem.style.zIndex = 0;
-				lastDraggingID = null;
 			}
-			draggingID = id;
+			lastDraggingID = null;
+		}
+	}
+	
+	/// change zIndex
+	function changeZIndex(index) {
+		var id = document.getElementById('content_id').innerHTML,
+			elem;
+		console.log("id:" + id);
+		if (id) {
 			elem = document.getElementById(id);
+			elem.style.zIndex = index;
+			console.log("change zindex:" + index);
+		}
+	}
+	
+	/// setup content
+	function setupContent(elem, id) {
+		elem.onmousedown = function (evt) {
+			var previewArea = document.getElementById('preview_area');
+			// erase last border
+			unselect();
+			select(id);
 			evt = (evt) || window.event;
-			//offset = vscreen.transform(evt.clientY - elem.offsetTop, evt.clientX - elem.offsetLeft);
 			dragOffsetTop = evt.clientY - elem.offsetTop;
 			dragOffsetLeft = evt.clientX - elem.offsetLeft;
-			elem.style.border = "solid 2px black";
-			elem.style.zIndex = 1;
-			showManipulator(elem);
 			evt.stopPropagation();
 			evt.preventDefault();
 		};
+	}
+	
+	///  setup window
+	function setupWindow(elem, id) {
+		setupContent(elem, id);
 	}
 	
 	// add content mousedown event
@@ -326,13 +367,7 @@
 			metaData;
 		// erase last border
 		if (lastDraggingID && !draggingManip) {
-			elem = document.getElementById(lastDraggingID);
-			metaData = metaDataDict[lastDraggingID];
-			if (metaData.type !== "window") {
-				elem.style.border = "";
-			}
-			elem.style.zIndex = 0;
-			lastDraggingID = null;
+			unselect();
 			removeManipulator();
 		}
 	});
@@ -392,40 +427,6 @@
 		dragOffsetTop = 0;
 		dragOffsetLeft = 0;
 	});
-	
-	function setupWindow(elem, id) {
-		elem.onmousedown = function (evt) {
-			var previewArea = document.getElementById('preview_area'),
-				elem,
-				offset;
-			//document.getElementById('delete_content_id').innerHTML = id;
-			//document.getElementById('update_content_id').innerHTML = id;
-			//document.getElementById('content_id').innerHTML = id;
-			document.getElementById('content_delete_button').disabled = true;
-			document.getElementById('update_image_input').disabled = true;
-			console.log(JSON.stringify(metaDataDict));
-			console.log(id);
-			assignContentProperty(metaDataDict[id]);
-			// erase last border
-			if (lastDraggingID) {
-				elem = document.getElementById(lastDraggingID);
-				elem.style.border = "";
-				elem.style.zIndex = 0;
-				lastDraggingID = null;
-			}
-			draggingID = id;
-			elem = document.getElementById(id);
-			evt = (evt) || window.event;
-			console.log(elem);
-			dragOffsetTop = evt.clientY - elem.offsetTop;
-			dragOffsetLeft = evt.clientX - elem.offsetLeft;
-			elem.style.border = "solid 2px black";
-			elem.style.zIndex = 1;
-			showManipulator(elem);
-			evt.stopPropagation();
-			evt.preventDefault();
-		};
-	}
 	
 	socket.on('doneAddContent', function (reply) {
 		var json = JSON.parse(reply);
@@ -488,7 +489,7 @@
 	/// meta data updated
 	socket.on('doneGetMetaData', function (data) {
 		var json = JSON.parse(data);
-		if (json.type === "window") { return; }
+		if (json.type === windowType) { return; }
 		metaDataDict[json.id] = json;
 		assignMetaData(document.getElementById(json.id), json);
 		if (draggingID === json.id) {
@@ -612,6 +613,7 @@
 		}
 	}
 	
+	/// add all screens
 	function addScreenRect() {
 		var whole = vscreen.getWhole(),
 			screens = vscreen.getScreenAll(),
@@ -622,7 +624,7 @@
 		console.log("screens:" + JSON.stringify(vscreen));
 		
 		wholeElem.style.border = 'solid';
-		wholeElem.style.zIndex = -1;
+		wholeElem.style.zIndex = -100;
 		wholeElem.className = "screen";
 		assignScreenRect(wholeElem, whole);
 		document.body.appendChild(wholeElem);
@@ -634,7 +636,6 @@
 				screenElem.id = s;
 				console.log("screenElemID:" + screenElem.id);
 				screenElem.style.border = 'solid';
-				screenElem.style.zIndex = -1;
 				assignScreenRect(screenElem, screens[s]);
 				document.body.appendChild(screenElem);
 				setupWindow(screenElem, s);
@@ -642,6 +643,7 @@
 		}
 	}
 	
+	/// update all screens
 	function updateScreen(scale) {
 		var resolutionWidth = document.getElementById('resolution_width'),
 			resolutionHeight = document.getElementById('resolution_height'),
@@ -691,6 +693,7 @@
 			resolutionHeight = document.getElementById('resolution_height'),
 			displayScaleElem = document.getElementById('display_scale'),
 			deleteAllWindow = document.getElementById('delete_all_window'), // for debug
+			contentZ = document.getElementById('content_transform_z'),
 			timer = null;
 			
 		resolutionWidth.value = 1000;
@@ -727,6 +730,10 @@
 				displayScale = 1.0;
 			}
 			updateScreen(displayScale);
+		};
+		contentZ.onchange = function () {
+			var val = parseInt(contentZ.value, 10);
+			changeZIndex(val);
 		};
 		
 		// for debug

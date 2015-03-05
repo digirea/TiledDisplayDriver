@@ -9,7 +9,8 @@
 		updateType = "all",
 		timer,
 		windowData = null,
-		metaDataDict = {};
+		metaDataDict = {},
+		windowType = "window";
 	
 	function getWindowSize() {
 		return {
@@ -79,6 +80,7 @@
 			parseInt(metaData.width, 10),
 			parseInt(metaData.height, 10)
 		);
+		if (metaData.type === windowType) { return; }
 		console.log("assingrect" + JSON.stringify(rect));
 		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
 	}
@@ -180,6 +182,7 @@
 			} else {
 				// recieve metadata
 				json = JSON.parse(message.data);
+				metaDataDict[json.id] = json;
 				if (json.hasOwnProperty('command')) {
 					if (json.command === "doneAddWindow") {
 						windowData = json;
@@ -190,8 +193,8 @@
 						return;
 					}
 				}
-				metaDataDict[json.id] = json;
 				assignMetaData(document.getElementById(json.id), json);
+				resizeViewport(windowData);
 			}
 		} else if (message.data instanceof Blob) {
 			//console.log("found blob");

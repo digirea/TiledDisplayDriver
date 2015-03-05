@@ -235,7 +235,7 @@
 		});
 	}
 	
-	function registerWindow(socketid, windowData, endCallback) {
+	function addWindow(socketid, windowData, endCallback) {
 		generateWindowID(function (id) {
 			socketidToHash[socketid] = id;
 			console.log("registerWindow: " + id);
@@ -250,7 +250,7 @@
 		});
 	}
 	
-	function unregisterWindow(socketid) {
+	function deleteWindow(socketid, endCallback) {
 		var id;
 		if (socketidToHash.hasOwnProperty(socketid)) {
 			id = socketidToHash[socketid];
@@ -260,6 +260,7 @@
 				} else {
 					console.log("unregister window socketid:" + socketid + ", id:" + id);
 				}
+				endCallback();
 			});
 		}
 	}
@@ -395,14 +396,26 @@
 		});
 	}
 	
-	/// do RegisterWindow command
-	function commandRegisterWindow(socket, ws_connection, json, endCallback) {
-		console.log("commandRegisterWindow : " + JSON.stringify(json));
+	/// do AddWindow command
+	function commandAddWindow(socket, ws_connection, json, endCallback) {
+		console.log("commandAddWindow : " + JSON.stringify(json));
 		var id = -1;
 		if (socket) { id = socket.id; }
 		if (ws_connection) { id = ws_connection.id; }
-		registerWindow(id, json, function (windowData) {
-			sendMetaData(Command.doneRegisterWindow, windowData, socket, ws_connection);
+		addWindow(id, json, function (windowData) {
+			sendMetaData(Command.doneAddWindow, windowData, socket, ws_connection);
+			endCallback();
+		});
+	}
+	
+	/// do DeleteWindow
+	function commandDeleteWindow(socket, ws_connection, endCallback) {
+		var id = -1;
+		if (socket) { id = socket.id; }
+		if (ws_connection) { id = ws_connection.id; }
+		console.log("commandDeleteWindow : " + id);
+		deleteWindow(id, function () {
+			sendMetaData(Command.doneDeleteWindow, { socketid: id }, socket, ws_connection);
 			endCallback();
 		});
 	}
@@ -477,8 +490,8 @@
 			commandUpdateTransform(socket, null, JSON.parse(data), updateTransform);
 		});
 
-		socket.on(Command.reqRegisterWindow, function (data) {
-			commandRegisterWindow(socket, null, JSON.parse(data), updateWindow);
+		socket.on(Command.reqAddWindow, function (data) {
+			commandAddWindow(socket, null, JSON.parse(data), updateWindow);
 		});
 		
 		socket.on(Command.reqGetWindow, function (data) {
@@ -539,8 +552,8 @@
 					commandGetContent(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqUpdateTransform) {
 					commandUpdateTransform(null, ws_connection, request, updateTransform);
-				} else if (request.command === Command.reqRegisterWindow) {
-					commandRegisterWindow(null, ws_connection, request, updateWindow);
+				} else if (request.command === Command.reqAddWindow) {
+					commandAddWindow(null, ws_connection, request, updateWindow);
 				} else if (request.command === Command.reqGetWindow) {
 					commandGetWindow(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqUpdateWindow) {
@@ -585,10 +598,10 @@
 	Operator.prototype.registerEvent = registerEvent;
 	Operator.prototype.registerWSEvent = registerWSEvent;
 	Operator.prototype.registerUUID = registerUUID;
-	Operator.prototype.unregisterWindow = unregisterWindow;
+	Operator.prototype.commandDeleteWindow = commandDeleteWindow;
 	Operator.prototype.commandGetContent = commandGetContent;
 	Operator.prototype.commandGetMetaData = commandGetMetaData;
 	Operator.prototype.commandGetWindow = commandGetWindow;
-	Operator.prototype.commandRegisterWindow = commandRegisterWindow;
+	Operator.prototype.commandAddWindow = commandAddWindow;
 	module.exports = new Operator();
 }());

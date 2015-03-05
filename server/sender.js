@@ -32,8 +32,8 @@
 					operator.commandGetContent(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqGetWindow) {
 					operator.commandGetWindow(null, ws_connection, request, function () {});
-				} else if (request.command === Command.reqRegisterWindow) {
-					operator.commandRegisterWindow(null, ws_connection, request, update);
+				} else if (request.command === Command.reqAddWindow) {
+					operator.commandAddWindow(null, ws_connection, request, update);
 				}
 			}
 		});

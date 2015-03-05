@@ -19,7 +19,7 @@
 	
 	function registerWindow() {
 		var wh = getWindowSize();
-		client.send(JSON.stringify({ command : 'reqRegisterWindow', width : wh.width, height : wh.height}));
+		client.send(JSON.stringify({ command : 'reqAddWindow', width : wh.width, height : wh.height}));
 	}
 	
 	function updateWindow() {
@@ -133,7 +133,7 @@
 				// recieve metadata
 				json = JSON.parse(message.data);
 				if (json.hasOwnProperty('command')) {
-					if (json.command === "doneRegisterWindow") {
+					if (json.command === "doneAddWindow") {
 						windowData = json;
 						return;
 					} else if (json.command === "doneGetWindow") {

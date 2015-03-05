@@ -119,6 +119,10 @@
 		};
 	}
 	
+	function clearScreenAll() {
+		screens = {};
+	}
+	
 	window.vscreen = new Vscreen();
 	window.vscreen.createWhole = createWhole;
 	window.vscreen.getWhole = getWhole;
@@ -127,6 +131,7 @@
 	window.vscreen.addScreen = addScreen;
 	window.vscreen.getScreen = getScreen;
 	window.vscreen.getScreenAll = getScreenAll;
+	window.vscreen.clearScreenAll = clearScreenAll;
 	window.vscreen.setPos = setPos;
 	window.vscreen.transform = transform;
 	window.vscreen.transform_inv = transform_inv;

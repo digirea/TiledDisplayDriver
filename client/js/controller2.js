@@ -26,6 +26,7 @@
 	
 	/// get image from server
 	function update() {
+		vscreen.clearScreenAll();
 		socket.emit('reqGetContent', JSON.stringify({type: "all", id: ""}));
 		socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
 	}
@@ -428,19 +429,6 @@
 		dragOffsetLeft = 0;
 	});
 	
-	socket.on('doneAddContent', function (reply) {
-		var json = JSON.parse(reply);
-		console.log("doneAddContent:" + json.id + ":" + json.type);
-		
-		if (currentContent) {
-			currentContent.id = json.id;
-			setupContent(currentContent, json.id);
-			//console.log(currentContent);
-		}
-		lastContentID = json.id;
-		currentContent = null;
-	});
-	
 	/// send text to server
 	function sendText() {
 		console.log("sendtest");
@@ -485,77 +473,6 @@
 		console.log("sendImage");
 		addContent(binary);
 	}
-	
-	/// meta data updated
-	socket.on('doneGetMetaData', function (data) {
-		var json = JSON.parse(data);
-		if (json.type === windowType) { return; }
-		metaDataDict[json.id] = json;
-		assignMetaData(document.getElementById(json.id), json);
-		if (draggingID === json.id) {
-			assignContentProperty(json);
-		}
-	});
-	
-	/// content data updated
-	socket.on('doneGetContent', function (data) {
-		metabinary.loadMetaBinary(new Blob([data]), function (metaData, contentData) {
-			var previewArea = document.getElementById('preview_area'),
-				elem,
-				tagName,
-				blob,
-				mime = "image/jpeg";
-			
-			metaDataDict[metaData.id] = metaData;
-			console.log("doneGetContent:" + JSON.stringify(metaData));
-			
-			if (metaData.type === 'text') {
-				tagName = 'div';
-			} else {
-				tagName = 'img';
-			}
-			if (document.getElementById(metaData.id)) {
-				elem = document.getElementById(metaData.id);
-				//console.log("found " + json.type);
-			} else {
-				elem = document.createElement(tagName);
-				elem.id = metaData.id;
-				elem.style.position = "absolute";
-				setupContent(elem, metaData.id);
-				previewArea.appendChild(elem);
-			}
-			console.log("id=" + metaData.id);
-			if (metaData.type === 'text') {
-				// contentData is text
-				elem.innerHTML = contentData;
-				assignMetaData(elem, metaData);
-			} else {
-				// contentData is blob
-				if (metaData.hasOwnProperty('mime')) {
-					mime = metaData.mime;
-					console.log("mime:" + mime);
-				}
-				blob = new Blob([contentData], {type: mime});
-				if (elem && blob) {
-					elem.src = URL.createObjectURL(blob);
-					
-					elem.onload = function () {
-						if (metaData.width < 10) {
-							console.log("naturalWidth:" + elem.naturalWidth);
-							metaData.width = elem.naturalWidth;
-						}
-						if (metaData.height < 10) {
-							console.log("naturalHeight:" + elem.naturalHeight);
-							metaData.height = elem.naturalHeight;
-						}
-						//console.log("onload:" + JSON.stringify(metaData));
-						assignMetaData(elem, metaData);
-					};
-				}
-			}
-			//console.log(metaData);
-		});
-	});
 	
 	/// open image file
 	function openImage(evt) {
@@ -619,6 +536,7 @@
 			screens = vscreen.getScreenAll(),
 			s,
 			wholeElem = document.createElement('span'),
+			previewArea = document.getElementById('preview_area'),
 			screenElem;
 		
 		console.log("screens:" + JSON.stringify(vscreen));
@@ -627,7 +545,7 @@
 		wholeElem.style.zIndex = -100;
 		wholeElem.className = "screen";
 		assignScreenRect(wholeElem, whole);
-		document.body.appendChild(wholeElem);
+		previewArea.appendChild(wholeElem);
 		
 		for (s in screens) {
 			if (screens.hasOwnProperty(s)) {
@@ -637,7 +555,7 @@
 				console.log("screenElemID:" + screenElem.id);
 				screenElem.style.border = 'solid';
 				assignScreenRect(screenElem, screens[s]);
-				document.body.appendChild(screenElem);
+				previewArea.appendChild(screenElem);
 				setupWindow(screenElem, s);
 			}
 		}
@@ -651,7 +569,8 @@
 			h = parseInt(resolutionHeight.value, 10),
 			cx = document.documentElement.clientWidth / 2,
 			cy = document.documentElement.clientHeight / 2,
-			screens = document.body.getElementsByClassName('screen'),
+			previewArea = document.getElementById('preview_area'),
+			screens = previewArea.getElementsByClassName('screen'),
 			ww = w,
 			i,
 			metaData,
@@ -660,9 +579,11 @@
 		if (w !== ww) {
 			return "NaN";
 		}
+		
+		console.log("screensscreensscreensscreens:" + screens);
 		vscreen.createWhole(resolutionWidth.value, resolutionHeight.value, cx, cy, scale);
 		for (i = screens.length - 1; i >= 0; i = i - 1) {
-			document.body.removeChild(screens.item(i));
+			previewArea.removeChild(screens.item(i));
 		}
 		for (i in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(i)) {
@@ -678,6 +599,83 @@
 		addScreenRect();
 	}
 	
+	/// import content
+	function importContent(metaData, contentData) {
+		var previewArea = document.getElementById('preview_area'),
+			elem,
+			tagName,
+			blob,
+			mime = "image/jpeg";
+
+		metaDataDict[metaData.id] = metaData;
+		console.log("doneGetContent:" + JSON.stringify(metaData));
+
+		if (metaData.type === 'text') {
+			tagName = 'div';
+		} else {
+			tagName = 'img';
+		}
+		if (document.getElementById(metaData.id)) {
+			elem = document.getElementById(metaData.id);
+			//console.log("found " + json.type);
+		} else {
+			elem = document.createElement(tagName);
+			elem.id = metaData.id;
+			elem.style.position = "absolute";
+			setupContent(elem, metaData.id);
+			previewArea.appendChild(elem);
+		}
+		console.log("id=" + metaData.id);
+		if (metaData.type === 'text') {
+			// contentData is text
+			elem.innerHTML = contentData;
+			assignMetaData(elem, metaData);
+		} else {
+			// contentData is blob
+			if (metaData.hasOwnProperty('mime')) {
+				mime = metaData.mime;
+				console.log("mime:" + mime);
+			}
+			blob = new Blob([contentData], {type: mime});
+			if (elem && blob) {
+				elem.src = URL.createObjectURL(blob);
+
+				elem.onload = function () {
+					if (metaData.width < 10) {
+						console.log("naturalWidth:" + elem.naturalWidth);
+						metaData.width = elem.naturalWidth;
+					}
+					if (metaData.height < 10) {
+						console.log("naturalHeight:" + elem.naturalHeight);
+						metaData.height = elem.naturalHeight;
+					}
+					//console.log("onload:" + JSON.stringify(metaData));
+					assignMetaData(elem, metaData);
+				};
+			}
+		}
+		//console.log(metaData);
+	}
+	
+	/// import window
+	function importWindow(windowData) {
+		if (windowData.hasOwnProperty('posx')) {
+			windowData.posx = parseInt(windowData.posx, 10);
+		} else {
+			windowData.posx = 0;
+		}
+		if (windowData.hasOwnProperty('posy')) {
+			windowData.posy = parseInt(windowData.posy, 10);
+		} else {
+			windowData.posy = 0;
+		}
+		console.log("import window:" + JSON.stringify(windowData));
+		metaDataDict[windowData.id] = windowData;
+		vscreen.addScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
+		updateScreen(displayScale);
+	}
+	
+	/// initialize elemets, events
 	function init() {
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),
@@ -757,6 +755,26 @@
 		vscreen.dump();
 	}
 	
+	///------------------------------------------------------------------------
+	
+	/// meta data updated
+	socket.on('doneGetMetaData', function (data) {
+		var json = JSON.parse(data);
+		if (json.type === windowType) { return; }
+		metaDataDict[json.id] = json;
+		assignMetaData(document.getElementById(json.id), json);
+		if (draggingID === json.id) {
+			assignContentProperty(json);
+		}
+	});
+	
+	/// content data updated
+	socket.on('doneGetContent', function (data) {
+		metabinary.loadMetaBinary(new Blob([data]), function (metaData, contentData) {
+			importContent(metaData, contentData);
+		});
+	});
+	
 	socket.on('doneUpdateTransform', function (reply) {
 	});
 	
@@ -778,23 +796,23 @@
 		update();
 	});
 	
+	socket.on('doneAddContent', function (reply) {
+		var json = JSON.parse(reply);
+		console.log("doneAddContent:" + json.id + ":" + json.type);
+		
+		if (currentContent) {
+			currentContent.id = json.id;
+			setupContent(currentContent, json.id);
+			//console.log(currentContent);
+		}
+		lastContentID = json.id;
+		currentContent = null;
+	});
+	
 	socket.on('doneGetWindow', function (reply) {
 		var windowData = JSON.parse(reply);
 		console.log('doneGetWindow:' + reply);
-		
-		if (windowData.hasOwnProperty('posx')) {
-			windowData.posx = parseInt(windowData.posx, 10);
-		} else {
-			windowData.posx = 0;
-		}
-		if (windowData.hasOwnProperty('posy')) {
-			windowData.posy = parseInt(windowData.posy, 10);
-		} else {
-			windowData.posy = 0;
-		}
-		metaDataDict[windowData.id] = windowData;
-		vscreen.addScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
-		updateScreen(displayScale);
+		importWindow(windowData);
 	});
 	
 	socket.on('updateTransform', function () {
@@ -807,9 +825,10 @@
 	});
 	
 	socket.on('update', function () {
+		removeManipulator();
 		update();
+		updateScreen(displayScale);
 	});
-	
 	
 	window.onload = init;
 

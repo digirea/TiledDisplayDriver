@@ -11,19 +11,15 @@ var fs = require('fs'),
 	currentVersion = "v1",
 	ws_connections = {},
 	ws2_connections = {},
-	id_counter = 0;
+	id_counter = 0,
+	Command = require('./command.js'),
+	io,   // socket io server operator instance
+	ws,   // web socket server sender instance
+	ws2;  // web socket server operator instance
 
 console.log(operator);
 
-/*
-util.generateUUID(function (err, uuid) {
-	'use strict';
-	var id = uuid.slice(0, 8);
-	console.log(id);
-	operator.registerUUID(id);
-});
-*/
-
+// register server id
 operator.registerUUID("default");
 
 //----------------------------------------------------------------------------------------
@@ -38,7 +34,7 @@ var seserver = http.createServer(function (req, res) {
 seserver.listen(port + 1);
 
 /// web socket server instance
-var ws = new WebSocket.server({ httpServer : seserver,
+ws = new WebSocket.server({ httpServer : seserver,
 		maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
 		autoAcceptConnections : false});
 
@@ -71,7 +67,11 @@ ws.on('request', function (request) {
 	
 	connection.on('close', function () {
 		delete ws_connections[connection.id];
-		operator.unregisterWindow(connection.id);
+		operator.commandDeleteWindow(null, connection, function () {
+			io.sockets.emit(Command.update);
+			ws2.broadcast(Command.update);
+			console.log("broadcast update");
+		});
 		console.log('connection closed :' + connection.id);
 	});
 	
@@ -118,7 +118,7 @@ if (process.argv.length > 2) {
 opsever.listen(port);
 
 /// socekt.io server instance
-var io = require('socket.io').listen(opsever);
+io = require('socket.io').listen(opsever);
 
 io.sockets.on('connection', function (socket) {
 	"use strict";
@@ -127,7 +127,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on('reqRegisterEvent', function (apiVersion) {
 		if (apiVersion === currentVersion) {
 			operator.registerEvent(socket, io, ws);
-			io.sockets.emit('update');
+			io.sockets.emit(Command.update);
 		}
 	});
 	socket.on('disconnect', function () {
@@ -148,7 +148,7 @@ var wsopserver = http.createServer(function (req, res) {
 wsopserver.listen(port + 2);
 
 /// web socket server instance
-var ws2 = new WebSocket.server({ httpServer : wsopserver,
+ws2 = new WebSocket.server({ httpServer : wsopserver,
 		maxReceivedFrameSize : 0x1000000, // more receive buffer!! default 65536B
 		autoAcceptConnections : false});
 
@@ -181,7 +181,11 @@ ws2.on('request', function (request) {
 	
 	connection.on('close', function () {
 		delete ws2_connections[connection.id];
-		operator.unregisterWindow(connection.id);
+		operator.commandDeleteWindow(null, connection, function () {
+			console.log("broadcast update");
+			io.sockets.emit(Command.update);
+			ws2.broadcast(Command.update);
+		});
 		console.log('connection closed :' + connection.id);
 	});
 	
@@ -189,6 +193,7 @@ ws2.on('request', function (request) {
 
 //----------------------------------------------------------------------------------------
 
+/*
 function unregisterAllWindow(endCallback) {
 	"use strict";
 	var id;
@@ -199,10 +204,11 @@ function unregisterAllWindow(endCallback) {
 	}
 	for (id in ws2_connections) {
 		if (ws2_connections.hasOwnProperty(id)) {
-			operator.unregisterWindow(id);
+			operator.commandDeleteWindow(id);
 		}
 	}
 }
+*/
 
 // unregister all window
 process.on('exit', function () {
@@ -213,7 +219,7 @@ process.on('exit', function () {
 process.on('SIGINT', function () {
 	"use strict";
 	console.log("SIGINT");
-	unregisterAllWindow();
+	//unregisterAllWindow();
 	setTimeout(function () {
 		process.exit();
 	}, 500);

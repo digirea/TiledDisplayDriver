@@ -13,7 +13,8 @@
 		reqDeleteContent : "reqDeleteContent",
 		reqUpdateContent : "reqUpdateContent",
 		reqUpdateTransform : "reqUpdateTransform",
-		reqRegisterWindow : "reqRegisterWindow",
+		reqAddWindow : "reqAddWindow",
+		reqDeleteWindow : "reqDeleteWindow",
 		reqGetWindow : "reqGetWindow",
 		reqUpdateWindow : "reqUpdateWindow",
 		
@@ -24,7 +25,8 @@
 		doneDeleteContent : "doneDeleteContent",
 		doneUpdateContent : "doneUpdateContent",
 		doneUpdateTransform : "doneUpdateTransform",
-		doneRegisterWindow : "doneRegisterWindow",
+		doneAddWindow : "doneAddWindow",
+		doneDeleteWindow : "doneDeleteWindow",
 		doneGetWindow : "doneGetWindow",
 		doneUpdateWindow : "doneUpdateWindow",
 		

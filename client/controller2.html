@@ -12,169 +12,169 @@
 	<script type="text/javascript" src="js/controller2.js"></script>
 </head>
 <body>
-<nav class="navbar navbar-default">
-	<div class="container-fluid">
-		<!-- Brand and toggle get grouped for better mobile display -->
-		<div class="navbar-header">
-			<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-				<span class="sr-only">Toggle navigation</span>
-			</button>
-			<a class="navbar-brand" href="#">Tiled Display</a>
-		</div>
-
-		<!-- Collect the nav links, forms, and other content for toggling -->
-		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-			<ul class="nav navbar-nav">
-				<li class="active"><a href="#">Controller <span class="sr-only">(current)</span></a></li>
-				<li><a href="view2.html">Display</a></li>
-			</ul>
-		</div>
-	</div>
-</nav>
 	
-<div class="panel panel-default">
-	<div class="panel-body">
-		<div class="row">
-			<div class="col-lg-2">
-				Virtual Display Resolution
+<div class="page">
+	
+	<nav class="navbar navbar-default navbar--top" role="navigation">
+		<div class="container">
+			<!-- Brand and toggle get grouped for better mobile display -->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">Tiled Display</a>
 			</div>
 
-			<div class="col-lg-2">
-				<span class="input-group">
-					<span class="input-group-addon">w</span>
-					<input type="text" class="form-control" id="resolution_width" placeholder="width" aria-describedby="sizing-addon1">
-					<span class="input-group-addon">px</span>
-				</span>
+			<!-- Collect the nav links, forms, and other content for toggling -->
+			<div class="navbar-collapse" id="">
+				<ul class="nav navbar-nav">
+					<li class="active"><a href="#">Controller <span class="sr-only">(current)</span></a></li>
+					<li><a href="view2.html">Display</a></li>
+				</ul>
 			</div>
+		</div>
+	</nav>
 
-			<div class="col-lg-2">
-				<span class="input-group">
-					<span class="input-group-addon">h</span>
-					<input type="text" class="form-control" id="resolution_height" placeholder="height" aria-describedby="sizing-addon2">
-					<span class="input-group-addon">px</span>
-				</span>
-			</div>
+	<div class="top_control_panel panel panel-default">
+		<div class="panel-body">
+			<div class="top_control">
+				<div class="topmenu0">
+					Virtual Display Resolution
+				</div>
 
-			<div class="col-lg-2">
-				<span class="input-group">
-					<span class="input-group-addon">display scale</span>
-					<input type="text" class="form-control" id="display_scale" placeholder="scale" aria-describedby="sizing-addon2" value=0.5>
-				</span>
-			</div>
-			
-			<div class="col-lg-2">
-				<span class="dropdown">
-					Snap Setting
-					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-						Free
-						<span class="caret"></span>
-					</button>
-					<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-						<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Display</a></li>
-					</ul>
-				</span>
+				<div class="topmenu1">
+					<span class="input-group">
+						<span class="input-group-addon">w</span>
+						<input type="text" class="form-control" id="resolution_width" placeholder="width" aria-describedby="sizing-addon1">
+						<span class="input-group-addon">px</span>
+					</span>
+				</div>
+
+				<div class="topmenu2">
+					<span class="input-group">
+						<span class="input-group-addon">h</span>
+						<input type="text" class="form-control" id="resolution_height" placeholder="height" aria-describedby="sizing-addon2">
+						<span class="input-group-addon">px</span>
+					</span>
+				</div>
+
+				<div class="topmenu3">
+					<span class="input-group">
+						<span class="input-group-addon">display scale</span>
+						<input type="text" class="form-control" id="display_scale" placeholder="scale" aria-describedby="sizing-addon2" value=0.5>
+					</span>
+				</div>
+
+				<div class="topmenu4">
+					<span class="dropdown">
+						Snap Setting
+						<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+							Free
+							<span class="caret"></span>
+						</button>
+						<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
+							<li role="presentation"><a role="menuitem" tabindex="-1" href="#">Display</a></li>
+						</ul>
+					</span>
+				</div>
 			</div>
 		</div>
 	</div>
-</div>
-	
-	
-<div id="leftArea" class="leftArea">
-	<ul class="nav nav-tabs">
-		<li role="presentation" id="display_tab_title"><a href="#">Display</a></li>
-		<li role="presentation" id="content_tab_title"  class="active"><a href="#">Content</a></li>
-	</ul>
-	
-	<div class="display_tab" id="display_tab">
-	</div>
-	
-	<div class="content_tab" id="content_tab">
-		<div>
-			<p>テキストの送信</p>
-			<input type="text" id="text_input" />
-			<input type="button" value="Send" id="text_send_button"></input>
-		</div>
-		<hr>
-		<div>
-			<p>URLの送信</p>
-			<input type="text" id="url_input" />
-			<input type="button" value="Send" id="url_send_button"></input>
-		</div>
-		<hr>
-		<div>
-			<p>画像の送信</p>
-			<input type="file" name="filename" id="file_input" />
-			<!--input type="button" value="Send" id="image_send_button"></input-->
-		</div>
-		<hr>
-		<div>
-			<p>コンテンツ削除</p>
-			<span>ID:</span><span id="delete_content_id" >No Content Selected.</span>
-			<input type="button" value="Delete" id="content_delete_button" disabled></input>
-		</div>
-		<hr>
-		<div>
-			<p>ウィンドウ全て削除</p>
-			<input type="button" value="Delete" id="delete_all_window"></input>
-		</div>
-		<hr>
-		<div>
-			<p>画像差し替え</p>
-			<span>ID:</span><span id="update_content_id" >No Content Selected.</span>
-			<input type="file" value="UpdateImage" id="update_image_input" disabled></input>
-		</div>
-		<hr>
 
-		<div>
-			<button type="button" class="btn btn-primary" id="content_add_button">Add</button>
-			<button type="button" class="btn btn-primary" id="content_delete_button" disabled>Delete</button>
-		</div>
-	</div>
-</div>
 
-<div id="rightArea" class="rightArea">
-	<p class="content_id">
-		<span>Content ID：</span><span id="content_id" >No Content Selected.</span>
-	</p>
-	
-	<div class="transform_input">
-		<div class="input-group">
-			<span class="input-group-addon">x</span>
-			<input type="text" class="form-control" id="content_transform_x" value="0">
-			<span class="input-group-addon">px</span>
+	<div id="leftArea" class="leftArea">
+		<ul class="nav nav-tabs">
+			<li role="presentation" id="display_tab_title"><a href="#">Display</a></li>
+			<li role="presentation" id="content_tab_title"  class="active"><a href="#">Content</a></li>
+		</ul>
+
+		<div class="display_tab" id="display_tab">
 		</div>
 
-		<div class="input-group">
-			<span class="input-group-addon">y</span>
-			<input type="text" class="form-control" id="content_transform_y" value="0">
-			<span class="input-group-addon">px</span>
-		</div>
+		<div class="content_tab" id="content_tab">
+			<div>
+				<p>テキストの送信</p>
+				<input type="text" id="text_input" />
+				<input type="button" value="Send" id="text_send_button"></input>
+			</div>
+			<hr>
+			<div>
+				<p>URLの送信</p>
+				<input type="text" id="url_input" />
+				<input type="button" value="Send" id="url_send_button"></input>
+			</div>
+			<hr>
+			<div>
+				<p>画像の送信</p>
+				<input type="file" name="filename" id="file_input" />
+				<!--input type="button" value="Send" id="image_send_button"></input-->
+			</div>
+			<hr>
+			<div>
+				<p>コンテンツ削除</p>
+				<span>ID:</span><span id="delete_content_id" >No Content Selected.</span>
+				<input type="button" value="Delete" id="content_delete_button" disabled></input>
+			</div>
+			<hr>
+			<div>
+				<p>ウィンドウ全て削除</p>
+				<input type="button" value="Delete" id="delete_all_window"></input>
+			</div>
+			<hr>
+			<div>
+				<p>画像差し替え</p>
+				<span>ID:</span><span id="update_content_id" >No Content Selected.</span>
+				<input type="file" value="UpdateImage" id="update_image_input" disabled></input>
+			</div>
+			<hr>
 
-		<div class="input-group">
-			<span class="input-group-addon">w</span>
-			<input type="text" class="form-control" id="content_transform_w" value="0">
-			<span class="input-group-addon">px</span>
-		</div>
-
-		<div class="input-group">
-			<span class="input-group-addon">h</span>
-			<input type="text" class="form-control" id="content_transform_h" value="0">
-			<span class="input-group-addon">px</span>
-		</div>
-		
-		<div class="input-group">
-			<span class="input-group-addon">z</span>
-			<input type="text" class="form-control" id="content_transform_z" value="0">
-			<span class="input-group-addon">index</span>
+			<div>
+				<button type="button" class="btn btn-primary" id="content_add_button">Add</button>
+				<button type="button" class="btn btn-primary" id="content_delete_button" disabled>Delete</button>
+			</div>
 		</div>
 	</div>
-	
-	<button type="button" class="download_button"/>
-</div>
-	
-<!--img src="" id="image_preview" /-->
-<div id="preview_area">
-</div>
+
+	<div id="rightArea" class="rightArea">
+		<p class="content_id">
+			<span>Content ID：</span><span id="content_id" >No Content Selected.</span>
+		</p>
+
+		<div class="transform_input">
+			<div class="input-group">
+				<span class="input-group-addon">x</span>
+				<input type="text" class="form-control" id="content_transform_x" value="0">
+				<span class="input-group-addon">px</span>
+			</div>
+
+			<div class="input-group">
+				<span class="input-group-addon">y</span>
+				<input type="text" class="form-control" id="content_transform_y" value="0">
+				<span class="input-group-addon">px</span>
+			</div>
+
+			<div class="input-group">
+				<span class="input-group-addon">w</span>
+				<input type="text" class="form-control" id="content_transform_w" value="0">
+				<span class="input-group-addon">px</span>
+			</div>
+
+			<div class="input-group">
+				<span class="input-group-addon">h</span>
+				<input type="text" class="form-control" id="content_transform_h" value="0">
+				<span class="input-group-addon">px</span>
+			</div>
+
+			<div class="input-group">
+				<span class="input-group-addon">z</span>
+				<input type="text" class="form-control" id="content_transform_z" value="0">
+				<span class="input-group-addon">index</span>
+			</div>
+		</div>
+
+		<button type="button" class="download_button"/>
+	</div>
+
+	<!--img src="" id="image_preview" /-->
+	<div id="preview_area">
+	</div>
 	
 	<script>
 		window.animtab.create('left', {
@@ -191,5 +191,7 @@
 		);
 	</script>
 	<script type="text/javascript" src="js/bootstrap-without-jquery.min.js"></script>
+
+</div>
 </body>
 </html>

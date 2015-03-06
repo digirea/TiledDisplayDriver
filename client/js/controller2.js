@@ -451,7 +451,7 @@
 			elem = document.createElement('span'),
 			width = (textInput.clientWidth + 1),
 			height = (textInput.clientHeight + 1),
-			binary = metabinary.createMetaBinary({type : "text", width : width, height : height}, textInput.value);
+			binary = metabinary.createMetaBinary({type : "text", posx : 0, posy : 0, width : width, height : height}, textInput.value);
 		
 		elem.style.position = "absolute";
 		elem.style.top = "0px";

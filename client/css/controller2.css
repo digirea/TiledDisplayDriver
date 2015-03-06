@@ -114,3 +114,42 @@
 	background-color: transparent;
 }
 
+.page {
+	min-width : 800px;
+}
+
+.top_control {
+	width : 800px;
+	height : 50px;
+}
+
+.top_control_panel {
+	text-align:center;
+}
+
+.topmenu0 {
+	position:absolute;
+	left : 10px;
+	padding-top : 15px;
+}
+
+.topmenu1 {
+	position: absolute;
+	left : 160px;
+}
+
+.topmenu2 {
+	position: absolute;
+	left : 330px;
+}
+
+.topmenu3 {
+	position: absolute;
+	left : 500px;
+}
+
+.topmenu4 {
+	position: absolute;
+	left : 690px;
+	padding-top : 10px;
+}

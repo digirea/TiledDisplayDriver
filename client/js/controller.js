@@ -20,6 +20,26 @@
 		socket.emit('reqGetContent', JSON.stringify({type: "all", id: ""}));
 	}
 	
+	/// delete content
+	function deleteContent() {
+		var contentID = document.getElementById('delete_content_id');
+		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
+	}
+	
+	function addContent(binary) {
+		socket.emit('reqAddContent', binary);
+	}
+	
+	function updateTransform(metaData) {
+		//console.log("reqUpdateTransform");
+		socket.emit('reqUpdateTransform', JSON.stringify(metaData));
+	}
+	
+	function updateContent(binary) {
+		socket.emit('reqUpdateContent', binary);
+	}
+	
+	
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
 	/// @param targetElem manipulator target
@@ -202,75 +222,65 @@
 			evt.stopPropagation();
 			evt.preventDefault();
 		};
-		window.document.onmousedown = function (evt) {
-			// erase last border
-			if (lastDraggingID && !draggingManip) {
-				elem = document.getElementById(lastDraggingID);
-				elem.style.border = "";
-				elem.style.zIndex = 0;
-				lastDraggingID = null;
-				removeManipulator();
-			}
-		};
-		window.document.onmousemove = function (evt) {
-			var i,
-				metaData,
-				elem;
-			evt = (evt) || window.event;
-			if (draggingID) {
-				// translate
-				elem = document.getElementById(draggingID);
-				metaData = metaDataDict[draggingID];
-				metaData.posx = evt.x - dragOffsetLeft;
-				metaData.posy = evt.y - dragOffsetTop;
-				assignMetaData(elem, metaData);
-				moveManipulator(manipulators, elem);
-				socket.emit('reqUpdateTransform', JSON.stringify(metaData));
-				evt.stopPropagation();
-				evt.preventDefault();
-			} else if (lastDraggingID) {
-				// scaling
-				elem = document.getElementById(lastDraggingID);
-				onManipulatorMove(evt);
-				moveManipulator(manipulators, elem);
-				evt.stopPropagation();
-				evt.preventDefault();
-			}
-		};
-		window.document.onmouseup = function () {
-			var previewArea = document.getElementById('preview_area'),
-				metaData,
-				elem;
-			if (draggingID) {
-				metaData = metaDataDict[draggingID];
-				socket.emit('reqUpdateTransform', JSON.stringify(metaData));
-			}
-			if (draggingManip && lastDraggingID) {
-				metaData = metaDataDict[lastDraggingID];
-				socket.emit('reqUpdateTransform', JSON.stringify(metaData));
-			} else {
-				lastDraggingID = draggingID;
-				draggingID = null;
-			}
-			draggingManip = null;
-			dragOffsetTop = 0;
-			dragOffsetLeft = 0;
-		};
 	}
 	
-	socket.on('doneAddContent', function (reply) {
-		var json = JSON.parse(reply);
-		console.log("doneAddContent:" + json.id + ":" + json.type);
-		
-		if (currentContent) {
-			currentContent.id = json.id;
-			setupContent(currentContent, json.id);
-			//console.log(currentContent);
+	window.document.onmousedown = function (evt) {
+		var elem;
+		// erase last border
+		if (lastDraggingID && !draggingManip) {
+			elem = document.getElementById(lastDraggingID);
+			elem.style.border = "";
+			elem.style.zIndex = 0;
+			lastDraggingID = null;
+			removeManipulator();
 		}
-		lastContentID = json.id;
-		currentContent = null;
-	});
-	
+	};
+	window.document.onmousemove = function (evt) {
+		var i,
+			metaData,
+			elem;
+		evt = (evt) || window.event;
+		if (draggingID) {
+			// translate
+			elem = document.getElementById(draggingID);
+			metaData = metaDataDict[draggingID];
+			metaData.posx = evt.x - dragOffsetLeft;
+			metaData.posy = evt.y - dragOffsetTop;
+			assignMetaData(elem, metaData);
+			moveManipulator(manipulators, elem);
+			updateTransform(metaData);
+			
+			evt.stopPropagation();
+			evt.preventDefault();
+		} else if (lastDraggingID) {
+			// scaling
+			elem = document.getElementById(lastDraggingID);
+			onManipulatorMove(evt);
+			moveManipulator(manipulators, elem);
+			evt.stopPropagation();
+			evt.preventDefault();
+		}
+	};
+	window.document.onmouseup = function () {
+		var previewArea = document.getElementById('preview_area'),
+			metaData,
+			elem;
+		if (draggingID) {
+			metaData = metaDataDict[draggingID];
+			//socket.emit('reqUpdateTransform', JSON.stringify(metaData));
+		}
+		if (draggingManip && lastDraggingID) {
+			metaData = metaDataDict[lastDraggingID];
+			//socket.emit('reqUpdateTransform', JSON.stringify(metaData));
+		} else {
+			lastDraggingID = draggingID;
+			draggingID = null;
+		}
+		draggingManip = null;
+		dragOffsetTop = 0;
+		dragOffsetLeft = 0;
+	};
+
 	/// send text to server
 	function sendText() {
 		console.log("sendtest");
@@ -289,7 +299,7 @@
 		currentContent = elem;
 		console.log(textInput.value);
 		
-		socket.emit('reqAddContent', binary);
+		addContent(binary);
 	}
 	
 	/// send url to server
@@ -307,7 +317,7 @@
 		currentContent = img;
 		console.log(urlInput.value);
 		
-		socket.emit('reqAddContent', binary);
+		addContent(binary);
 	}
 	
 	/// send image to server
@@ -315,13 +325,7 @@
 		var metaData = {type : "image", posx : 0, posy : 0, width : width, height: height},
 			binary = metabinary.createMetaBinary(metaData, imagebinary);
 		console.log("sendImage");
-		socket.emit('reqAddContent', binary);
-	}
-	
-	/// delete content
-	function deleteContent() {
-		var contentID = document.getElementById('delete_content_id');
-		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
+		addContent(binary);
 	}
 	
 	/// open image file
@@ -370,7 +374,7 @@
 		fileReader.onloadend = function (e) {
 			if (e.target.result) {
 				binary = metabinary.createMetaBinary({type : "image", id : id}, e.target.result);
-				socket.emit('reqUpdateContent', binary);
+				updateContent(binary);
 			}
 		};
 		for (i = 0, file = files[i]; file; i = i + 1, file = files[i]) {
@@ -455,9 +459,25 @@
 		fileInput.addEventListener('change', openImage, false);
 	}
 	
+	///------------------------------------------------------------------------
+	
 	socket.on('connect', function () {
 		console.log("connect");
 		socket.emit('reqRegisterEvent', "v1");
+	});
+	
+
+	socket.on('doneAddContent', function (reply) {
+		var json = JSON.parse(reply);
+		console.log("doneAddContent:" + json.id + ":" + json.type);
+		
+		if (currentContent) {
+			currentContent.id = json.id;
+			setupContent(currentContent, json.id);
+			//console.log(currentContent);
+		}
+		lastContentID = json.id;
+		currentContent = null;
 	});
 	
 	socket.on('doneUpdateTransform', function (reply) {

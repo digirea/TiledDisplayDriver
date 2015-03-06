@@ -15,37 +15,10 @@
 		dragOffsetLeft = 0,
 		metaDataDict = {};
 	
-	socket.on('connect', function () {
-		console.log("connect");
-		socket.emit('reqRegisterEvent', "v1");
-	});
-	
-	
 	/// get image from server
 	function update() {
 		socket.emit('reqGetContent', JSON.stringify({type: "all", id: ""}));
 	}
-	
-	socket.on('doneUpdateTransform', function (reply) {
-	});
-	
-	socket.on('doneDeleteContent', function (reply) {
-		console.log("doneDeleteContent");
-		var json = JSON.parse(reply),
-			previewArea = document.getElementById('preview_area'),
-			contentID = document.getElementById('delete_content_id'),
-			deleted = document.getElementById(json.id);
-		previewArea.removeChild(deleted);
-		contentID.innerHTML = "No Content Selected.";
-		document.getElementById('content_delete_button').disabled = true;
-	});
-	
-	socket.on('doneUpdateContent', function (reply) {
-		var updateContentID = document.getElementById('update_content_id');
-		updateContentID.innerHTML = "No Content Selected.";
-		document.getElementById('update_image_input').disabled = true;
-		update();
-	});
 	
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
@@ -304,7 +277,9 @@
 		var previewArea = document.getElementById('preview_area'),
 			textInput = document.getElementById('text_input'),
 			elem = document.createElement('span'),
-			binary = metabinary.createMetaBinary({type : "text"}, textInput.value);
+			width = (textInput.clientWidth + 1),
+			height = (textInput.clientHeight + 1),
+			binary = metabinary.createMetaBinary({type : "text", width : width, height : height}, textInput.value);
 		
 		elem.style.position = "absolute";
 		elem.style.top = "0px";
@@ -342,66 +317,6 @@
 		console.log("sendImage");
 		socket.emit('reqAddContent', binary);
 	}
-	
-	/// meta data updated
-	socket.on('doneGetMetaData', function (data) {
-		var json = JSON.parse(data);
-		metaDataDict[json.id] = json;
-		assignMetaData(document.getElementById(json.id), json);
-	});
-	
-	/// content data updated
-	socket.on('doneGetContent', function (data) {
-		metabinary.loadMetaBinary(new Blob([data]), function (metaData, contentData) {
-			var previewArea = document.getElementById('preview_area'),
-				elem,
-				tagName,
-				blob,
-				mime = "image/jpeg";
-			
-			metaDataDict[metaData.id] = metaData;
-			
-			if (metaData.type === 'text') {
-				tagName = 'div';
-			} else {
-				tagName = 'img';
-			}
-			if (document.getElementById(metaData.id)) {
-				elem = document.getElementById(metaData.id);
-				//console.log("found " + json.type);
-			} else {
-				elem = document.createElement(tagName);
-				elem.id = metaData.id;
-				elem.style.position = "absolute";
-				setupContent(elem, metaData.id);
-				previewArea.appendChild(elem);
-			}
-			console.log("id=" + metaData.id);
-			if (metaData.type === 'text') {
-				// contentData is text
-				elem.innerHTML = contentData;
-			} else {
-				// contentData is blob
-				if (metaData.hasOwnProperty('mime')) {
-					mime = metaData.mime;
-				}
-				blob = new Blob([contentData], {type: mime});
-				if (elem && blob) {
-					elem.src = URL.createObjectURL(blob);
-				}
-			}
-			//console.log(metaData);
-			assignMetaData(elem, metaData);
-		});
-	});
-	
-	socket.on('updateTransform', function () {
-		socket.emit('reqGetMetaData', JSON.stringify({type: "all", id: ""}));
-	});
-	
-	socket.on('update', function () {
-		update();
-	});
 	
 	/// delete content
 	function deleteContent() {
@@ -465,6 +380,64 @@
 		}
 	}
 	
+	/// import content
+	function importContent(metaData, contentData) {
+		var previewArea = document.getElementById('preview_area'),
+			elem,
+			tagName,
+			blob,
+			mime = "image/jpeg";
+
+		metaDataDict[metaData.id] = metaData;
+		console.log("doneGetContent:" + JSON.stringify(metaData));
+
+		if (metaData.type === 'text') {
+			tagName = 'div';
+		} else {
+			tagName = 'img';
+		}
+		if (document.getElementById(metaData.id)) {
+			elem = document.getElementById(metaData.id);
+			//console.log("found " + json.type);
+		} else {
+			elem = document.createElement(tagName);
+			elem.id = metaData.id;
+			elem.style.position = "absolute";
+			setupContent(elem, metaData.id);
+			previewArea.appendChild(elem);
+		}
+		console.log("id=" + metaData.id);
+		if (metaData.type === 'text') {
+			// contentData is text
+			elem.innerHTML = contentData;
+			assignMetaData(elem, metaData);
+		} else {
+			// contentData is blob
+			if (metaData.hasOwnProperty('mime')) {
+				mime = metaData.mime;
+				console.log("mime:" + mime);
+			}
+			blob = new Blob([contentData], {type: mime});
+			if (elem && blob) {
+				elem.src = URL.createObjectURL(blob);
+
+				elem.onload = function () {
+					if (metaData.width < 10) {
+						console.log("naturalWidth:" + elem.naturalWidth);
+						metaData.width = elem.naturalWidth;
+					}
+					if (metaData.height < 10) {
+						console.log("naturalHeight:" + elem.naturalHeight);
+						metaData.height = elem.naturalHeight;
+					}
+					//console.log("onload:" + JSON.stringify(metaData));
+					assignMetaData(elem, metaData);
+				};
+			}
+		}
+		//console.log(metaData);
+	}
+	
 	function init() {
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),
@@ -481,6 +454,54 @@
 		updateImageInput.addEventListener('change', replaceImage, false);
 		fileInput.addEventListener('change', openImage, false);
 	}
+	
+	socket.on('connect', function () {
+		console.log("connect");
+		socket.emit('reqRegisterEvent', "v1");
+	});
+	
+	socket.on('doneUpdateTransform', function (reply) {
+	});
+	
+	socket.on('doneDeleteContent', function (reply) {
+		console.log("doneDeleteContent");
+		var json = JSON.parse(reply),
+			previewArea = document.getElementById('preview_area'),
+			contentID = document.getElementById('delete_content_id'),
+			deleted = document.getElementById(json.id);
+		previewArea.removeChild(deleted);
+		contentID.innerHTML = "No Content Selected.";
+		document.getElementById('content_delete_button').disabled = true;
+	});
+	
+	socket.on('doneUpdateContent', function (reply) {
+		var updateContentID = document.getElementById('update_content_id');
+		updateContentID.innerHTML = "No Content Selected.";
+		document.getElementById('update_image_input').disabled = true;
+		update();
+	});
+	
+	/// meta data updated
+	socket.on('doneGetMetaData', function (data) {
+		var json = JSON.parse(data);
+		metaDataDict[json.id] = json;
+		assignMetaData(document.getElementById(json.id), json);
+	});
+	
+	/// content data updated
+	socket.on('doneGetContent', function (data) {
+		metabinary.loadMetaBinary(new Blob([data]), function (metaData, contentData) {
+			importContent(metaData, contentData);
+		});
+	});
+	
+	socket.on('updateTransform', function () {
+		socket.emit('reqGetMetaData', JSON.stringify({type: "all", id: ""}));
+	});
+	
+	socket.on('update', function () {
+		update();
+	});
 	
 	window.onload = init;
 

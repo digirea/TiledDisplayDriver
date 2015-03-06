@@ -437,7 +437,9 @@
 		var previewArea = document.getElementById('preview_area'),
 			textInput = document.getElementById('text_input'),
 			elem = document.createElement('span'),
-			binary = metabinary.createMetaBinary({type : "text"}, textInput.value);
+			width = (textInput.clientWidth + 1),
+			height = (textInput.clientHeight + 1),
+			binary = metabinary.createMetaBinary({type : "text", width : width, height : height}, textInput.value);
 		
 		elem.style.position = "absolute";
 		elem.style.top = "0px";
@@ -446,6 +448,7 @@
 		previewArea.appendChild(elem);
 		currentContent = elem;
 		console.log(textInput.value);
+		console.log(textInput.style);
 		
 		addContent(binary);
 	}

@@ -27,6 +27,16 @@
 		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height}));
 	}
 	
+	function resizeText(elem, rect) {
+		if (rect.h - 1 > 9) {
+			elem.style.fontSize = rect.h - 1 + "px";
+		} else {
+			elem.style.fontSize = "9px";
+			elem.style.width = "";
+			elem.style.height = "";
+		}
+	}
+	
 	/*
 	function updateWholeWindow() {
 		var wh = getWindowSize(),
@@ -89,6 +99,10 @@
 		if (metaData.type === windowType) { return; }
 		console.log("assingrect" + JSON.stringify(rect));
 		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
+		
+		if (metaData.type === "text") {
+			resizeText(elem, rect);
+		}
 	}
 	
 	function assignMetaBinary(metaData, contentData) {

@@ -74,11 +74,24 @@
 		manips[3].style.top = top + "px";
 	}
 	
+	function resizeText(elem, metaData) {
+		if (metaData.height - 1 > 9) {
+			elem.style.fontSize = metaData.height - 1 + "px";
+		} else {
+			elem.style.fontSize = "9px";
+			elem.style.width = "";
+			elem.style.height = "";
+		}
+	}
+	
 	function assignMetaData(elem, metaData) {
 		elem.style.left = Number(metaData.posx) + "px";
 		elem.style.top = Number(metaData.posy) + "px";
 		elem.style.width = Number(metaData.width) + "px";
 		elem.style.height = Number(metaData.height) + "px";
+		if (metaData.type === "text") {
+			resizeText(elem, metaData);
+		}
 		if (metaData.width < 10) {
 			elem.style.width = "";
 		}

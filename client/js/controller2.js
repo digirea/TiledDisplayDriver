@@ -58,6 +58,16 @@
 		socket.emit('reqUpdateContent', binary);
 	}
 	
+	function resizeText(elem, rect) {
+		if (rect.h - 1 > 9) {
+			elem.style.fontSize = rect.h - 1 + "px";
+		} else {
+			elem.style.fontSize = "9px";
+			elem.style.width = "";
+			elem.style.height = "";
+		}
+	}
+	
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
 	/// @param targetElem manipulator target
@@ -127,7 +137,6 @@
 		transh.value = parseInt(metaData.height, 10);
 	}
 	
-	
 	function toFloatRect(metaData) {
 		return vscreen.makeRect(
 			parseFloat(metaData.posx),
@@ -149,6 +158,9 @@
 	function assignMetaData(elem, metaData) {
 		var rect = vscreen.transformOrg(toIntRect(metaData));
 		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
+		if (metaData.type === "text") {
+			resizeText(elem, rect);
+		}
 		console.log("assignMetaData:" + JSON.stringify(metaData));
 	}
 	

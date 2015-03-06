@@ -46,6 +46,7 @@
 		if (metaData.type === windowType) {
 			// window
 			//console.log("reqUpdateWindow");
+			console.log("JSON.stringify(metaData)" + JSON.stringify(metaData));
 			socket.emit('reqUpdateWindow', JSON.stringify(metaData));
 		} else {
 			//console.log("reqUpdateTransform");
@@ -114,7 +115,7 @@
 	}
 	
 	function assignContentProperty(metaData) {
-		//console.log("assingcontent:" + JSON.stringify(metaData));
+		console.log("assignContentProperty:" + JSON.stringify(metaData));
 		var transx = document.getElementById('content_transform_x'),
 			transy = document.getElementById('content_transform_y'),
 			transw = document.getElementById('content_transform_w'),
@@ -126,52 +127,55 @@
 		transh.value = parseInt(metaData.height, 10);
 	}
 	
-	function assignMetaData(elem, metaData) {
-		var rect = vscreen.transform(
+	
+	function toFloatRect(metaData) {
+		return vscreen.makeRect(
+			parseFloat(metaData.posx),
+			parseFloat(metaData.posy),
+			parseFloat(metaData.width),
+			parseFloat(metaData.height)
+		);
+	}
+	
+	function toIntRect(metaData) {
+		return vscreen.makeRect(
 			parseInt(metaData.posx, 10),
 			parseInt(metaData.posy, 10),
 			parseInt(metaData.width, 10),
 			parseInt(metaData.height, 10)
 		);
-		
+	}
+	
+	function assignMetaData(elem, metaData) {
+		var rect = vscreen.transformOrg(toIntRect(metaData));
 		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
-		//console.log("assignMetaData:" + JSON.stringify(metaData));
+		console.log("assignMetaData:" + JSON.stringify(metaData));
 	}
 	
 	function trans(metaData) {
-		var result = JSON.parse(JSON.stringify(metaData)),
-			rect = vscreen.transform(parseFloat(metaData.posx, 10),
-				parseFloat(metaData.posy, 10),
-				parseFloat(metaData.width),
-				parseFloat(metaData.height));
-		result.posx = rect.x;
-		result.posy = rect.y;
-		result.width = rect.w;
-		result.height = rect.h;
-		return result;
+		var rect = vscreen.transformOrg(toFloatRect(metaData));
+		metaData.posx = rect.x;
+		metaData.posy = rect.y;
+		metaData.width = rect.w;
+		metaData.height = rect.h;
+		return metaData;
 	}
 	
 	function transInv(metaData) {
-		var result = JSON.parse(JSON.stringify(metaData)),
-			rect = vscreen.transform_inv(parseFloat(metaData.posx, 10),
-				parseFloat(metaData.posy, 10),
-				parseFloat(metaData.width),
-				parseFloat(metaData.height));
-		result.posx = rect.x;
-		result.posy = rect.y;
-		result.width = rect.w;
-		result.height = rect.h;
-		return result;
+		var rect = vscreen.transformOrgInv(toFloatRect(metaData));
+		metaData.posx = rect.x;
+		metaData.posy = rect.y;
+		metaData.width = rect.w;
+		metaData.height = rect.h;
+		return metaData;
 	}
 	
 	function transPosInv(metaData) {
-		var result = JSON.parse(JSON.stringify(metaData)),
-			rect = vscreen.transform_inv(parseFloat(metaData.posx, 10), parseFloat(metaData.posy, 10), 0, 0);
-		result.posx = rect.x;
-		result.posy = rect.y;
-		result.width = metaData.width;
-		result.height = metaData.height;
-		return result;
+		var rect = vscreen.transformOrgInv(
+			vscreen.makeRect(parseFloat(metaData.posx, 10), parseFloat(metaData.posy, 10), 0, 0)
+		);
+		metaData.posx = rect.x;
+		metaData.posy = rect.y;
 	}
 	
 	function onManipulatorMove(evt) {
@@ -182,16 +186,15 @@
 			currenth,
 			ydiff,
 			elem,
-			metaData,
-			metaDataTransed;
+			metaData;
 		if (draggingManip && lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
-			metaDataTransed = trans(metaData);
-			lastx = metaDataTransed.posx;
-			lasty = metaDataTransed.posy;
-			lastw = metaDataTransed.width;
-			lasth = metaDataTransed.height;
+			trans(metaData);
+			lastx = metaData.posx;
+			lasty = metaData.posy;
+			lastw = metaData.width;
+			lasth = metaData.height;
 			
 			if (draggingManip.id === '_manip_0' || draggingManip.id === '_manip_1') {
 				px = evt.clientX - dragOffsetLeft;
@@ -206,17 +209,17 @@
 			currenth = lasth * (currentw / lastw);
 			ydiff = lasth * (currentw / lastw - 1.0);
 			
-			metaDataTransed.width = currentw;
-			metaDataTransed.height = lasth * (currentw / lastw);
+			metaData.width = currentw;
+			metaData.height = lasth * (currentw / lastw);
 			if (draggingManip.id === '_manip_0') {
-				metaDataTransed.posx = px;
-				metaDataTransed.posy = (lasty - ydiff);
+				metaData.posx = px;
+				metaData.posy = (lasty - ydiff);
 			} else if (draggingManip.id === '_manip_1') {
-				metaDataTransed.posx = px;
+				metaData.posx = px;
 			} else if (draggingManip.id === '_manip_3') {
-				metaDataTransed.posy = (lasty - ydiff);
+				metaData.posy = (lasty - ydiff);
 			}
-			metaData = transInv(metaDataTransed);
+			transInv(metaData);
 			assignMetaData(elem, metaData);
 			console.log("lastDraggingID:" + lastDraggingID);
 			metaDataDict[lastDraggingID] = metaData;
@@ -385,13 +388,16 @@
 			// translate
 			elem = document.getElementById(draggingID);
 			metaData = metaDataDict[draggingID];
+			
+			console.log("metaData.posx:" + metaData.posx);
 			metaData.posx = evt.clientX - dragOffsetLeft;
 			metaData.posy = evt.clientY - dragOffsetTop;
-			metaTemp = transPosInv(metaData);
-			assignMetaData(elem, metaTemp);
+			transPosInv(metaData);
+			
+			assignMetaData(elem, metaData);
 			moveManipulator(manipulators, elem);
 
-			updateTransform(metaTemp);
+			updateTransform(metaData);
 			evt.stopPropagation();
 			evt.preventDefault();
 		} else if (lastDraggingID) {
@@ -548,9 +554,9 @@
 				screenElem = document.createElement('div');
 				screenElem.className = "screen";
 				screenElem.id = s;
-				console.log("screenElemID:" + screenElem.id);
+				console.log("screenElemID:" + JSON.stringify(screens[s]));
 				screenElem.style.border = 'solid';
-				assignScreenRect(screenElem, screens[s]);
+				assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
 				previewArea.appendChild(screenElem);
 				setupWindow(screenElem, s);
 			}
@@ -576,8 +582,7 @@
 			return "NaN";
 		}
 		
-		console.log("screensscreensscreensscreens:" + screens);
-		vscreen.createWhole(resolutionWidth.value, resolutionHeight.value, cx, cy, scale);
+		vscreen.assignWhole(resolutionWidth.value, resolutionHeight.value, cx, cy, scale);
 		for (i = screens.length - 1; i >= 0; i = i - 1) {
 			previewArea.removeChild(screens.item(i));
 		}
@@ -667,7 +672,7 @@
 		}
 		console.log("import window:" + JSON.stringify(windowData));
 		metaDataDict[windowData.id] = windowData;
-		vscreen.addScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
+		vscreen.assignScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
 		updateScreen(displayScale);
 	}
 	

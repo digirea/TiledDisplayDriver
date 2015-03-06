@@ -23,16 +23,18 @@
 		var wh = getWindowSize(),
 			cx = wh.width / 2.0,
 			cy = wh.height / 2.0;
-		vscreen.createWhole(wh.width, wh.height, cx, cy, 1.0);
+		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
 		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height}));
 	}
 	
+	/*
 	function updateWholeWindow() {
 		var wh = getWindowSize(),
 			cx = wh / 2.0,
 			cy = wh / 2.0;
-		vscreen.createWhole(wh.width, wh.height, cx, cy, 1.0);
+		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
 	}
+	*/
 	
 	client.onopen = function () {
 		client.send("view");
@@ -74,12 +76,16 @@
 	}
 	
 	function assignMetaData(elem, metaData) {
+		//console.log("transformByScreen" + JSON.stringify(vscreen.getScreen(windowData.id)));
 		var rect = vscreen.transform(
-			parseInt(metaData.posx, 10),
-			parseInt(metaData.posy, 10),
-			parseInt(metaData.width, 10),
-			parseInt(metaData.height, 10)
+			vscreen.makeRect(
+				parseInt(metaData.posx, 10),
+				parseInt(metaData.posy, 10),
+				parseInt(metaData.width, 10),
+				parseInt(metaData.height, 10)
+			)
 		);
+		
 		if (metaData.type === windowType) { return; }
 		console.log("assingrect" + JSON.stringify(rect));
 		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
@@ -123,17 +129,23 @@
 		assignMetaData(elem, metaData);
 	}
 	
-	function trans(metaData) {
-		var result = JSON.parse(JSON.stringify(metaData)),
-			rect = vscreen.transform(parseFloat(metaData.posx, 10),
-				parseFloat(metaData.posy, 10),
-				parseFloat(metaData.width),
-				parseFloat(metaData.height));
-		result.posx = rect.x;
-		result.posy = rect.y;
-		result.width = rect.w;
-		result.height = rect.h;
-		return result;
+	function updateWindow(metaData) {
+		var cx = parseFloat(metaData.posx, 10),
+			cy = parseFloat(metaData.posy, 10),
+			w = parseFloat(metaData.width),
+			h = parseFloat(metaData.height),
+			orgW = parseFloat(vscreen.getWhole().orgW),
+			scale = orgW / w;
+		
+		console.log("scale:" + scale);
+		
+		// scale
+		vscreen.setPosWhole(0, 0);
+		vscreen.setCenterWhole(0, 0);
+		vscreen.setScaleWhole(scale);
+		
+		// trans
+		vscreen.translateWhole(-cx, -cy);
 	}
 	
 	function resizeViewport(windowData) {
@@ -143,21 +155,12 @@
 			scale,
 			id,
 			metaTemp;
-		vscreen.clearScreenAll();
-		//vscreen.addScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
-		scale = 1.0;
-		vscreen.createWhole(parseFloat(windowData.width),
-			parseFloat(windowData.height),
-			parseFloat(windowData.width) / 2.0 - parseFloat(windowData.posx) / 2.0,
-			parseFloat(windowData.height) / 2.0 - parseFloat(windowData.posy) / 2.0, scale);
-		
-		console.log("windowData:" + JSON.stringify(windowData));
-		console.log("setWindowOffset:" + JSON.stringify(vscreen.getWhole()));
+
+		updateWindow(windowData);
 		
 		for (id in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(id)) {
-				metaTemp = trans(metaDataDict[id]);
-				assignMetaData(document.getElementById(id), metaTemp);
+				assignMetaData(document.getElementById(id), metaDataDict[id]);
 			}
 		}
 	}
@@ -178,6 +181,7 @@
 				update();
 			} else if (message.data === "updateWindow") {
 				updateType = 'window';
+				console.log("updateWindow");
 				update();
 			} else {
 				// recieve metadata
@@ -186,8 +190,10 @@
 				if (json.hasOwnProperty('command')) {
 					if (json.command === "doneAddWindow") {
 						windowData = json;
+						updateWindow(windowData);
 						return;
 					} else if (json.command === "doneGetWindow") {
+						console.log("doneGetWindow");
 						windowData = json;
 						resizeViewport(windowData);
 						return;
@@ -210,6 +216,7 @@
 	function init() {
 		
 		// resize event
+		/*
 		window.onresize = function () {
 			if (timer) {
 				clearTimeout(timer);
@@ -218,6 +225,7 @@
 				updateWholeWindow();
 			}, 200);
 		};
+		*/
 	}
 	
 	window.onload = init;

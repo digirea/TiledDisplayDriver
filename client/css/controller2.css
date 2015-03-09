@@ -4,8 +4,12 @@
 	-khtml-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
-	user-select: none
-	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
+	user-select: none;
+	font-family: "Hiragino Kaku Gothic Pro","Hiragino Kaku Gothic Pro W3", Meiryo, sans-serif;
+}
+
+div {
+	font-family: "Hiragino Kaku Gothic Pro","Hiragino Kaku Gothic Pro W3", Meiryo, sans-serif;
 }
 
 .leftArea {

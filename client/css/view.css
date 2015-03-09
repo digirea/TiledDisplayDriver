@@ -14,4 +14,5 @@ body {
 
 div {
 	font-family: "Hiragino Kaku Gothic Pro","Hiragino Kaku Gothic Pro W3", Meiryo, sans-serif;
+	white-space: nowrap;
 }

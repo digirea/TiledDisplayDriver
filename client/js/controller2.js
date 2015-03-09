@@ -345,15 +345,50 @@
 		}
 	}
 	
+	function getSelectedElem() {
+		var targetID = document.getElementById('content_id').innerHTML;
+		if (targetID) {
+			return document.getElementById(targetID);
+		}
+		return null;
+	}
+	
 	/// change zIndex
 	function changeZIndex(index) {
-		var id = document.getElementById('content_id').innerHTML,
-			elem;
-		console.log("id:" + id);
-		if (id) {
-			elem = document.getElementById(id);
+		var elem = getSelectedElem();
+		if (elem) {
 			elem.style.zIndex = index;
 			console.log("change zindex:" + index);
+		}
+	}
+	
+	/// change rect
+	function changeRect(id, value) {
+		var elem = getSelectedElem(),
+			metaData,
+			aspect = 1.0;
+		if (elem) {
+			metaData = metaDataDict[elem.id];
+			if (metaData) {
+				aspect = elem.naturalHeight / elem.naturalWidth;
+				if (id === 'content_transform_x') {
+					metaData.posx = value;
+					updateTransform(metaData);
+				} else if (id === 'content_transform_y') {
+					metaData.posy = value;
+					updateTransform(metaData);
+				} else if (id === 'content_transform_w' && value > 10) {
+					metaData.width = value;
+					metaData.height = value * aspect;
+					document.getElementById('content_transform_h').value = metaData.height;
+					updateTransform(metaData);
+				} else if (id === 'content_transform_h' && value > 10) {
+					metaData.width = value / aspect;
+					metaData.height = value;
+					document.getElementById('content_transform_w').value = metaData.width;
+					updateTransform(metaData);
+				}
+			}
 		}
 	}
 	
@@ -707,8 +742,15 @@
 			resolutionHeight = document.getElementById('resolution_height'),
 			displayScaleElem = document.getElementById('display_scale'),
 			deleteAllWindow = document.getElementById('delete_all_window'), // for debug
+			contentX = document.getElementById('content_transform_x'),
+			contentY = document.getElementById('content_transform_y'),
+			contentW = document.getElementById('content_transform_w'),
+			contentH = document.getElementById('content_transform_h'),
 			contentZ = document.getElementById('content_transform_z'),
-			timer = null;
+			timer = null,
+			rectChangeFunc = function () {
+				changeRect(this.id, parseInt(this.value, 10));
+			};
 			
 		resolutionWidth.value = 1000;
 		resolutionHeight.value = 900;
@@ -745,6 +787,10 @@
 			}
 			updateScreen(displayScale);
 		};
+		contentX.onchange = rectChangeFunc;
+		contentY.onchange = rectChangeFunc;
+		contentW.onchange = rectChangeFunc;
+		contentH.onchange = rectChangeFunc;
 		contentZ.onchange = function () {
 			var val = parseInt(contentZ.value, 10);
 			changeZIndex(val);

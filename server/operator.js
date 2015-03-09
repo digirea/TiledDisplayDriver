@@ -34,7 +34,7 @@
 				output,
 				url ];
 		console.dir("Phantomjs:" + JSON.stringify(phantomjs));
-		console.log("Phantomjs path:" + phantomjs.binPath);
+		console.log("Phantomjs path:" + phantomjs.path);
 		
 		util.launchApp(command, null, function () {
 			if (fs.existsSync(output)) {
@@ -460,6 +460,14 @@
 			ws.broadcast(Command.updateWindow);
 			io.sockets.emit(Command.updateWindow);
 		}
+		
+		/*
+		socket.on("message", function (data) {
+			metabinary.loadMetaBinary(data, function (metaData, binaryData) {
+				commandAddContent(socket, null, metaData, binaryData, update);
+			});
+		});
+		*/
 		
 		socket.on(Command.reqAddContent, function (data) {
 			metabinary.loadMetaBinary(data, function (metaData, binaryData) {

@@ -7,3 +7,7 @@
 	user-select: none
 	font-family:'Lucida Grande','Hiragino Kaku Gothic ProN', Meiryo, sans-serif;
 }
+
+body {
+	overflow:hidden;
+}

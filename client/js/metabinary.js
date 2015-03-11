@@ -10,8 +10,14 @@
 	// Array Buffer To String funciton
 	//
 	function arrayBufferToString(arraybuf) {
-		var encodedString = String.fromCharCode.apply(null, new Uint8Array(arraybuf)),
-			decodedString = decodeURIComponent(escape(encodedString));
+		var chars = new Uint8Array(arraybuf),
+			encodedString = "",
+			decodedString = "",
+			i;
+		for (i = 0; i < chars.length; i = i + 1) {
+			encodedString = encodedString + String.fromCharCode(chars[i]);
+		}
+		decodedString = decodeURIComponent(escape(encodedString));
 		return decodedString;
 	}
 	

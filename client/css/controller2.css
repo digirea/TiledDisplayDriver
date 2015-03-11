@@ -13,6 +13,14 @@ div {
 	white-space: nowrap;
 }
 
+pre {
+	font-family: "monospace, serif";
+	-webkit-box-sizing: "";
+	box-sizing: content-box;
+	line-height: 1;
+	margin: 0;
+}
+
 .leftArea {
 	position : absolute;
 	height : 800px;

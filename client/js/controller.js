@@ -74,14 +74,38 @@
 		manips[3].style.top = top + "px";
 	}
 	
-	function resizeText(elem, metaData) {
-		if (metaData.height - 1 > 9) {
-			elem.style.fontSize = metaData.height - 1 + "px";
-		} else {
+	function resizeText(elem, rect) {
+		var lineCount = 1,
+			fsize;
+		console.log("rect:", rect);
+
+		lineCount = elem.innerHTML.split("\n").length;
+		fsize = parseInt((parseInt(rect.h, 10) - 1) / lineCount, 10);
+		elem.style.fontSize = fsize + "px";
+		if (fsize < 9) {
 			elem.style.fontSize = "9px";
-			elem.style.width = "";
-			elem.style.height = "";
+			elem.style.overflow = "auto";
 		}
+		elem.style.width = rect.w + 'px';
+		elem.style.height = rect.h + 'px';
+	}
+	
+	function makeRect(left, top, width, height) {
+		return {
+			x : left,
+			y : top,
+			w : width,
+			h : height
+		};
+	}
+	
+	function toIntRect(metaData) {
+		return makeRect(
+			parseInt(metaData.posx, 10),
+			parseInt(metaData.posy, 10),
+			parseInt(metaData.width, 10),
+			parseInt(metaData.height, 10)
+		);
 	}
 	
 	function assignMetaData(elem, metaData) {
@@ -90,7 +114,7 @@
 		elem.style.width = Number(metaData.width) + "px";
 		elem.style.height = Number(metaData.height) + "px";
 		if (metaData.type === "text") {
-			resizeText(elem, metaData);
+			resizeText(elem, toIntRect(metaData));
 		}
 		if (metaData.width < 10) {
 			elem.style.width = "";
@@ -409,7 +433,7 @@
 		console.log("doneGetContent:" + JSON.stringify(metaData));
 
 		if (metaData.type === 'text') {
-			tagName = 'div';
+			tagName = 'pre';
 		} else {
 			tagName = 'img';
 		}
@@ -518,6 +542,7 @@
 	socket.on('doneGetMetaData', function (data) {
 		var json = JSON.parse(data);
 		metaDataDict[json.id] = json;
+		console.log("doneGetMeta:", json);
 		assignMetaData(document.getElementById(json.id), json);
 	});
 	

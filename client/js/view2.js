@@ -28,13 +28,17 @@
 	}
 	
 	function resizeText(elem, rect) {
-		if (rect.h - 1 > 9) {
-			elem.style.fontSize = rect.h - 1 + "px";
-		} else {
+		var lineCount = 1,
+			fsize;
+		lineCount = elem.innerHTML.split("\n").length;
+		fsize = parseInt((parseInt(rect.h, 10) - 1) / lineCount, 10);
+		elem.style.fontSize = fsize + "px";
+		if (fsize < 9) {
 			elem.style.fontSize = "9px";
-			elem.style.width = "";
-			elem.style.height = "";
+			elem.style.overflow = "auto";
 		}
+		elem.style.width = rect.w + 'px';
+		elem.style.height = rect.h + 'px';
 	}
 	
 	/*
@@ -97,7 +101,7 @@
 		);
 		
 		if (metaData.type === windowType) { return; }
-		console.log("assingrect" + JSON.stringify(rect));
+		//console.log("assingrect" + JSON.stringify(rect));
 		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
 		
 		if (metaData.type === "text") {
@@ -115,7 +119,7 @@
 		console.log("id=" + metaData.id);
 
 		if (metaData.type === 'text') {
-			tagName = 'div';
+			tagName = 'pre';
 		} else {
 			tagName = 'img';
 		}
@@ -174,7 +178,11 @@
 		
 		for (id in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(id)) {
-				assignMetaData(document.getElementById(id), metaDataDict[id]);
+				if (document.getElementById(id)) {
+					assignMetaData(document.getElementById(id), metaDataDict[id]);
+				} else {
+					delete metaDataDict[id];
+				}
 			}
 		}
 	}

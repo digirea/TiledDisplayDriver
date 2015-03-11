@@ -23,6 +23,13 @@
 		socket.emit('reqRegisterEvent', "v1");
 	});
 	
+	function toIntMetaData(metaData) {
+		metaData.posx = parseInt(metaData.posx, 10);
+		metaData.posy = parseInt(metaData.posy, 10);
+		metaData.width = parseInt(metaData.width, 10);
+		metaData.height = parseInt(metaData.height, 10);
+		return metaData;
+	}
 	
 	/// get image from server
 	function update() {
@@ -46,11 +53,11 @@
 		if (metaData.type === windowType) {
 			// window
 			//console.log("reqUpdateWindow");
-			console.log("JSON.stringify(metaData)" + JSON.stringify(metaData));
-			socket.emit('reqUpdateWindow', JSON.stringify(metaData));
+			console.log("JSON.stringify(metaData)" + JSON.stringify(toIntMetaData(metaData)));
+			socket.emit('reqUpdateWindow', JSON.stringify(toIntMetaData(metaData)));
 		} else {
 			//console.log("reqUpdateTransform");
-			socket.emit('reqUpdateTransform', JSON.stringify(metaData));
+			socket.emit('reqUpdateTransform', JSON.stringify(toIntMetaData(metaData)));
 		}
 	}
 	
@@ -59,20 +66,22 @@
 	}
 	
 	function resizeText(elem, rect) {
-		if (rect.h - 1 > 9) {
-			elem.style.fontSize = rect.h - 1 + "px";
-		} else {
+		var lineCount = 1,
+			fsize;
+		lineCount = elem.innerHTML.split("\n").length;
+		fsize = parseInt((parseInt(rect.h, 10) - 1) / lineCount, 10);
+		elem.style.fontSize = fsize + "px";
+		if (fsize < 9) {
 			elem.style.fontSize = "9px";
-			elem.style.width = "";
-			elem.style.height = "";
+			elem.style.overflow = "auto";
 		}
+		elem.style.width = rect.w + 'px';
+		elem.style.height = rect.h + 'px';
 	}
 	
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
 	/// @param targetElem manipulator target
-	/// @param posx left position of target
-	/// @param posy top position of target
 	function moveManipulator(manips, targetElem) {
 		var left,
 			top,
@@ -161,7 +170,7 @@
 		if (metaData.type === "text") {
 			resizeText(elem, rect);
 		}
-		console.log("assignMetaData:" + JSON.stringify(metaData));
+		//console.log("assignMetaData:" + JSON.stringify(metaData));
 	}
 	
 	function trans(metaData) {
@@ -289,11 +298,9 @@
 			],
 			manip,
 			previewArea = document.getElementById('preview_area'),
-			i,
-			posx,
-			posy;
+			i;
 		
-		moveManipulator(manips, elem, posx, posy);
+		moveManipulator(manips, elem);
 		removeManipulator();
 		
 		for (i = 0; i < manips.length; i = i + 1) {
@@ -479,20 +486,41 @@
 	});
 	
 	/// send text to server
-	function sendText() {
-		console.log("sendtest");
+	function sendText(text) {
 		var previewArea = document.getElementById('preview_area'),
 			textInput = document.getElementById('text_input'),
-			elem = document.createElement('span'),
+			elem = document.createElement('pre'),
 			width = (textInput.clientWidth + 1),
 			height = (textInput.clientHeight + 1),
-			binary = metabinary.createMetaBinary({type : "text", posx : 0, posy : 0, width : width, height : height}, textInput.value);
+			textData = "",
+			binary = null;
 		
+		if (text) {
+			textData = text;
+		} else {
+			textData = textInput.value;
+		}
 		elem.style.position = "absolute";
 		elem.style.top = "0px";
 		elem.style.left = "0px";
-		elem.innerHTML = textInput.value;
+		elem.innerHTML = textData;
 		previewArea.appendChild(elem);
+		
+		// calculate width, height
+		width = elem.offsetWidth / displayScale;
+		height = elem.offsetHeight / displayScale;
+		if (width > vscreen.getWhole().orgW) {
+			width = vscreen.getWhole().orgW;
+			elem.style.overflow = "auto";
+		}
+		if (height > vscreen.getWhole().orgH) {
+			height = vscreen.getWhole().orgH;
+			elem.style.overflow = "auto";
+		}
+		console.log("sendtext- width, height", width, height);
+		
+		binary = metabinary.createMetaBinary({type : "text", posx : 0, posy : 0, width : width, height : height}, textData);
+
 		currentContent = elem;
 		console.log(textInput.value);
 		console.log(textInput.style);
@@ -556,6 +584,26 @@
 		for (i = 0, file = files[i]; file; i = i + 1, file = files[i]) {
 			if (file.type.match('image.*')) {
 				fileReader.readAsArrayBuffer(file);
+			}
+		}
+	}
+	
+	/// open text file
+	function openText(evt) {
+		var files = evt.target.files,
+			file,
+			i,
+			fileReader = new FileReader();
+		
+		console.log("openText");
+		fileReader.onloadend = function (e) {
+			var data = e.target.result;
+			console.log(data);
+			sendText(data);
+		};
+		for (i = 0, file = files[i]; file; i = i + 1, file = files[i]) {
+			if (file.type.match('text.*')) {
+				fileReader.readAsText(file);
 			}
 		}
 	}
@@ -662,7 +710,7 @@
 		console.log("doneGetContent:" + JSON.stringify(metaData));
 
 		if (metaData.type === 'text') {
-			tagName = 'div';
+			tagName = 'pre';
 		} else {
 			tagName = 'img';
 		}
@@ -731,7 +779,8 @@
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),
 			contentDeleteButton = document.getElementById('content_delete_button'),
-			fileInput = document.getElementById('file_input'),
+			imageFileInput = document.getElementById('image_file_input'),
+			textFileInput = document.getElementById('text_file_input'),
 			dropZone = document.getElementById('drop_zone'),
 			updateImageInput = document.getElementById('update_image_input'),
 			displayTab = document.getElementById('display_tab'),
@@ -754,11 +803,23 @@
 			
 		resolutionWidth.value = 1000;
 		resolutionHeight.value = 900;
-		textSendButton.onclick = sendText;
+		textSendButton.onclick = function (evt) {
+			sendText(null);
+		};
 		urlSendButton.onclick = sendURL;
 		contentDeleteButton.onclick = deleteContent;
-		updateImageInput.addEventListener('change', replaceImage, false);
-		fileInput.addEventListener('change', openImage, false);
+		updateImageInput.addEventListener('change', function (evt) {
+			replaceImage(evt);
+			updateImageInput.value = "";
+		}, false);
+		imageFileInput.addEventListener('change', function (evt) {
+			openImage(evt);
+			imageFileInput.value = "";
+		}, false);
+		textFileInput.addEventListener('change', function (evt) {
+			openText(evt);
+			textFileInput.value = "";
+		}, false);
 		
 		displayTabTitle.onclick = function () {
 			contentTab.style.display = "none";

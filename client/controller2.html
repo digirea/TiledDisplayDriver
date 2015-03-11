@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<link href="css/controller2.css" rel="stylesheet"/>
-	<link href="css/bootstrap.min.css" rel="stylesheet" />
+	<link href="css/bootstrap.css" rel="stylesheet" />
 	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 	<script type="text/javascript" src="js/qatrix-1.1.js"></script>
 	<script type="text/javascript" src="js/animtab.js"></script>
@@ -96,6 +96,11 @@
 			</div>
 			<hr>
 			<div>
+				<p>テキストファイルの送信</p>
+				<input type="file" name="filename" id="text_file_input" />
+			</div>
+			<hr>
+			<div>
 				<p>URLの送信</p>
 				<input type="text" id="url_input" />
 				<input type="button" value="Send" id="url_send_button"></input>
@@ -103,7 +108,7 @@
 			<hr>
 			<div>
 				<p>画像の送信</p>
-				<input type="file" name="filename" id="file_input" />
+				<input type="file" name="filename" id="image_file_input" />
 				<!--input type="button" value="Send" id="image_send_button"></input-->
 			</div>
 			<hr>

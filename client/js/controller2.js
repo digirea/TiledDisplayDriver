@@ -1,7 +1,7 @@
 /*jslint devel:true */
 /*global io, socket, FileReader, Uint8Array, Blob, URL, event */
 
-(function (metabinary, vscreen) {
+(function (metabinary, vscreen, vsutil) {
 	"use strict";
 	
 	var socket = io.connect(),
@@ -65,20 +65,6 @@
 		socket.emit('reqUpdateContent', binary);
 	}
 	
-	function resizeText(elem, rect) {
-		var lineCount = 1,
-			fsize;
-		lineCount = elem.innerHTML.split("\n").length;
-		fsize = parseInt((parseInt(rect.h, 10) - 1) / lineCount, 10);
-		elem.style.fontSize = fsize + "px";
-		if (fsize < 9) {
-			elem.style.fontSize = "9px";
-			elem.style.overflow = "auto";
-		}
-		elem.style.width = rect.w + 'px';
-		elem.style.height = rect.h + 'px';
-	}
-	
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
 	/// @param targetElem manipulator target
@@ -111,28 +97,6 @@
 		manips[3].style.top = top + "px";
 	}
 	
-	function assignScreenRect(elem, rect) {
-		elem.style.position = 'absolute';
-		elem.style.left = parseInt(rect.x, 10) + 'px';
-		elem.style.top = parseInt(rect.y, 10) + 'px';
-		elem.style.width = parseInt(rect.w, 10) + 'px';
-		elem.style.height = parseInt(rect.h, 10) + 'px';
-		console.log("assignScreenRect:" + JSON.stringify(rect));
-	}
-	
-	function assignRect(elem, rect, withoutWidth, withoutHeight) {
-		elem.style.position = 'absolute';
-		elem.style.left = parseInt(rect.x, 10) + 'px';
-		elem.style.top = parseInt(rect.y, 10) + 'px';
-		if (!withoutWidth && rect.w) {
-			elem.style.width = parseInt(rect.w, 10) + 'px';
-		}
-		if (!withoutHeight && rect.h) {
-			elem.style.height = parseInt(rect.h, 10) + 'px';
-		}
-		//console.log("assignRect:" + JSON.stringify(rect));
-	}
-	
 	function assignContentProperty(metaData) {
 		console.log("assignContentProperty:" + JSON.stringify(metaData));
 		var transx = document.getElementById('content_transform_x'),
@@ -144,59 +108,6 @@
 		transy.value = parseInt(metaData.posy, 10);
 		transw.value = parseInt(metaData.width, 10);
 		transh.value = parseInt(metaData.height, 10);
-	}
-	
-	function toFloatRect(metaData) {
-		return vscreen.makeRect(
-			parseFloat(metaData.posx),
-			parseFloat(metaData.posy),
-			parseFloat(metaData.width),
-			parseFloat(metaData.height)
-		);
-	}
-	
-	function toIntRect(metaData) {
-		return vscreen.makeRect(
-			parseInt(metaData.posx, 10),
-			parseInt(metaData.posy, 10),
-			parseInt(metaData.width, 10),
-			parseInt(metaData.height, 10)
-		);
-	}
-	
-	function assignMetaData(elem, metaData) {
-		var rect = vscreen.transformOrg(toIntRect(metaData));
-		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
-		if (metaData.type === "text") {
-			resizeText(elem, rect);
-		}
-		//console.log("assignMetaData:" + JSON.stringify(metaData));
-	}
-	
-	function trans(metaData) {
-		var rect = vscreen.transformOrg(toFloatRect(metaData));
-		metaData.posx = rect.x;
-		metaData.posy = rect.y;
-		metaData.width = rect.w;
-		metaData.height = rect.h;
-		return metaData;
-	}
-	
-	function transInv(metaData) {
-		var rect = vscreen.transformOrgInv(toFloatRect(metaData));
-		metaData.posx = rect.x;
-		metaData.posy = rect.y;
-		metaData.width = rect.w;
-		metaData.height = rect.h;
-		return metaData;
-	}
-	
-	function transPosInv(metaData) {
-		var rect = vscreen.transformOrgInv(
-			vscreen.makeRect(parseFloat(metaData.posx, 10), parseFloat(metaData.posy, 10), 0, 0)
-		);
-		metaData.posx = rect.x;
-		metaData.posy = rect.y;
 	}
 	
 	function onManipulatorMove(evt) {
@@ -211,7 +122,7 @@
 		if (draggingManip && lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
-			trans(metaData);
+			vsutil.trans(metaData);
 			lastx = metaData.posx;
 			lasty = metaData.posy;
 			lastw = metaData.width;
@@ -240,8 +151,8 @@
 			} else if (draggingManip.id === '_manip_3') {
 				metaData.posy = (lasty - ydiff);
 			}
-			transInv(metaData);
-			assignMetaData(elem, metaData);
+			vsutil.transInv(metaData);
+			vsutil.assignMetaData(elem, metaData);
 			console.log("lastDraggingID:" + lastDraggingID);
 			metaDataDict[lastDraggingID] = metaData;
 			updateTransform(metaData);
@@ -446,9 +357,9 @@
 			console.log("metaData.posx:" + metaData.posx);
 			metaData.posx = evt.clientX - dragOffsetLeft;
 			metaData.posy = evt.clientY - dragOffsetTop;
-			transPosInv(metaData);
+			vsutil.transPosInv(metaData);
 			
-			assignMetaData(elem, metaData);
+			vsutil.assignMetaData(elem, metaData);
 			moveManipulator(manipulators, elem);
 
 			updateTransform(metaData);
@@ -644,7 +555,7 @@
 		wholeElem.style.border = 'solid';
 		wholeElem.style.zIndex = -100;
 		wholeElem.className = "screen";
-		assignScreenRect(wholeElem, whole);
+		vsutil.assignScreenRect(wholeElem, whole);
 		previewArea.appendChild(wholeElem);
 		
 		for (s in screens) {
@@ -654,7 +565,7 @@
 				screenElem.id = s;
 				console.log("screenElemID:" + JSON.stringify(screens[s]));
 				screenElem.style.border = 'solid';
-				assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
+				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
 				previewArea.appendChild(screenElem);
 				setupWindow(screenElem, s);
 			}
@@ -690,7 +601,7 @@
 				if (metaData.type !== windowType) {
 					elem = document.getElementById(metaData.id);
 					if (elem) {
-						assignMetaData(elem, metaData);
+						vsutil.assignMetaData(elem, metaData);
 					}
 				}
 			}
@@ -728,7 +639,7 @@
 		if (metaData.type === 'text') {
 			// contentData is text
 			elem.innerHTML = contentData;
-			assignMetaData(elem, metaData);
+			vsutil.assignMetaData(elem, metaData);
 		} else {
 			// contentData is blob
 			if (metaData.hasOwnProperty('mime')) {
@@ -749,7 +660,7 @@
 						metaData.height = elem.naturalHeight;
 					}
 					//console.log("onload:" + JSON.stringify(metaData));
-					assignMetaData(elem, metaData);
+					vsutil.assignMetaData(elem, metaData);
 				};
 			}
 		}
@@ -885,7 +796,7 @@
 		var json = JSON.parse(data);
 		if (json.type === windowType) { return; }
 		metaDataDict[json.id] = json;
-		assignMetaData(document.getElementById(json.id), json);
+		vsutil.assignMetaData(document.getElementById(json.id), json);
 		if (draggingID === json.id) {
 			assignContentProperty(json);
 		}
@@ -955,4 +866,4 @@
 	
 	window.onload = init;
 
-}(window.metabinary, window.vscreen));
+}(window.metabinary, window.vscreen, window.vscreen_util));

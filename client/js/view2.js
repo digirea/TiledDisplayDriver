@@ -1,7 +1,7 @@
 /*jslint devel:true*/
 /*global io, socket, WebSocket, Blob, URL, FileReader, DataView, Uint8Array */
 
-(function (metabinary, vscreen) {
+(function (metabinary, vscreen, vsutil) {
 	"use strict";
 
 	console.log(location);
@@ -25,20 +25,6 @@
 			cy = wh.height / 2.0;
 		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
 		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height}));
-	}
-	
-	function resizeText(elem, rect) {
-		var lineCount = 1,
-			fsize;
-		lineCount = elem.innerHTML.split("\n").length;
-		fsize = parseInt((parseInt(rect.h, 10) - 1) / lineCount, 10);
-		elem.style.fontSize = fsize + "px";
-		if (fsize < 9) {
-			elem.style.fontSize = "9px";
-			elem.style.overflow = "auto";
-		}
-		elem.style.width = rect.w + 'px';
-		elem.style.height = rect.h + 'px';
 	}
 	
 	/*
@@ -77,38 +63,6 @@
 		}
 	}
 	
-	function assignRect(elem, rect, withoutWidth, withoutHeight) {
-		elem.style.position = 'absolute';
-		elem.style.left = parseInt(rect.x, 10) + 'px';
-		elem.style.top = parseInt(rect.y, 10) + 'px';
-		if (!withoutWidth && rect.w) {
-			elem.style.width = parseInt(rect.w, 10) + 'px';
-		}
-		if (!withoutHeight && rect.h) {
-			elem.style.height = parseInt(rect.h, 10) + 'px';
-		}
-	}
-	
-	function assignMetaData(elem, metaData) {
-		//console.log("transformByScreen" + JSON.stringify(vscreen.getScreen(windowData.id)));
-		var rect = vscreen.transform(
-			vscreen.makeRect(
-				parseInt(metaData.posx, 10),
-				parseInt(metaData.posy, 10),
-				parseInt(metaData.width, 10),
-				parseInt(metaData.height, 10)
-			)
-		);
-		
-		if (metaData.type === windowType) { return; }
-		//console.log("assingrect" + JSON.stringify(rect));
-		assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
-		
-		if (metaData.type === "text") {
-			resizeText(elem, rect);
-		}
-	}
-	
 	function assignMetaBinary(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
 			tagName,
@@ -144,7 +98,7 @@
 				elem.src = URL.createObjectURL(blob);
 			}
 		}
-		assignMetaData(elem, metaData);
+		vsutil.assignMetaData(elem, metaData);
 	}
 	
 	function updateWindow(metaData) {
@@ -179,7 +133,7 @@
 		for (id in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(id)) {
 				if (document.getElementById(id)) {
-					assignMetaData(document.getElementById(id), metaDataDict[id]);
+					vsutil.assignMetaData(document.getElementById(id), metaDataDict[id]);
 				} else {
 					delete metaDataDict[id];
 				}
@@ -221,7 +175,7 @@
 						return;
 					}
 				}
-				assignMetaData(document.getElementById(json.id), json);
+				vsutil.assignMetaData(document.getElementById(json.id), json);
 				resizeViewport(windowData);
 			}
 		} else if (message.data instanceof Blob) {
@@ -251,4 +205,4 @@
 	}
 	
 	window.onload = init;
-}(window.metabinary, window.vscreen));
+}(window.metabinary, window.vscreen, window.vscreen_util));

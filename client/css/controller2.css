@@ -25,6 +25,7 @@ pre {
 	position : absolute;
 	height : 800px;
 	width : 250px;
+	overflow: hidden;
 }
 
 .nav-tabs > li.active > a,
@@ -58,6 +59,7 @@ pre {
 	height : 800px;
 	width : 250px;
 	right : 0px;
+	overflow: hidden;
 }
 
 .rightTab {
@@ -82,7 +84,6 @@ pre {
 .leftTab {
 	background-color: rgba(100, 100, 100, 0.5);
 	padding: 3px;
-
 	border: solid 1px;
 	border-radius:1px;
 	

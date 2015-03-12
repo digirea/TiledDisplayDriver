@@ -16,12 +16,45 @@
 		metaDataDict = {},
 		//windowDataDict = {},
 		displayScale = 0.5,
-		windowType = "window";
+		windowType = "window",
+		onContentArea = false;
 	
 	socket.on('connect', function () {
 		console.log("connect");
 		socket.emit('reqRegisterEvent', "v1");
 	});
+	
+	function isVisible(metaData) {
+		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
+	}
+	
+	function isUnvisibleID(id) {
+		return (id.indexOf("onlist:") >= 0);
+	}
+	
+	function getElem(id) {
+		var elem,
+			uid,
+			previewArea = document.getElementById('preview_area'),
+			child;
+		if (isUnvisibleID(id)) {
+			uid = id.split('onlist:').join('');
+			if (document.getElementById(uid)) {
+				return document.getElementById(uid);
+			} else {
+				elem = document.getElementById(id).cloneNode();
+				elem.id = uid;
+				child = document.getElementById(id).childNodes[0].cloneNode();
+				child.innerHTML = document.getElementById(id).childNodes[0].innerHTML;
+				elem.appendChild(child);
+				previewArea.appendChild(elem);
+				setupContent(elem, uid);
+				elem.style.marginTop = "0px";
+				return elem;
+			}
+		}
+		return document.getElementById(id);
+	}
 	
 	function toIntMetaData(metaData) {
 		metaData.posx = parseInt(metaData.posx, 10);
@@ -40,7 +73,7 @@
 	
 	/// delete content
 	function deleteContent() {
-		var contentID = document.getElementById('delete_content_id');
+		var contentID = document.getElementById('content_id');
 		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
 	}
 	
@@ -52,12 +85,10 @@
 		//console.log(JSON.stringify(metaData));
 		if (metaData.type === windowType) {
 			// window
-			//console.log("reqUpdateWindow");
-			console.log("JSON.stringify(metaData)" + JSON.stringify(toIntMetaData(metaData)));
-			socket.emit('reqUpdateWindow', JSON.stringify(toIntMetaData(metaData)));
+			socket.emit('reqUpdateWindow', JSON.stringify(metaData));
 		} else {
 			//console.log("reqUpdateTransform");
-			socket.emit('reqUpdateTransform', JSON.stringify(toIntMetaData(metaData)));
+			socket.emit('reqUpdateTransform', JSON.stringify(metaData));
 		}
 	}
 	
@@ -122,6 +153,9 @@
 		if (draggingManip && lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
+			if (metaData.type !== windowType && !isVisible(metaData)) {
+				return;
+			}
 			vsutil.trans(metaData);
 			lastx = metaData.posx;
 			lasty = metaData.posy;
@@ -152,7 +186,7 @@
 				metaData.posy = (lasty - ydiff);
 			}
 			vsutil.transInv(metaData);
-			vsutil.assignMetaData(elem, metaData);
+			vsutil.assignMetaData(elem, metaData, true);
 			console.log("lastDraggingID:" + lastDraggingID);
 			metaDataDict[lastDraggingID] = metaData;
 			updateTransform(metaData);
@@ -181,8 +215,9 @@
 			cursor = "ne-resize";
 		}
 		manip.onmousedown = function (evt) {
-			dragOffsetTop = evt.clientY - manip.offsetTop;
-			dragOffsetLeft = evt.clientX - manip.offsetLeft;
+			var rect = event.target.getBoundingClientRect();
+			dragOffsetTop = evt.clientY - rect.top;
+			dragOffsetLeft = evt.clientX - rect.left;
 			draggingManip = manip;
 		};
 		manip.onmousemove = function (evt) {
@@ -223,44 +258,77 @@
 		}
 	}
 	
+	function enableDeleteButton(isEnable) {
+		if (isEnable) {
+			document.getElementById('content_delete_button').className = "btn btn-primary";
+		} else {
+			document.getElementById('content_delete_button').className = "btn btn-primary disabled";
+		}
+	}
+	
+	function enableUpdateImageButton(isEnable) {
+		if (isEnable) {
+			document.getElementById('update_image_input').disabled = false;
+		} else {
+			document.getElementById('update_image_input').disabled = true;
+		}
+	}
+	
 	/// select content or window
 	function select(id) {
 		var elem,
-			metaData = metaDataDict[id];
+			metaData;
 		
+		elem = getElem(id);
+		if (elem.id !== id) {
+			id = elem.id;
+		}
+		if (document.getElementById("onlist:" + id)) {
+			document.getElementById("onlist:" + id).style.borderColor = "orange";
+		}
+		metaData = metaDataDict[id];
 		assignContentProperty(metaDataDict[id]);
 		draggingID = id;
-		elem = document.getElementById(id);
+		console.log("draggingID = id;:" + draggingID);
 		elem.style.border = "solid 2px black";
 		if (metaData.type === windowType) {
-			document.getElementById('content_delete_button').disabled = true;
-			document.getElementById('update_image_input').disabled = true;
+			enableDeleteButton(false);
+			enableUpdateImageButton(false);
 		} else {
-			document.getElementById('delete_content_id').innerHTML = id;
+			enableDeleteButton(true);
+			enableUpdateImageButton(true);
 			document.getElementById('update_content_id').innerHTML = id;
 			document.getElementById('content_id').innerHTML = id;
-			document.getElementById('content_delete_button').disabled = false;
-			document.getElementById('update_image_input').disabled = false;
 		}
 		if (elem.style.zIndex === "") {
 			elem.style.zIndex = 0;
 		}
 		document.getElementById('content_transform_z').value = elem.style.zIndex;
-		showManipulator(elem);
+		if (metaData.type === windowType || isVisible(metaData)) {
+			showManipulator(elem);
+		} else {
+			// turn on visible
+			elem.style.borderColor = "blue";
+		}
 	}
 	
 	/// unselect content or window
 	function unselect() {
 		var elem,
 			metaData;
+		
 		if (lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
-			if (metaData.type !== windowType) {
+			if (metaData.type !== windowType && isVisible(metaData)) {
 				elem.style.border = "";
+			}
+			if (document.getElementById("onlist:" + lastDraggingID)) {
+				document.getElementById("onlist:" + lastDraggingID).style.borderColor = "white";
 			}
 			lastDraggingID = null;
 		}
+		removeManipulator();
 	}
 	
 	function getSelectedElem() {
@@ -313,13 +381,16 @@
 	/// setup content
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
-			var previewArea = document.getElementById('preview_area');
+			var previewArea = document.getElementById('preview_area'),
+				rect = event.target.getBoundingClientRect();
 			// erase last border
 			unselect();
 			select(id);
 			evt = (evt) || window.event;
-			dragOffsetTop = evt.clientY - elem.offsetTop;
-			dragOffsetLeft = evt.clientX - elem.offsetLeft;
+			dragOffsetTop = evt.clientY - rect.top;
+			dragOffsetLeft = evt.clientX - rect.left;
+			//dragOffsetTop = evt.clientY - elem.offsetTop;
+			//dragOffsetLeft = evt.clientX - elem.offsetLeft;
 			evt.stopPropagation();
 			evt.preventDefault();
 		};
@@ -337,7 +408,6 @@
 		// erase last border
 		if (lastDraggingID && !draggingManip) {
 			unselect();
-			removeManipulator();
 		}
 	});
 	
@@ -347,42 +417,71 @@
 			metaData,
 			metaTemp,
 			elem,
-			pos;
+			pos,
+			px,
+			py,
+			elemOnPos,
+			onInvisibleContent,
+			leftArea = document.getElementById('leftArea'),
+			contentArea = document.getElementById('left_main_area'),
+			rect = event.target.getBoundingClientRect();
+		
 		evt = (evt) || window.event;
+		
+		// detect content list area
+		px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
+		py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
+		if (px < (contentArea.scrollWidth) && py > 180 && py < (180 + contentArea.offsetTop + contentArea.scrollHeight)) {
+			onContentArea = true;
+		} else {
+			onContentArea = false;
+		}
+		
 		if (draggingID) {
 			// translate
 			elem = document.getElementById(draggingID);
 			metaData = metaDataDict[draggingID];
 			
-			console.log("metaData.posx:" + metaData.posx);
 			metaData.posx = evt.clientX - dragOffsetLeft;
 			metaData.posy = evt.clientY - dragOffsetTop;
 			vsutil.transPosInv(metaData);
+			vsutil.assignMetaData(elem, metaData, true);
 			
-			vsutil.assignMetaData(elem, metaData);
-			moveManipulator(manipulators, elem);
-
-			updateTransform(metaData);
+			if (metaData.type === windowType || isVisible(metaData)) {
+				moveManipulator(manipulators, elem);
+				updateTransform(metaData);
+			}
 			evt.stopPropagation();
 			evt.preventDefault();
-		} else if (lastDraggingID) {
+		} else if (lastDraggingID && draggingManip) {
 			// scaling
 			elem = document.getElementById(lastDraggingID);
-			onManipulatorMove(evt);
-			moveManipulator(manipulators, elem);
+			metaData = metaDataDict[lastDraggingID];
+			if (metaData.type === windowType || isVisible(metaData)) {
+				onManipulatorMove(evt);
+				moveManipulator(manipulators, elem);
+			}
 			evt.stopPropagation();
 			evt.preventDefault();
 		}
 	});
 	
 	// add content mouseup event
-	window.document.addEventListener("mouseup", function () {
+	window.document.addEventListener("mouseup", function (evt) {
 		var previewArea = document.getElementById('preview_area'),
+			contentArea = document.getElementById('content_area'),
 			metaData,
 			elem;
 		if (draggingID) {
+			elem = document.getElementById(draggingID);
 			metaData = metaDataDict[draggingID];
-			//updateTransform(metaData);
+			if (!onContentArea) {
+				console.log("not onContentArea");
+				metaData.visible = true;
+				elem.style.color = "black";
+				vsutil.assignMetaData(elem, metaData, true);
+				updateTransform(metaData);
+			}
 		}
 		if (draggingManip && lastDraggingID) {
 			metaData = metaDataDict[lastDraggingID];
@@ -428,14 +527,11 @@
 			height = vscreen.getWhole().orgH;
 			elem.style.overflow = "auto";
 		}
-		console.log("sendtext- width, height", width, height);
+		//console.log("sendtext- width, height", width, height);
 		
 		binary = metabinary.createMetaBinary({type : "text", posx : 0, posy : 0, width : width, height : height}, textData);
 
 		currentContent = elem;
-		console.log(textInput.value);
-		console.log(textInput.style);
-		
 		addContent(binary);
 	}
 	
@@ -509,7 +605,7 @@
 		console.log("openText");
 		fileReader.onloadend = function (e) {
 			var data = e.target.result;
-			console.log(data);
+			//console.log(data);
 			sendText(data);
 		};
 		for (i = 0, file = files[i]; file; i = i + 1, file = files[i]) {
@@ -555,8 +651,11 @@
 		wholeElem.style.border = 'solid';
 		wholeElem.style.zIndex = -100;
 		wholeElem.className = "screen";
+		wholeElem.style.color = "black";
 		vsutil.assignScreenRect(wholeElem, whole);
 		previewArea.appendChild(wholeElem);
+		
+		console.log("wholeElemwholeElem");
 		
 		for (s in screens) {
 			if (screens.hasOwnProperty(s)) {
@@ -598,10 +697,12 @@
 		for (i in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(i)) {
 				metaData = metaDataDict[i];
-				if (metaData.type !== windowType) {
-					elem = document.getElementById(metaData.id);
-					if (elem) {
-						vsutil.assignMetaData(elem, metaData);
+				if (isVisible(metaData)) {
+					if (metaData.type !== windowType) {
+						elem = document.getElementById(metaData.id);
+						if (elem) {
+							vsutil.assignMetaData(elem, metaData, true);
+						}
 					}
 				}
 			}
@@ -609,66 +710,140 @@
 		addScreenRect();
 	}
 	
-	/// import content
-	function importContent(metaData, contentData) {
+	function importContentToView(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
 			elem,
 			tagName,
 			blob,
 			mime = "image/jpeg";
 
-		metaDataDict[metaData.id] = metaData;
-		console.log("doneGetContent:" + JSON.stringify(metaData));
+		if (isVisible(metaData)) {
+			metaDataDict[metaData.id] = metaData;
+			console.log("doneGetContent:" + JSON.stringify(metaData));
 
+			if (metaData.type === 'text') {
+				tagName = 'pre';
+			} else {
+				tagName = 'img';
+			}
+			if (document.getElementById(metaData.id)) {
+				elem = document.getElementById(metaData.id);
+				//console.log("found " + json.type);
+			} else {
+				elem = document.createElement(tagName);
+				elem.id = metaData.id;
+				elem.style.position = "absolute";
+				setupContent(elem, metaData.id);
+				previewArea.appendChild(elem);
+			}
+			console.log("id=" + metaData.id);
+			if (metaData.type === 'text') {
+				// contentData is text
+				elem.innerHTML = contentData;
+				vsutil.assignMetaData(elem, metaData, true);
+			} else {
+				// contentData is blob
+				if (metaData.hasOwnProperty('mime')) {
+					mime = metaData.mime;
+					console.log("mime:" + mime);
+				}
+				blob = new Blob([contentData], {type: mime});
+				if (elem && blob) {
+					elem.src = URL.createObjectURL(blob);
+
+					elem.onload = function () {
+						if (metaData.width < 10) {
+							console.log("naturalWidth:" + elem.naturalWidth);
+							metaData.width = elem.naturalWidth;
+						}
+						if (metaData.height < 10) {
+							console.log("naturalHeight:" + elem.naturalHeight);
+							metaData.height = elem.naturalHeight;
+						}
+						vsutil.assignMetaData(elem, metaData, true);
+					};
+				}
+			}
+		}
+	}
+	
+	function importContentToList(metaData, contentData) {
+		var hasVisible = metaData.hasOwnProperty('visible'),
+			contentArea = document.getElementById('content_area'),
+			contentElem,
+			divElem,
+			tagName,
+			blob,
+			mime = "image/jpeg",
+			onlistID = "onlist:" + metaData.id;
+		
+		metaDataDict[metaData.id] = metaData;
 		if (metaData.type === 'text') {
 			tagName = 'pre';
 		} else {
 			tagName = 'img';
 		}
-		if (document.getElementById(metaData.id)) {
-			elem = document.getElementById(metaData.id);
+		if (document.getElementById(onlistID)) {
+			divElem = document.getElementById(onlistID);
+			contentElem = divElem.childNodes[0];
 			//console.log("found " + json.type);
 		} else {
-			elem = document.createElement(tagName);
-			elem.id = metaData.id;
-			elem.style.position = "absolute";
-			setupContent(elem, metaData.id);
-			previewArea.appendChild(elem);
+			contentElem = document.createElement(tagName);
+			
+			divElem = document.createElement('div');
+			divElem.style.position = "absolute";
+			divElem.id = onlistID;
+			setupContent(divElem, onlistID);
+			divElem.appendChild(contentElem);
+			contentArea.appendChild(divElem);
 		}
-		console.log("id=" + metaData.id);
+		//console.log("id=" + metaData.id);
 		if (metaData.type === 'text') {
 			// contentData is text
-			elem.innerHTML = contentData;
-			vsutil.assignMetaData(elem, metaData);
+			contentElem.innerHTML = contentData;
+			divElem.style.width = "200px";
+			divElem.style.height = "50px";
 		} else {
 			// contentData is blob
 			if (metaData.hasOwnProperty('mime')) {
 				mime = metaData.mime;
-				console.log("mime:" + mime);
+				//console.log("mime:" + mime);
 			}
+			divElem.style.width = "200px";
 			blob = new Blob([contentData], {type: mime});
-			if (elem && blob) {
-				elem.src = URL.createObjectURL(blob);
+			if (contentElem && blob) {
+				contentElem.src = URL.createObjectURL(blob);
 
-				elem.onload = function () {
-					if (metaData.width < 10) {
-						console.log("naturalWidth:" + elem.naturalWidth);
-						metaData.width = elem.naturalWidth;
+				contentElem.onload = function () {
+					if (contentElem.offsetHeight > 200) {
+						divElem.style.width = "";
+						divElem.style.height = "100px";
 					}
-					if (metaData.height < 10) {
-						console.log("naturalHeight:" + elem.naturalHeight);
-						metaData.height = elem.naturalHeight;
-					}
-					//console.log("onload:" + JSON.stringify(metaData));
-					vsutil.assignMetaData(elem, metaData);
 				};
 			}
 		}
-		//console.log(metaData);
+		contentElem.style.width = "100%";
+		contentElem.style.height = "100%";
+		divElem.style.position = "relative";
+		divElem.style.top = "5px";
+		divElem.style.left = "20px";
+		divElem.style.border = "solid";
+		divElem.style.borderColor = "white";
+		divElem.style.marginTop = "5px";
+		divElem.style.color = "white";
+	}
+	
+	/// import content
+	function importContent(metaData, contentData) {
+		importContentToList(metaData, contentData);
+		importContentToView(metaData, contentData);
 	}
 	
 	/// import window
 	function importWindow(windowData) {
+		if (windowData.type !== windowType) {
+			return;
+		}
 		if (windowData.hasOwnProperty('posx')) {
 			windowData.posx = parseInt(windowData.posx, 10);
 		} else {
@@ -696,8 +871,11 @@
 			updateImageInput = document.getElementById('update_image_input'),
 			displayArea = document.getElementById('display_area'),
 			displayTabTitle = document.getElementById('display_tab_title'),
+			displayTabLink = document.getElementById('display_tab_link'),
 			contentArea = document.getElementById('content_area'),
+			contentButtonArea = document.getElementById('content_button_area'),
 			contentTabTitle = document.getElementById('content_tab_title'),
+			contentTabLink = document.getElementById('content_tab_link'),
 			popupBackground = document.getElementById('popup_background'),
 			contentDialog = document.getElementById('content_dialog'),
 			resolutionWidth = document.getElementById('resolution_width'),
@@ -743,14 +921,20 @@
 		displayTabTitle.onclick = function () {
 			displayArea.style.display = "block";
 			contentArea.style.display = "none";
+			contentButtonArea.style.display = "none";
 			displayTabTitle.className = "display_tab_title active";
 			contentTabTitle.className = "content_tab_title";
+			displayTabLink.className = "active";
+			contentTabLink.className = "";
 		};
 		contentTabTitle.onclick = function () {
 			displayArea.style.display = "none";
 			contentArea.style.display = "block";
+			contentButtonArea.style.display = "block";
 			displayTabTitle.className = "display_tab_title";
 			contentTabTitle.className = "content_tab_title active";
+			contentTabLink.className = "active";
+			displayTabLink.className = "";
 		};
 		addButton.onclick = function () {
 			bottomfunc(true);
@@ -807,9 +991,11 @@
 		var json = JSON.parse(data);
 		if (json.type === windowType) { return; }
 		metaDataDict[json.id] = json;
-		vsutil.assignMetaData(document.getElementById(json.id), json);
-		if (draggingID === json.id) {
-			assignContentProperty(json);
+		if (isVisible(json)) {
+			vsutil.assignMetaData(document.getElementById(json.id), json, true);
+			if (draggingID === json.id) {
+				assignContentProperty(json);
+			}
 		}
 	});
 	
@@ -826,12 +1012,15 @@
 	socket.on('doneDeleteContent', function (reply) {
 		console.log("doneDeleteContent");
 		var json = JSON.parse(reply),
+			contentArea = document.getElementById('content_area'),
 			previewArea = document.getElementById('preview_area'),
-			contentID = document.getElementById('delete_content_id'),
+			contentID = document.getElementById('content_id'),
 			deleted = document.getElementById(json.id);
 		previewArea.removeChild(deleted);
+		if (document.getElementById("onlist:" + json.id)) {
+			contentArea.removeChild(document.getElementById("onlist:" + json.id));
+		}
 		contentID.innerHTML = "No Content Selected.";
-		document.getElementById('content_delete_button').disabled = true;
 	});
 	
 	socket.on('doneUpdateContent', function (reply) {

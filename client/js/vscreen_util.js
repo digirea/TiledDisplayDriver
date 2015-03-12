@@ -56,8 +56,13 @@
 		//console.log("assignRect:" + JSON.stringify(rect));
 	}
 	
-	function assignMetaData(elem, metaData) {
-		var rect = vscreen.transformOrg(toIntRect(metaData));
+	function assignMetaData(elem, metaData, useOrg) {
+		var rect;
+		if (useOrg) {
+			rect = vscreen.transformOrg(toIntRect(metaData));
+		} else {
+			rect = vscreen.transform(toIntRect(metaData));
+		}
 		if (elem && metaData) {
 			assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
 			if (metaData.type === "text") {

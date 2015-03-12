@@ -82,17 +82,19 @@
 
 	<div id="leftArea" class="leftArea">
 		<div class="left_tab_area">
-			<span id="display_tab_title" class="display_tab_title"><a href="#">Display</a></span>
-			<span id="content_tab_title" class="content_tab_title active"><a href="#" class="active">Content</a></span>
+			<span id="display_tab_title" class="display_tab_title"><a href="#" id="display_tab_link">Display</a></span>
+			<span id="content_tab_title" class="content_tab_title active"><a href="#" class="active" id="content_tab_link">Content</a></span>
 		</div>
-		<div class="left_main_area">
+		<div class="left_main_area" id="left_main_area">
 			<div class="display_area" id="display_area">
 			</div>
 
 			<div class="content_area" id="content_area">
-				<div class="content_button_area">
-					<button type="button" class="btn btn-primary btn-block" id="content_add_button">Add</button>
-					<button type="button" class="btn btn-primary btn-block" id="content_delete_button" disabled>Delete</button>
+			</div>
+			<div class="content_button_area" id="content_button_area">
+				<div class="content_button btn-group btn-group-justified">
+					<div class="btn btn-primary" id="content_add_button">Add</div>
+					<div class="btn btn-primary disabled" id="content_delete_button">Delete</div>
 				</div>
 			</div>
 		</div>
@@ -161,11 +163,6 @@
 			<!--input type="button" value="Send" id="image_send_button"></input-->
 		</div>
 		<hr>
-		<div>
-			<p>コンテンツ削除</p>
-			<span>ID:</span><span id="delete_content_id" >No Content Selected.</span>
-			<input type="button" value="Delete" id="content_delete_button" disabled></input>
-		</div>
 		<hr>
 		<div>
 			<p>ウィンドウ全て削除</p>

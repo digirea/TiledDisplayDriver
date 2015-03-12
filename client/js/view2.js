@@ -12,6 +12,10 @@
 		metaDataDict = {},
 		windowType = "window";
 	
+	function isVisible(metaData) {
+		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
+	}
+	
 	function getWindowSize() {
 		return {
 			width : document.documentElement.clientWidth,
@@ -72,33 +76,36 @@
 		
 		console.log("id=" + metaData.id);
 
-		if (metaData.type === 'text') {
-			tagName = 'pre';
-		} else {
-			tagName = 'img';
-		}
-		if (document.getElementById(metaData.id)) {
-			elem = document.getElementById(metaData.id);
-		} else {
-			elem = document.createElement(tagName);
-			elem.id = metaData.id;
-			elem.style.position = "absolute";
-			previewArea.appendChild(elem);
-		}
-		if (metaData.type === 'text') {
-			// contentData is text
-			elem.innerHTML = contentData;
-		} else {
-			// contentData is blob
-			if (metaData.hasOwnProperty('mime')) {
-				mime = metaData.mime;
+		if (metaData.type === windowType || (metaData.hasOwnProperty('visible') && metaData.visible === "true")) {
+			metaDataDict[metaData.id] = metaData;
+			if (metaData.type === 'text') {
+				tagName = 'pre';
+			} else {
+				tagName = 'img';
 			}
-			blob = new Blob([contentData], {type: mime});
-			if (elem && blob) {
-				elem.src = URL.createObjectURL(blob);
+			if (document.getElementById(metaData.id)) {
+				elem = document.getElementById(metaData.id);
+			} else {
+				elem = document.createElement(tagName);
+				elem.id = metaData.id;
+				elem.style.position = "absolute";
+				previewArea.appendChild(elem);
 			}
+			if (metaData.type === 'text') {
+				// contentData is text
+				elem.innerHTML = contentData;
+			} else {
+				// contentData is blob
+				if (metaData.hasOwnProperty('mime')) {
+					mime = metaData.mime;
+				}
+				blob = new Blob([contentData], {type: mime});
+				if (elem && blob) {
+					elem.src = URL.createObjectURL(blob);
+				}
+			}
+			vsutil.assignMetaData(elem, metaData, false);
 		}
-		vsutil.assignMetaData(elem, metaData);
 	}
 	
 	function updateWindow(metaData) {
@@ -133,7 +140,7 @@
 		for (id in metaDataDict) {
 			if (metaDataDict.hasOwnProperty(id)) {
 				if (document.getElementById(id)) {
-					vsutil.assignMetaData(document.getElementById(id), metaDataDict[id]);
+					vsutil.assignMetaData(document.getElementById(id), metaDataDict[id], false);
 				} else {
 					delete metaDataDict[id];
 				}
@@ -142,7 +149,8 @@
 	}
 	
 	client.onmessage = function (message) {
-		var json;
+		var json,
+			elem;
 		//console.log('> got message');
 		if (typeof message.data === "string") {
 			if (message.data === "update") {
@@ -171,17 +179,30 @@
 					} else if (json.command === "doneGetWindow") {
 						console.log("doneGetWindow");
 						windowData = json;
+						console.log(windowData);
 						resizeViewport(windowData);
 						return;
 					}
 				}
-				vsutil.assignMetaData(document.getElementById(json.id), json);
+				elem = document.getElementById(json.id);
+				//console.log(elem);
+				if (elem) {
+					if (isVisible(json)) {
+						vsutil.assignMetaData(elem, json, false);
+						elem.style.display = "block";
+					} else {
+						elem.style.display = "none";
+					}
+				} else if (isVisible(json)) {
+					// new visible content
+					updateType = 'all';
+					update();
+				}
 				resizeViewport(windowData);
 			}
 		} else if (message.data instanceof Blob) {
 			//console.log("found blob");
 			metabinary.loadMetaBinary(message.data, function (metaData, contentData) {
-				metaDataDict[metaData.id] = metaData;
 				assignMetaBinary(metaData, contentData);
 			});
 		}

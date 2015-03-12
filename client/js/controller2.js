@@ -791,7 +791,6 @@
 			contentElem = document.createElement(tagName);
 			
 			divElem = document.createElement('div');
-			divElem.style.position = "absolute";
 			divElem.id = onlistID;
 			setupContent(divElem, onlistID);
 			divElem.appendChild(contentElem);
@@ -839,8 +838,7 @@
 		importContentToView(metaData, contentData);
 	}
 	
-	/// import window
-	function importWindow(windowData) {
+	function importWindowToView(windowData) {
 		if (windowData.type !== windowType) {
 			return;
 		}
@@ -858,6 +856,37 @@
 		metaDataDict[windowData.id] = windowData;
 		vscreen.assignScreen(windowData.id, windowData.posx, windowData.posy, windowData.width, windowData.height);
 		updateScreen(displayScale);
+	}
+	
+	function importWindowToList(windowData) {
+		var displayArea = document.getElementById('display_area'),
+			divElem = document.createElement("div"),
+			onlistID = "onlist:" + windowData.id;
+		
+		divElem.innerHTML = "ID:" + windowData.id;
+		divElem.id = onlistID;
+		divElem.style.position = "relative";
+		divElem.style.top = "5px";
+		divElem.style.left = "20px";
+		divElem.style.width = "200px";
+		divElem.style.height = "50px";
+		divElem.style.border = "solid";
+		divElem.style.borderColor = "white";
+		divElem.style.marginTop = "5px";
+		divElem.style.color = "white";
+		setupContent(divElem, onlistID);
+		displayArea.appendChild(divElem);
+	}
+	
+	function clearWindowList() {
+		var displayArea = document.getElementById('display_area');
+		displayArea.innerHTML = "";
+	}
+	
+	/// import window
+	function importWindow(windowData) {
+		importWindowToView(windowData);
+		importWindowToList(windowData);
 	}
 	
 	/// initialize elemets, events
@@ -1055,12 +1084,13 @@
 	
 	socket.on('updateWindow', function () {
 		console.log('updateWindow');
-		//update();
 	});
 	
 	socket.on('update', function () {
 		removeManipulator();
 		update();
+		
+		clearWindowList();
 		updateScreen(displayScale);
 	});
 	

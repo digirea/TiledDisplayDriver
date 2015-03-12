@@ -16,7 +16,7 @@
 	
 <div class="page">
 	
-	<nav class="navbar navbar-default navbar--top" role="navigation">
+	<nav class="navbar navbar-default navbar-top navbar-inverse" role="navigation">
 		<div class="container">
 			<!-- Brand and toggle get grouped for better mobile display -->
 			<div class="navbar-header">
@@ -81,59 +81,19 @@
 
 
 	<div id="leftArea" class="leftArea">
-		<ul class="nav nav-tabs">
-			<li role="presentation" id="display_tab_title"><a href="#">Display</a></li>
-			<li role="presentation" id="content_tab_title"  class="active"><a href="#">Content</a></li>
-		</ul>
-
-		<div class="display_tab" id="display_tab">
+		<div class="left_tab_area">
+			<span id="display_tab_title" class="display_tab_title"><a href="#">Display</a></span>
+			<span id="content_tab_title" class="content_tab_title active"><a href="#" class="active">Content</a></span>
 		</div>
+		<div class="left_main_area">
+			<div class="display_area" id="display_area">
+			</div>
 
-		<div class="content_tab" id="content_tab">
-			<div>
-				<p>テキストの送信</p>
-				<input type="text" id="text_input" />
-				<input type="button" value="Send" id="text_send_button"></input>
-			</div>
-			<hr>
-			<div>
-				<p>テキストファイルの送信</p>
-				<input type="file" name="filename" id="text_file_input" />
-			</div>
-			<hr>
-			<div>
-				<p>URLの送信</p>
-				<input type="text" id="url_input" />
-				<input type="button" value="Send" id="url_send_button"></input>
-			</div>
-			<hr>
-			<div>
-				<p>画像の送信</p>
-				<input type="file" name="filename" id="image_file_input" />
-				<!--input type="button" value="Send" id="image_send_button"></input-->
-			</div>
-			<hr>
-			<div>
-				<p>コンテンツ削除</p>
-				<span>ID:</span><span id="delete_content_id" >No Content Selected.</span>
-				<input type="button" value="Delete" id="content_delete_button" disabled></input>
-			</div>
-			<hr>
-			<div>
-				<p>ウィンドウ全て削除</p>
-				<input type="button" value="Delete" id="delete_all_window"></input>
-			</div>
-			<hr>
-			<div>
-				<p>画像差し替え</p>
-				<span>ID:</span><span id="update_content_id" >No Content Selected.</span>
-				<input type="file" value="UpdateImage" id="update_image_input" disabled></input>
-			</div>
-			<hr>
-
-			<div>
-				<button type="button" class="btn btn-primary" id="content_add_button">Add</button>
-				<button type="button" class="btn btn-primary" id="content_delete_button" disabled>Delete</button>
+			<div class="content_area" id="content_area">
+				<div class="content_button_area">
+					<button type="button" class="btn btn-primary btn-block" id="content_add_button">Add</button>
+					<button type="button" class="btn btn-primary btn-block" id="content_delete_button" disabled>Delete</button>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -174,14 +134,58 @@
 				<span class="input-group-addon">index</span>
 			</div>
 		</div>
-
 		<button type="button" class="download_button"/>
 	</div>
 
+	<div id="bottomArea" class="bottomArea">
+		<div>
+			<p>テキストの送信</p>
+			<input type="text" id="text_input" />
+			<input type="button" value="Send" id="text_send_button"></input>
+		</div>
+		<hr>
+		<div>
+			<p>テキストファイルの送信</p>
+			<input type="file" name="filename" id="text_file_input" />
+		</div>
+		<hr>
+		<div>
+			<p>URLの送信</p>
+			<input type="text" id="url_input" />
+			<input type="button" value="Send" id="url_send_button"></input>
+		</div>
+		<hr>
+		<div>
+			<p>画像の送信</p>
+			<input type="file" name="filename" id="image_file_input" />
+			<!--input type="button" value="Send" id="image_send_button"></input-->
+		</div>
+		<hr>
+		<div>
+			<p>コンテンツ削除</p>
+			<span>ID:</span><span id="delete_content_id" >No Content Selected.</span>
+			<input type="button" value="Delete" id="content_delete_button" disabled></input>
+		</div>
+		<hr>
+		<div>
+			<p>ウィンドウ全て削除</p>
+			<input type="button" value="Delete" id="delete_all_window"></input>
+		</div>
+		<hr>
+		<div>
+			<p>画像差し替え</p>
+			<span>ID:</span><span id="update_content_id" >No Content Selected.</span>
+			<input type="file" value="UpdateImage" id="update_image_input" disabled></input>
+		</div>
+		<hr>
+	</div>
+		
 	<!--img src="" id="image_preview" /-->
 	<div id="preview_area">
 	</div>
 	
+	<div class="popup_background" id="popup_background"></div>
+
 	<script>
 		window.animtab.create('left', {
 				'leftTab' : { min : '0px', max : 'auto' },

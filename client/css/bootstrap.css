@@ -42,6 +42,7 @@ audio:not([controls]) {
 template {
   display: none;
 }
+/*
 a {
   background: transparent;
 }
@@ -49,6 +50,7 @@ a:active,
 a:hover {
   outline: 0;
 }
+*/
 abbr[title] {
   border-bottom: 1px dotted;
 }
@@ -195,6 +197,7 @@ th {
     -webkit-box-shadow: none !important;
             box-shadow: none !important;
   }
+	/*
   a,
   a:visited {
     text-decoration: underline;
@@ -202,6 +205,7 @@ th {
   a[href]:after {
     content: " (" attr(href) ")";
   }
+	*/
   abbr[title]:after {
     content: " (" attr(title) ")";
   }
@@ -913,6 +917,7 @@ a {
   color: #428bca;
   text-decoration: none;
 }
+/*
 a:hover,
 a:focus {
   color: #2a6496;
@@ -923,6 +928,7 @@ a:focus {
   outline: 5px auto -webkit-focus-ring-color;
   outline-offset: -2px;
 }
+*/
 figure {
   margin: 0;
 }

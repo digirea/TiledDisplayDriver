@@ -694,10 +694,12 @@
 			textFileInput = document.getElementById('text_file_input'),
 			dropZone = document.getElementById('drop_zone'),
 			updateImageInput = document.getElementById('update_image_input'),
-			displayTab = document.getElementById('display_tab'),
+			displayArea = document.getElementById('display_area'),
 			displayTabTitle = document.getElementById('display_tab_title'),
-			contentTab = document.getElementById('content_tab'),
+			contentArea = document.getElementById('content_area'),
 			contentTabTitle = document.getElementById('content_tab_title'),
+			popupBackground = document.getElementById('popup_background'),
+			contentDialog = document.getElementById('content_dialog'),
 			resolutionWidth = document.getElementById('resolution_width'),
 			resolutionHeight = document.getElementById('resolution_height'),
 			displayScaleElem = document.getElementById('display_scale'),
@@ -707,10 +709,16 @@
 			contentW = document.getElementById('content_transform_w'),
 			contentH = document.getElementById('content_transform_h'),
 			contentZ = document.getElementById('content_transform_z'),
+			addButton = document.getElementById('content_add_button'),
 			timer = null,
 			rectChangeFunc = function () {
 				changeRect(this.id, parseInt(this.value, 10));
-			};
+			},
+			bottomfunc = window.animtab.create('bottom',
+				{'bottomTab' : { min : '0px', max : 'auto' }},
+				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
+		
+		bottomfunc(false);
 			
 		resolutionWidth.value = 1000;
 		resolutionHeight.value = 900;
@@ -733,16 +741,19 @@
 		}, false);
 		
 		displayTabTitle.onclick = function () {
-			contentTab.style.display = "none";
-			displayTab.style.display = "block";
-			contentTabTitle.className = "";
-			displayTabTitle.className = "active";
+			displayArea.style.display = "block";
+			contentArea.style.display = "none";
+			displayTabTitle.className = "display_tab_title active";
+			contentTabTitle.className = "content_tab_title";
 		};
 		contentTabTitle.onclick = function () {
-			displayTab.style.display = "none";
-			contentTab.style.display = "block";
-			contentTabTitle.className = "active";
-			displayTabTitle.className = "";
+			displayArea.style.display = "none";
+			contentArea.style.display = "block";
+			displayTabTitle.className = "display_tab_title";
+			contentTabTitle.className = "content_tab_title active";
+		};
+		addButton.onclick = function () {
+			bottomfunc(true);
 		};
 		resolutionWidth.onchange = function () {
 			updateScreen(displayScale);

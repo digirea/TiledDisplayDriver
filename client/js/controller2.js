@@ -5,20 +5,20 @@
 	"use strict";
 	
 	var socket = io.connect(),
-		lastContentID = 0,
 		currentContent = null,
 		draggingID = 0,
 		lastDraggingID = null,
 		dragOffsetTop = 0,
 		dragOffsetLeft = 0,
 		metaDataDict = {},
-		displayScale = 0.5,
 		windowType = "window",
 		onContentArea = false,
 		wholeWindowID = "onlist:whole_window",
 		wholeSubWindowID = "whole_sub_window",
 		initialWholeWidth = 1000,
-		initialWholeHeight = 900;
+		initialWholeHeight = 900,
+		initialDisplayScale = 0.5,
+		snapSetting = "free";
 	
 	socket.on('connect', function () {
 		console.log("connect");
@@ -32,6 +32,10 @@
 	
 	function isVisible(metaData) {
 		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
+	}
+	
+	function isFreeMode() {
+		return snapSetting === 'free';
 	}
 	
 	function isUnvisibleID(id) {
@@ -262,10 +266,10 @@
 			wholeSplitX = document.getElementById('whole_split_x');
 			wholeSplitY = document.getElementById('whole_split_y');
 			wholeW.onchange = function () {
-				updateScreen(displayScale);
+				updateScreen();
 			};
 			wholeH.onchange = function () {
-				updateScreen(displayScale);
+				updateScreen();
 			};
 			wholeSplitX.onchange = function () {
 				changeWholeSplit(this.value, wholeSplitY.value);
@@ -274,13 +278,14 @@
 				changeWholeSplit(wholeSplitX.value, this.value);
 			};
 			wholeScale.onchange = function () {
-				displayScale = parseFloat(this.value);
+				var displayScale = parseFloat(this.value);
 				if (displayScale < 0) {
 					displayScale = 0.01;
 				} else if (displayScale > 1.0) {
 					displayScale = 1.0;
 				}
-				updateScreen(displayScale);
+				vscreen.setWholeScale(displayScale);
+				updateScreen();
 			};
 			donwloadButton.style.display = "none";
 		}
@@ -423,12 +428,9 @@
 			elem.style.zIndex = 0;
 		}
 		//document.getElementById('content_transform_z').value = elem.style.zIndex;
-		if (metaData.type === windowType || isVisible(metaData)) {
-			manipulator.showManipulator(elem);
-		} else {
-			// turn on visibler
-			elem.style.borderColor = "blue";
-		}
+		//console.log("showManipulator" , elem);
+		manipulator.showManipulator(elem);
+		manipulator.moveManipulator(elem);
 	}
 	
 	/// unselect content or window
@@ -636,8 +638,8 @@
 		previewArea.appendChild(elem);
 		
 		// calculate width, height
-		width = elem.offsetWidth / displayScale;
-		height = elem.offsetHeight / displayScale;
+		width = elem.offsetWidth / vscreen.getWholeScale();
+		height = elem.offsetHeight / vscreen.getWholeScale();
 		if (width > vscreen.getWhole().orgW) {
 			width = vscreen.getWhole().orgW;
 			elem.style.overflow = "auto";
@@ -799,7 +801,7 @@
 	}
 	
 	/// update all screens
-	function updateScreen(scale, windowData) {
+	function updateScreen(windowData) {
 		var whole = vscreen.getWhole(),
 			wholeWidth = document.getElementById('whole_width'),
 			wholeHeight = document.getElementById('whole_height'),
@@ -809,6 +811,7 @@
 			cy = document.body.scrollHeight / 2,
 			previewArea = document.getElementById('preview_area'),
 			screens = previewArea.getElementsByClassName('screen'),
+			scale = vscreen.getWholeScale(),
 			ww = w,
 			i,
 			metaData,
@@ -1006,7 +1009,7 @@
 		vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
 		vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
 		//console.log("import windowsc:", vscreen.getScreen(windowData.id));
-		updateScreen(displayScale);
+		updateScreen();
 	}
 	
 	function importWindowToList(windowData) {
@@ -1103,8 +1106,10 @@
 			dropDownCurrent.innerHTML = selected;
 			if (selected === "Free") {
 				console.log("free mode");
+				snapSetting = 'free';
 			} else if (selected === "Display") {
 				console.log("display mode");
+				snapSetting = 'display';
 			}
 		};
 	}
@@ -1175,12 +1180,12 @@
 			}
 			timer = setTimeout(function () {
 				manipulator.removeManipulator();
-				updateScreen(displayScale);
+				updateScreen();
 			}, 200);
 		};
 		
 		console.log("clientHeight:" + document.documentElement.clientHeight);
-		updateScreen(displayScale);
+		updateScreen();
 		vscreen.dump();
 	}
 	
@@ -1216,7 +1221,7 @@
 		vscreen.assignScreen(windowData.id, windowData.orgX, windowData.orgY, windowData.orgWidth, windowData.orgHeight);
 		vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
 		vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
-		updateScreen(displayScale, windowData);
+		updateScreen(windowData);
 	});
 	
 	socket.on('doneDeleteContent', function (reply) {
@@ -1249,7 +1254,6 @@
 			setupContent(currentContent, json.id);
 			//console.log(currentContent);
 		}
-		lastContentID = json.id;
 		currentContent = null;
 	});
 	
@@ -1275,7 +1279,7 @@
 		
 		clearWindowList();
 		addWholeWindowToList();
-		updateScreen(displayScale);
+		updateScreen();
 	});
 	
 	window.onload = init;

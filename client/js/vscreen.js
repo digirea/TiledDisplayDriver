@@ -57,7 +57,7 @@
 		};
 	}
 	
-	function setSizeWhole(w, h, s) {
+	function setWholeSize(w, h, s) {
 		vscreen_rect.x = scalePos(center_x - w * 0.5, center_x);
 		vscreen_rect.y = scalePos(center_y - h * 0.5, center_y);
 		vscreen_rect.w = w * s;
@@ -72,12 +72,12 @@
 		vscreen_rect.y = vscreen_rect.y + y;
 	}
 	
-	function setPosWhole(x, y) {
+	function setWholePos(x, y) {
 		vscreen_rect.x = x;
 		vscreen_rect.y = y;
 	}
 	
-	function setScaleWhole(s) {
+	function setWholeScale(s) {
 		vscreen_scale = s;
 	}
 	
@@ -90,7 +90,7 @@
 		center_x = cx;
 		center_y = cy;
 		vscreen_scale = s;
-		setSizeWhole(w, h, s);
+		setWholeSize(w, h, s);
 		vscreen_rect.orgX = center_x - w * 0.5;
 		vscreen_rect.orgY = center_y - h * 0.5;
 		vscreen_rect.orgW = w;
@@ -102,7 +102,7 @@
 		return vscreen_rect;
 	}
 	
-	function setCenterWhole(x, y) {
+	function setWholeCenter(x, y) {
 		center_x = x;
 		center_y = y;
 	}
@@ -134,6 +134,22 @@
 		return screens;
 	}
 	
+	function setScreenSize(id, w, h) {
+		var screen = getScreen(id);
+		if (screen) {
+			screen.w = w;
+			screen.h = h;
+		}
+	}
+	
+	function setScreenPos(id, x, y) {
+		var screen = getScreen(id);
+		if (screen) {
+			screen.x = x;
+			screen.y = y;
+		}
+	}
+	
 	function dump() {
 		var s;
 		console.log("center_x:" + center_x);
@@ -151,7 +167,7 @@
 	}
 	
 	function transformScreen(screen) {
-		return transformOrg(makeRect(screen.orgX, screen.orgY, screen.orgW, screen.orgH));
+		return transformOrg(makeRect(screen.x, screen.y, screen.w, screen.h));
 	}
 	
 	function transformScreenInv(screen) {
@@ -165,15 +181,17 @@
 	// whole screen (one background screen)
 	window.vscreen.assignWhole = assignWhole;
 	window.vscreen.getWhole = getWhole;
-	window.vscreen.setCenterWhole = setCenterWhole;
-	window.vscreen.setSizeWhole = setSizeWhole;
-	window.vscreen.setScaleWhole = setScaleWhole;
-	window.vscreen.setPosWhole = setPosWhole;
+	window.vscreen.setWholeCenter = setWholeCenter;
+	window.vscreen.setWholeSize = setWholeSize;
+	window.vscreen.setWholeScale = setWholeScale;
+	window.vscreen.setWholePos = setWholePos;
 	window.vscreen.translateWhole = translateWhole;
 	// screen
 	window.vscreen.assignScreen = assignScreen;
 	window.vscreen.getScreen = getScreen;
 	window.vscreen.getScreenAll = getScreenAll;
+	window.vscreen.setScreenSize = setScreenSize;
+	window.vscreen.setScreenPos = setScreenPos;
 	window.vscreen.clearScreenAll = clearScreenAll;
 	// transform
 	window.vscreen.transform = transform;

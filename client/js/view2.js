@@ -119,9 +119,9 @@
 		console.log("scale:" + scale);
 		
 		// scale
-		vscreen.setPosWhole(0, 0);
-		vscreen.setCenterWhole(0, 0);
-		vscreen.setScaleWhole(scale);
+		vscreen.setWholePos(0, 0);
+		vscreen.setWholeCenter(0, 0);
+		vscreen.setWholeScale(scale);
 		
 		// trans
 		vscreen.translateWhole(-cx, -cy);

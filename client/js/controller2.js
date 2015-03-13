@@ -1,7 +1,7 @@
 /*jslint devel:true */
 /*global io, socket, FileReader, Uint8Array, Blob, URL, event */
 
-(function (metabinary, vscreen, vsutil) {
+(function (metabinary, vscreen, vsutil, manipulator) {
 	"use strict";
 	
 	var socket = io.connect(),
@@ -9,8 +9,6 @@
 		currentContent = null,
 		draggingID = 0,
 		lastDraggingID = null,
-		manipulators = [],
-		draggingManip = null,
 		dragOffsetTop = 0,
 		dragOffsetLeft = 0,
 		metaDataDict = {},
@@ -26,6 +24,11 @@
 		console.log("connect");
 		socket.emit('reqRegisterEvent', "v1");
 	});
+	
+	function draggingOffsetFunc(top, left) {
+		dragOffsetTop = top;
+		dragOffsetLeft = left;
+	}
 	
 	function isVisible(metaData) {
 		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
@@ -99,38 +102,6 @@
 	
 	function updateContent(binary) {
 		socket.emit('reqUpdateContent', binary);
-	}
-	
-	/// move manipulator rects on elem
-	/// @param manips list of manipulator elements
-	/// @param targetElem manipulator target
-	function moveManipulator(manips, targetElem) {
-		var left,
-			top,
-			width,
-			height,
-			manipHalfWidth = 5,
-			manipHalfHeight = 5,
-			posx = Number(targetElem.style.left.split("px").join("")),
-			posy = Number(targetElem.style.top.split("px").join(""));
-		
-		left = (posx - manipHalfWidth);
-		top = (posy - manipHalfHeight);
-		width = targetElem.offsetWidth;
-		height = targetElem.offsetHeight;
-		
-		// left top
-		manips[0].style.left = left + "px";
-		manips[0].style.top = top + "px";
-		// left bottom
-		manips[1].style.left = left + "px";
-		manips[1].style.top = (top + height) + "px";
-		// right bottom
-		manips[2].style.left = (left + width) + "px";
-		manips[2].style.top = (top + height) + "px";
-		// right top
-		manips[3].style.left = (left + width) + "px";
-		manips[3].style.top = top + "px";
 	}
 	
 	function addInputProperty(id, leftLabel, rightLabel, value) {
@@ -348,7 +319,9 @@
 			currenth,
 			ydiff,
 			elem,
-			metaData;
+			metaData,
+			draggingManip = manipulator.getDraggingManip();
+		
 		if (draggingManip && lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
@@ -389,71 +362,6 @@
 			console.log("lastDraggingID:" + lastDraggingID);
 			metaDataDict[lastDraggingID] = metaData;
 			updateTransform(metaData);
-		}
-	}
-	
-	function setupManipulator(manip) {
-		var manipHalfWidth = 5,
-			manipHalfHeight = 5,
-			cursor,
-			isdragging = false;
-		
-		manip.style.position = "absolute";
-		manip.style.border = "solid 2px black";
-		manip.style.zIndex = '10';
-		manip.style.width = manipHalfWidth * 2 + "px";
-		manip.style.height = manipHalfHeight * 2 + "px";
-		manip.style.background = "#000";
-		if (manip.id === '_manip_0') {
-			cursor = "nw-resize";
-		} else if (manip.id === '_manip_1') {
-			cursor = "sw-resize";
-		} else if (manip.id === '_manip_2') {
-			cursor = "se-resize";
-		} else if (manip.id === '_manip_3') {
-			cursor = "ne-resize";
-		}
-		manip.onmousedown = function (evt) {
-			var rect = event.target.getBoundingClientRect();
-			dragOffsetTop = evt.clientY - rect.top;
-			dragOffsetLeft = evt.clientX - rect.left;
-			draggingManip = manip;
-		};
-		manip.onmousemove = function (evt) {
-			manip.style.cursor = cursor;
-		};
-	}
-	
-	function removeManipulator() {
-		var i,
-			previewArea = document.getElementById('preview_area');
-		for (i = 0; i < manipulators.length; i = i + 1) {
-			previewArea.removeChild(manipulators[i]);
-		}
-		manipulators = [];
-	}
-	
-	/// show manipulator rects on elem
-	function showManipulator(elem) {
-		var manips = [
-				document.createElement('span'),
-				document.createElement('span'),
-				document.createElement('span'),
-				document.createElement('span')
-			],
-			manip,
-			previewArea = document.getElementById('preview_area'),
-			i;
-		
-		moveManipulator(manips, elem);
-		removeManipulator();
-		
-		for (i = 0; i < manips.length; i = i + 1) {
-			manip = manips[i];
-			manip.id = "_manip_" + i;
-			setupManipulator(manip);
-			previewArea.appendChild(manip);
-			manipulators.push(manip);
 		}
 	}
 	
@@ -516,7 +424,7 @@
 		}
 		//document.getElementById('content_transform_z').value = elem.style.zIndex;
 		if (metaData.type === windowType || isVisible(metaData)) {
-			showManipulator(elem);
+			manipulator.showManipulator(elem);
 		} else {
 			// turn on visibler
 			elem.style.borderColor = "blue";
@@ -539,7 +447,7 @@
 			}
 			lastDraggingID = null;
 		}
-		removeManipulator();
+		manipulator.removeManipulator();
 	}
 	
 	function getSelectedElem() {
@@ -617,7 +525,7 @@
 		var elem,
 			metaData;
 		// erase last border
-		if (lastDraggingID && !draggingManip) {
+		if (lastDraggingID && !manipulator.getDraggingManip()) {
 			unselect();
 		}
 	});
@@ -659,18 +567,18 @@
 			vsutil.assignMetaData(elem, metaData, true);
 			
 			if (metaData.type === windowType || isVisible(metaData)) {
-				moveManipulator(manipulators, elem);
+				manipulator.moveManipulator(elem);
 				updateTransform(metaData);
 			}
 			evt.stopPropagation();
 			evt.preventDefault();
-		} else if (lastDraggingID && draggingManip) {
+		} else if (lastDraggingID && manipulator.getDraggingManip()) {
 			// scaling
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
 			if (metaData.type === windowType || isVisible(metaData)) {
 				onManipulatorMove(evt);
-				moveManipulator(manipulators, elem);
+				manipulator.moveManipulator(elem);
 			}
 			evt.stopPropagation();
 			evt.preventDefault();
@@ -694,14 +602,14 @@
 				updateTransform(metaData);
 			}
 		}
-		if (draggingManip && lastDraggingID) {
+		if (manipulator.getDraggingManip() && lastDraggingID) {
 			metaData = metaDataDict[lastDraggingID];
 			//updateTransform(metaData);
 		} else {
 			lastDraggingID = draggingID;
 			draggingID = null;
 		}
-		draggingManip = null;
+		manipulator.clearDraggingManip();
 		dragOffsetTop = 0;
 		dragOffsetLeft = 0;
 	});
@@ -1097,7 +1005,7 @@
 		vscreen.assignScreen(windowData.id, windowData.orgX, windowData.orgY, windowData.orgWidth, windowData.orgHeight);
 		vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
 		vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
-		console.log("import windowsc:", vscreen.getScreen(windowData.id));
+		//console.log("import windowsc:", vscreen.getScreen(windowData.id));
 		updateScreen(displayScale);
 	}
 	
@@ -1249,6 +1157,7 @@
 				{'bottomTab' : { min : '0px', max : 'auto' }},
 				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
 		
+		manipulator.setDraggingOffsetFunc(draggingOffsetFunc);
 		bottomfunc(false);
 		// initial select
 		initPropertyArea(wholeWindowID, "whole_window");
@@ -1265,7 +1174,7 @@
 				clearTimeout(timer);
 			}
 			timer = setTimeout(function () {
-				removeManipulator();
+				manipulator.removeManipulator();
 				updateScreen(displayScale);
 			}, 200);
 		};
@@ -1361,7 +1270,7 @@
 	});
 	
 	socket.on('update', function () {
-		removeManipulator();
+		manipulator.removeManipulator();
 		update();
 		
 		clearWindowList();
@@ -1371,4 +1280,4 @@
 	
 	window.onload = init;
 
-}(window.metabinary, window.vscreen, window.vscreen_util));
+}(window.metabinary, window.vscreen, window.vscreen_util, window.manipulator));

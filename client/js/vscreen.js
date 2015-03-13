@@ -81,6 +81,10 @@
 		vscreen_scale = s;
 	}
 	
+	function getWholeScale() {
+		return vscreen_scale;
+	}
+	
 	/// assign whole virtual screen
 	/// if exists, overwrite
 	function assignWhole(w, h, cx, cy, s) {
@@ -100,6 +104,13 @@
 	
 	function getWhole() {
 		return vscreen_rect;
+	}
+	
+	function getCenter() {
+		return {
+			x : center_x,
+			y : center_y
+		};
 	}
 	
 	function setWholeCenter(x, y) {
@@ -180,10 +191,12 @@
 	window.vscreen.makeRect = makeRect;
 	// whole screen (one background screen)
 	window.vscreen.assignWhole = assignWhole;
+	window.vscreen.getCenter = getCenter;
 	window.vscreen.getWhole = getWhole;
 	window.vscreen.setWholeCenter = setWholeCenter;
 	window.vscreen.setWholeSize = setWholeSize;
 	window.vscreen.setWholeScale = setWholeScale;
+	window.vscreen.getWholeScale = getWholeScale;
 	window.vscreen.setWholePos = setWholePos;
 	window.vscreen.translateWhole = translateWhole;
 	// screen

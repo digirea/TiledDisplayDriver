@@ -50,7 +50,7 @@ p {
 
 .leftArea {
 	position : absolute;
-	top : 180px;
+	top : 100px;
 	height : 800px;
 	width : 250px;
 	overflow: hidden;
@@ -230,30 +230,9 @@ p {
 	text-align:center;
 }
 
-.topmenu0 {
-	position:absolute;
-	left : 10px;
-	padding-top : 15px;
-}
-
-.topmenu1 {
-	position: absolute;
-	left : 160px;
-}
-
-.topmenu2 {
-	position: absolute;
-	left : 330px;
-}
-
-.topmenu3 {
-	position: absolute;
-	left : 500px;
-}
-
 .topmenu4 {
 	position: absolute;
-	left : 690px;
+	right : 30px;
 	padding-top : 10px;
 }
 
@@ -302,4 +281,8 @@ p {
 
 .blacktext {
 	color : black;
+}
+
+.virtual_display_property {
+	display : none;
 }

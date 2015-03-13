@@ -14,10 +14,12 @@
 		dragOffsetTop = 0,
 		dragOffsetLeft = 0,
 		metaDataDict = {},
-		//windowDataDict = {},
 		displayScale = 0.5,
 		windowType = "window",
-		onContentArea = false;
+		onContentArea = false,
+		wholeWindowID = "onlist:whole_window",
+		initialWholeWidth = 1000,
+		initialWholeHeight = 900;
 	
 	socket.on('connect', function () {
 		console.log("connect");
@@ -37,6 +39,8 @@
 			uid,
 			previewArea = document.getElementById('preview_area'),
 			child;
+		
+		if (id === wholeWindowID) { return null; }
 		if (isUnvisibleID(id)) {
 			uid = id.split('onlist:').join('');
 			if (document.getElementById(uid)) {
@@ -128,6 +132,125 @@
 		manips[3].style.top = top + "px";
 	}
 	
+	function addInputProperty(id, leftLabel, rightLabel, value) {
+		/*
+			<div class="input-group">
+				<span class="input-group-addon">x</span>
+				<input type="text" class="form-control" id="content_transform_x" value="0">
+				<span class="input-group-addon">px</span>
+			</div>
+		*/
+		var transInput = document.getElementById('transform_input'),
+			group = document.createElement('div'),
+			leftSpan = document.createElement('span'),
+			rightSpan = document.createElement('span'),
+			input = document.createElement('input');
+		
+		group.className = "input-group";
+		leftSpan.className = "input-group-addon";
+		leftSpan.innerHTML = leftLabel;
+		rightSpan.className = "input-group-addon";
+		rightSpan.innerHTML = rightLabel;
+		input.className = "form-control";
+		input.id = id;
+		input.value = value;
+		input.nodeType = "text";
+		
+		group.appendChild(leftSpan);
+		group.appendChild(input);
+		if (rightLabel) {
+			group.appendChild(rightSpan);
+		}
+		transInput.appendChild(group);
+	}
+	
+	function initPropertyArea(id, type) {
+		var contentX,
+			contentY,
+			contentW,
+			contentH,
+			contentZ,
+			wholeW,
+			wholeH,
+			wholeScale,
+			transInput = document.getElementById('transform_input'),
+			idlabel = document.getElementById('content_id_label'),
+			idtext = document.getElementById('content_id'),
+			donwloadButton = document.getElementById('download_button'),
+			rectChangeFunc = function () {
+				changeRect(this.id, parseInt(this.value, 10));
+			};
+		console.log("initPropertyArea");
+		if (id) {
+			document.getElementById('content_id').innerHTML = id;
+		}
+		transInput.innerHTML = "";
+		if (type === "content") {
+			idlabel.innerHTML = "Content ID:";
+			addInputProperty('content_transform_x', 'x', 'px', '0');
+			addInputProperty('content_transform_y', 'y', 'px', '0');
+			addInputProperty('content_transform_w', 'w', 'px', '0');
+			addInputProperty('content_transform_h', 'h', 'px', '0');
+			addInputProperty('content_transform_z', 'z', 'index', '0');
+			contentX = document.getElementById('content_transform_x');
+			contentY = document.getElementById('content_transform_y');
+			contentW = document.getElementById('content_transform_w');
+			contentH = document.getElementById('content_transform_h');
+			contentZ = document.getElementById('content_transform_z');
+			contentX.onchange = rectChangeFunc;
+			contentY.onchange = rectChangeFunc;
+			contentW.onchange = rectChangeFunc;
+			contentH.onchange = rectChangeFunc;
+			contentZ.onchange = function () {
+				var val = parseInt(contentZ.value, 10);
+				changeZIndex(val);
+			};
+			donwloadButton.style.display = "block";
+		}
+		if (type === "display") {
+			idlabel.innerHTML = "Display ID:";
+			addInputProperty('content_transform_x', 'x', 'px', '0');
+			addInputProperty('content_transform_y', 'y', 'px', '0');
+			addInputProperty('content_transform_w', 'w', 'px', '0');
+			addInputProperty('content_transform_h', 'h', 'px', '0');
+			contentX = document.getElementById('content_transform_x');
+			contentY = document.getElementById('content_transform_y');
+			contentW = document.getElementById('content_transform_w');
+			contentH = document.getElementById('content_transform_h');
+			contentX.onchange = rectChangeFunc;
+			contentY.onchange = rectChangeFunc;
+			contentW.onchange = rectChangeFunc;
+			contentH.onchange = rectChangeFunc;
+			donwloadButton.style.display = "none";
+		}
+		if (type === "whole_window") {
+			idlabel.innerHTML = "Virtual Display Setting";
+			idtext.innerHTML = "";
+			addInputProperty('whole_width', 'w', 'px', '1000');
+			addInputProperty('whole_height', 'h', 'px', '900');
+			addInputProperty('whole_scale', 'scale', '', '0');
+			wholeW = document.getElementById('whole_width');
+			wholeH = document.getElementById('whole_height');
+			wholeScale = document.getElementById('whole_scale');
+			wholeW.onchange = function () {
+				updateScreen(displayScale);
+			};
+			wholeH.onchange = function () {
+				updateScreen(displayScale);
+			};
+			wholeScale.onchange = function () {
+				displayScale = parseFloat(this.value);
+				if (displayScale < 0) {
+					displayScale = 0.01;
+				} else if (displayScale > 1.0) {
+					displayScale = 1.0;
+				}
+				updateScreen(displayScale);
+			};
+			donwloadButton.style.display = "none";
+		}
+	}
+	
 	function assignContentProperty(metaData) {
 		console.log("assignContentProperty:" + JSON.stringify(metaData));
 		var transx = document.getElementById('content_transform_x'),
@@ -139,6 +262,18 @@
 		transy.value = parseInt(metaData.posy, 10);
 		transw.value = parseInt(metaData.width, 10);
 		transh.value = parseInt(metaData.height, 10);
+	}
+	
+	function assignWholeWindowProperty() {
+		var whole = vscreen.getWhole(),
+			scale = vscreen.getWholeScale(),
+			wholeW = document.getElementById('whole_width'),
+			wholeH = document.getElementById('whole_height'),
+			wholeScale = document.getElementById('whole_scale');
+		
+		wholeW.value = parseInt(whole.orgW, 10);
+		wholeH.value = parseInt(whole.orgH, 10);
+		wholeScale.value = scale;
 	}
 	
 	function onManipulatorMove(evt) {
@@ -279,6 +414,13 @@
 		var elem,
 			metaData;
 		
+		if (id === wholeWindowID) {
+			initPropertyArea(id, "whole_window");
+			assignWholeWindowProperty();
+			document.getElementById(wholeWindowID).style.borderColor = "orange";
+			return;
+		}
+		document.getElementById(wholeWindowID).style.borderColor = "white";
 		elem = getElem(id);
 		if (elem.id !== id) {
 			id = elem.id;
@@ -287,27 +429,29 @@
 			document.getElementById("onlist:" + id).style.borderColor = "orange";
 		}
 		metaData = metaDataDict[id];
-		assignContentProperty(metaDataDict[id]);
 		draggingID = id;
 		console.log("draggingID = id;:" + draggingID);
 		elem.style.border = "solid 2px black";
 		if (metaData.type === windowType) {
+			initPropertyArea(id, "display");
+			assignContentProperty(metaDataDict[id]);
 			enableDeleteButton(false);
 			enableUpdateImageButton(false);
 		} else {
+			initPropertyArea(id, "content");
+			assignContentProperty(metaDataDict[id]);
 			enableDeleteButton(true);
 			enableUpdateImageButton(true);
 			document.getElementById('update_content_id').innerHTML = id;
-			document.getElementById('content_id').innerHTML = id;
 		}
 		if (elem.style.zIndex === "") {
 			elem.style.zIndex = 0;
 		}
-		document.getElementById('content_transform_z').value = elem.style.zIndex;
+		//document.getElementById('content_transform_z').value = elem.style.zIndex;
 		if (metaData.type === windowType || isVisible(metaData)) {
 			showManipulator(elem);
 		} else {
-			// turn on visible
+			// turn on visibler
 			elem.style.borderColor = "blue";
 		}
 	}
@@ -431,7 +575,7 @@
 		// detect content list area
 		px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
 		py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
-		if (px < (contentArea.scrollWidth) && py > 180 && py < (180 + contentArea.offsetTop + contentArea.scrollHeight)) {
+		if (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight)) {
 			onContentArea = true;
 		} else {
 			onContentArea = false;
@@ -678,10 +822,11 @@
 	
 	/// update all screens
 	function updateScreen(scale, windowData) {
-		var resolutionWidth = document.getElementById('resolution_width'),
-			resolutionHeight = document.getElementById('resolution_height'),
-			w = parseInt(resolutionWidth.value, 10),
-			h = parseInt(resolutionHeight.value, 10),
+		var whole = vscreen.getWhole(),
+			wholeWidth = document.getElementById('whole_width'),
+			wholeHeight = document.getElementById('whole_height'),
+			w,
+			h,
 			cx = document.body.scrollWidth / 2,
 			cy = document.body.scrollHeight / 2,
 			previewArea = document.getElementById('preview_area'),
@@ -703,7 +848,17 @@
 			}
 		} else {
 			// recreate all screens
-			vscreen.assignWhole(resolutionWidth.value, resolutionHeight.value, cx, cy, scale);
+			if (!wholeWidth || !whole.hasOwnProperty('w')) {
+				w = initialWholeWidth;
+			} else {
+				w = parseInt(wholeWidth.value, 10);
+			}
+			if (!wholeHeight || !whole.hasOwnProperty('h')) {
+				h = initialWholeHeight;
+			} else {
+				h = parseInt(wholeHeight.value, 10);
+			}
+			vscreen.assignWhole(w, h, cx, cy, scale);
 			for (i = screens.length - 1; i >= 0; i = i - 1) {
 				previewArea.removeChild(screens.item(i));
 			}
@@ -895,6 +1050,26 @@
 		displayArea.appendChild(divElem);
 	}
 	
+	function addWholeWindowToList() {
+		var displayArea = document.getElementById('display_area'),
+			divElem = document.createElement("div"),
+			onlistID = "onlist:" + "whole_window";
+		
+		divElem.innerHTML = "Virtual Display";
+		divElem.id = onlistID;
+		divElem.style.position = "relative";
+		divElem.style.top = "5px";
+		divElem.style.left = "20px";
+		divElem.style.width = "200px";
+		divElem.style.height = "50px";
+		divElem.style.border = "solid";
+		divElem.style.borderColor = "white";
+		divElem.style.marginTop = "5px";
+		divElem.style.color = "white";
+		setupContent(divElem, onlistID);
+		displayArea.appendChild(divElem);
+	}
+	
 	function clearWindowList() {
 		var displayArea = document.getElementById('display_area');
 		displayArea.innerHTML = "";
@@ -904,26 +1079,6 @@
 	function importWindow(windowData) {
 		importWindowToView(windowData);
 		importWindowToList(windowData);
-	}
-	
-	function initPropertyArea() {
-		var contentX = document.getElementById('content_transform_x'),
-			contentY = document.getElementById('content_transform_y'),
-			contentW = document.getElementById('content_transform_w'),
-			contentH = document.getElementById('content_transform_h'),
-			contentZ = document.getElementById('content_transform_z'),
-			rectChangeFunc = function () {
-				changeRect(this.id, parseInt(this.value, 10));
-			};
-		
-		contentX.onchange = rectChangeFunc;
-		contentY.onchange = rectChangeFunc;
-		contentW.onchange = rectChangeFunc;
-		contentH.onchange = rectChangeFunc;
-		contentZ.onchange = function () {
-			var val = parseInt(contentZ.value, 10);
-			changeZIndex(val);
-		};
 	}
 	
 	function initAddContentArea() {
@@ -958,31 +1113,21 @@
 	}
 	
 	function initWholeSettingArea() {
-		var popupBackground = document.getElementById('popup_background'),
-			contentDialog = document.getElementById('content_dialog'),
-			resolutionWidth = document.getElementById('resolution_width'),
-			resolutionHeight = document.getElementById('resolution_height'),
-			displayScaleElem = document.getElementById('display_scale');
+		var dropDownCurrent = document.getElementById('dropdown_current'),
+			dropDownItem1 = document.getElementById('dropdown_item1');
 			
-		resolutionWidth.value = 1000;
-		resolutionHeight.value = 900;
-
-		resolutionWidth.onchange = function () {
-			updateScreen(displayScale);
-		};
-		resolutionHeight.onchange = function () {
-			updateScreen(displayScale);
-		};
-		displayScaleElem.onchange = function () {
-			displayScale = parseFloat(displayScaleElem.value);
-			if (displayScale < 0) {
-				displayScale = 0.01;
-			} else if (displayScale > 1.0) {
-				displayScale = 1.0;
+		dropDownItem1.onclick = function () {
+			var selected;
+			// swap curent
+			selected = dropDownItem1.innerHTML;
+			dropDownItem1.innerHTML = dropDownCurrent.innerHTML;
+			dropDownCurrent.innerHTML = selected;
+			if (selected === "Free") {
+				console.log("free mode");
+			} else if (selected === "Display") {
+				console.log("display mode");
 			}
-			updateScreen(displayScale);
 		};
-		
 	}
 	
 	function initContentArea(bottomfunc) {
@@ -1034,7 +1179,7 @@
 				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
 		
 		bottomfunc(false);
-		initPropertyArea();
+		initPropertyArea(null, "content");
 		initLeftArea(bottomfunc);
 		initAddContentArea();
 		initWholeSettingArea();
@@ -1130,14 +1275,6 @@
 		importWindow(windowData);
 	});
 	
-	/*
-	socket.on('doneAddWindow', function (reply) {
-		console.log('doneAddWindow:');
-		var windowData = JSON.parse(reply);
-		importWindow(windowData);
-	});
-	*/
-	
 	socket.on('updateTransform', function () {
 		socket.emit('reqGetMetaData', JSON.stringify({type: "all", id: ""}));
 	});
@@ -1153,6 +1290,7 @@
 		update();
 		
 		clearWindowList();
+		addWholeWindowToList();
 		updateScreen(displayScale);
 	});
 	

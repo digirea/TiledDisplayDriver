@@ -12,7 +12,9 @@
 		center_y,
 		screens = {},
 		whole_subscreens = {},
-		whole_subscreen_id = "whole_sub_window";
+		whole_subscreen_id = "whole_sub_window",
+		split_x = 1,
+		split_y = 1;
 	
 	// utility
 	function scalePos(p, c) {
@@ -76,6 +78,9 @@
 			subW = vscreen_rect.orgW / parseFloat(xcount),
 			subH = vscreen_rect.orgH / parseFloat(ycount);
 			
+		split_x = xcount;
+		split_y = ycount;
+		
 		for (k = 1; k <= ycount; k = k + 1) {
 			for (i = 1; i <= xcount; i = i + 1) {
 				screen = {
@@ -108,6 +113,13 @@
 			}
 		}
 		return null;
+	}
+	
+	function getSplitCount() {
+		return {
+			x : split_x,
+			y : split_y
+		};
 	}
 	
 	function clearSplitWholes() {
@@ -252,6 +264,7 @@
 	window.vscreen.getSplitWholes = getSplitWholes;
 	window.vscreen.getSplitWholeByPos = getSplitWholeByPos;
 	window.vscreen.clearSplitWholes = clearSplitWholes;
+	window.vscreen.getSplitCount = getSplitCount;
 	// screen
 	window.vscreen.assignScreen = assignScreen;
 	window.vscreen.getScreen = getScreen;

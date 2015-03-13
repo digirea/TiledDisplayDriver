@@ -17,6 +17,8 @@
 		reqDeleteWindow : "reqDeleteWindow",
 		reqGetWindow : "reqGetWindow",
 		reqUpdateWindow : "reqUpdateWindow",
+		reqUpdateVirtualDisplay : "reqUpdateVirtualDisplay",
+		reqGetVirtualDisplay : "reqGetVirtualDisplay",
 		
 		// result command
 		doneAddContent : "doneAddContent",
@@ -29,6 +31,8 @@
 		doneDeleteWindow : "doneDeleteWindow",
 		doneGetWindow : "doneGetWindow",
 		doneUpdateWindow : "doneUpdateWindow",
+		doneUpdateVirtualDisplay : "doneUpdateVirtualDisplay",
+		doneGetVirtualDisplay : "doneGetVirtualDisplay",
 		
 		// update request from server
 		update : "update",

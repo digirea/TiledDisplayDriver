@@ -94,6 +94,7 @@
 	/// get image from server
 	function update() {
 		vscreen.clearScreenAll();
+		socket.emit('reqGetVirtualDisplay', JSON.stringify({type: "all", id: ""}));
 		socket.emit('reqGetContent', JSON.stringify({type: "all", id: ""}));
 		socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
 	}
@@ -127,6 +128,20 @@
 	
 	function updateContent(binary) {
 		socket.emit('reqUpdateContent', binary);
+	}
+	
+	function updateWindowData() {
+		var windowData,
+			whole = vscreen.getWhole(),
+			split = vscreen.getSplitCount();
+			
+		windowData = {
+			orgWidth : whole.orgW,
+			orgHeight : whole.orgH,
+			splitX : split.x,
+			splitY : split.y
+		};
+		socket.emit('reqUpdateVirtualDisplay', JSON.stringify(windowData));
 	}
 	
 	function addInputProperty(id, leftLabel, rightLabel, value) {
@@ -187,7 +202,7 @@
 		}
 	}
 	
-	function changeWholeSplit(x, y) {
+	function changeWholeSplit(x, y, withoutUpdate) {
 		var ix = parseInt(x, 10),
 			iy = parseInt(y, 10),
 			splitWholes,
@@ -210,6 +225,9 @@
 		vscreen.clearSplitWholes();
 		vscreen.splitWhole(ix, iy);
 		assignSplitWholes(vscreen.getSplitWholes());
+		if (!withoutUpdate) {
+			updateWindowData();
+		}
 	}
 	
 	function initPropertyArea(id, type) {
@@ -278,7 +296,7 @@
 			idtext.innerHTML = "";
 			addInputProperty('whole_width', 'w', 'px', '1000');
 			addInputProperty('whole_height', 'h', 'px', '900');
-			addInputProperty('whole_scale', 'scale', '', '0');
+			addInputProperty('whole_scale', 'scale', '', '0.5');
 			addInputProperty('whole_split_x', 'split x', '', '1');
 			addInputProperty('whole_split_y', 'split y', '', '1');
 			wholeW = document.getElementById('whole_width');
@@ -287,10 +305,10 @@
 			wholeSplitX = document.getElementById('whole_split_x');
 			wholeSplitY = document.getElementById('whole_split_y');
 			wholeW.onchange = function () {
-				updateScreen();
+				changeDisplayValue();
 			};
 			wholeH.onchange = function () {
-				updateScreen();
+				changeDisplayValue();
 			};
 			wholeSplitX.onchange = function () {
 				changeWholeSplit(this.value, wholeSplitY.value);
@@ -584,6 +602,7 @@
 		var splitWholes,
 			i;
 		splitWholes = vscreen.getSplitWholes();
+		console.log("splitWholes", splitWholes);
 		for (i in splitWholes) {
 			if (splitWholes.hasOwnProperty(i)) {
 				document.getElementById(splitWholes[i].id).style.background = "transparent";
@@ -901,8 +920,11 @@
 		var whole = vscreen.getWhole(),
 			wholeWidth = document.getElementById('whole_width'),
 			wholeHeight = document.getElementById('whole_height'),
+			wholeSplitX = document.getElementById('whole_split_x'),
+			wholeSplitY = document.getElementById('whole_split_y'),
 			w,
 			h,
+			splitCount = vscreen.getSplitCount(),
 			cx = document.body.scrollWidth / 2,
 			cy = document.body.scrollHeight / 2,
 			previewArea = document.getElementById('preview_area'),
@@ -925,17 +947,19 @@
 			}
 		} else {
 			// recreate all screens
-			if (!wholeWidth || !whole.hasOwnProperty('w')) {
-				w = initialWholeWidth;
-			} else {
-				w = parseInt(wholeWidth.value, 10);
+			if (wholeWidth) {
+				wholeWidth.value = whole.orgW;
 			}
-			if (!wholeHeight || !whole.hasOwnProperty('h')) {
-				h = initialWholeHeight;
-			} else {
-				h = parseInt(wholeHeight.value, 10);
+			if (wholeHeight) {
+				wholeHeight.value = whole.orgH;
 			}
-			vscreen.assignWhole(w, h, cx, cy, scale);
+			if (wholeSplitX) {
+				wholeSplitX.value = splitCount.x;
+			}
+			if (wholeSplitY) {
+				wholeSplitY.value = splitCount.y;
+			}
+			//vscreen.assignWhole(w, h, cx, cy, scale);
 			for (i = screens.length - 1; i >= 0; i = i - 1) {
 				previewArea.removeChild(screens.item(i));
 			}
@@ -955,6 +979,44 @@
 		}
 		addScreenRect(windowData);
 		//changeWholeSplit(wholeSplitX.value, this.value);
+	}
+	
+	function changeDisplayValue() {
+		var whole = vscreen.getWhole(),
+			wholeWidth = document.getElementById('whole_width'),
+			wholeHeight = document.getElementById('whole_height'),
+			wholeSplitX = document.getElementById('whole_split_x'),
+			wholeSplitY = document.getElementById('whole_split_y'),
+			wholeScale = document.getElementById('whole_scale'),
+			w,
+			h,
+			s = parseFloat(wholeScale.value),
+			ix = parseInt(wholeSplitX.value, 10),
+			iy = parseInt(wholeSplitY.value, 10),
+			cx = document.body.scrollWidth / 2,
+			cy = document.body.scrollHeight / 2;
+
+		if (!wholeWidth || !whole.hasOwnProperty('w')) {
+			w = initialWholeWidth;
+		} else {
+			w = parseInt(wholeWidth.value, 10);
+		}
+		if (!wholeHeight || !whole.hasOwnProperty('h')) {
+			h = initialWholeHeight;
+		} else {
+			h = parseInt(wholeHeight.value, 10);
+		}
+		console.log(wholeScale.value);
+		console.log("changeDisplayValue", w, h, s);
+		if (w && h && s) {
+			vscreen.assignWhole(w, h, cx, cy, s);
+		}
+		if (ix && iy) {
+			vscreen.splitWhole(ix, iy);
+		}
+		updateWindowData();
+		updateScreen();
+		changeWholeSplit(ix, iy, true);
 	}
 	
 	function importContentToView(metaData, contentData) {
@@ -1370,6 +1432,26 @@
 		console.log('doneGetWindow:');
 		var windowData = JSON.parse(reply);
 		importWindow(windowData);
+	});
+	
+	socket.on('doneGetVirtualDisplay', function (reply) {
+		var windowData = JSON.parse(reply),
+			whole = vscreen.getWhole(),
+			split = vscreen.getSplitCount(),
+			cx = document.body.scrollWidth / 2,
+			cy = document.body.scrollHeight / 2;
+		
+		console.log('doneGetVirtualDisplay', reply, whole);
+		if (windowData.hasOwnProperty('orgWidth')) {
+			// set virtual displays
+			vscreen.assignWhole(windowData.orgWidth, windowData.orgHeight, cx, cy, vscreen.getWholeScale());
+			vscreen.splitWhole(windowData.splitX, windowData.splitY);
+			console.log("doneGetVirtualDisplay", vscreen.getWhole());
+			updateScreen();
+		} else {
+			// running first time
+			updateWindowData();
+		}
 	});
 	
 	socket.on('updateTransform', function () {

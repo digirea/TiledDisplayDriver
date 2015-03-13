@@ -10,6 +10,7 @@
 		textClient = redis.createClient(6379, '127.0.0.1', {'return_buffers': false}),
 		contentIDStr = "content_id",
 		windowIDStr = "window_id",
+		virtualDisplayIDStr = "virtual_display",
 		metadataPrefix = "metadata:",
 		contentPrefix = "content:",
 		windowPrefix = "window:",
@@ -252,6 +253,24 @@
 		});
 	}
 	
+	function setVirtualDisplay(windowData, endCallback) {
+		if (windowData) {
+			textClient.hmset(virtualDisplayIDStr, windowData, function (err, reply) {
+				endCallback(windowData);
+			});
+		}
+	}
+	
+	function getVirtualDisplay(endCallback) {
+		textClient.hgetall(virtualDisplayIDStr, function (err, data) {
+			if (data) {
+				endCallback(data);
+			} else {
+				endCallback({});
+			}
+		});
+	}
+	
 	function deleteWindow(id, endCallback) {
 		client.del(windowPrefix + id, function (err) {
 			if (err) {
@@ -446,6 +465,22 @@
 		}
 	}
 	
+	/// do UpdateVirtualDisplay command
+	function commandUpdateVirtualDisplay(socket, ws_connection, json, endCallback) {
+		if (json) {
+			setVirtualDisplay(json, function (data) {
+				endCallback();
+			});
+		}
+	}
+	
+	function commandGetVirtualDisplay(socket, ws_connection, json, endCallback) {
+		getVirtualDisplay(function (data) {
+			sendMetaData(Command.doneGetVirtualDisplay, data, socket, ws_connection);
+			endCallback();
+		});
+	}
+	
 	/// do GetWindow command
 	function commandGetWindow(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetWindow : " + JSON.stringify(json));
@@ -540,6 +575,14 @@
 			commandDeleteWindow(socket, null, JSON.parse(data), update);
 		});
 		
+		socket.on(Command.reqUpdateVirtualDisplay, function (data) {
+			commandUpdateVirtualDisplay(socket, null, JSON.parse(data), updateWindow);
+		});
+		
+		socket.on(Command.reqGetVirtualDisplay, function (data) {
+			commandGetVirtualDisplay(socket, null, JSON.parse(data), function () {});
+		});
+		
 		socket.on('debugDeleteWindowAll', function () {
 			client.keys(windowPrefix + '*', function (err, replies) {
 				var multi = textClient.multi();
@@ -596,6 +639,10 @@
 					commandGetWindow(null, ws_connection, request, function () {});
 				} else if (request.command === Command.reqUpdateWindow) {
 					commandUpdateWindow(null, ws_connection, request, updateWindow);
+				} else if (request.command === Command.reqUpdateVirtualDisplay) {
+					commandUpdateVirtualDisplay(null, ws_connection, request, updateWindow);
+				} else if (request.command === Command.reqGetVirtualDisplay) {
+					commandGetVirtualDisplay(null, ws_connection, request, function () {});
 				}
 			} else {
 				// binary
@@ -625,6 +672,7 @@
 		contentPrefix = frontPrefix + "s:" + uuidPrefix + contentPrefix;
 		metadataPrefix = frontPrefix + "s:" + uuidPrefix + metadataPrefix;
 		windowPrefix = frontPrefix + "s:" + uuidPrefix + windowPrefix;
+		virtualDisplayIDStr = frontPrefix + "s:" + uuidPrefix + virtualDisplayIDStr;
 		console.log("idstr:" + contentIDStr);
 		console.log("idstr:" + contentPrefix);
 		console.log("idstr:" + metadataPrefix);

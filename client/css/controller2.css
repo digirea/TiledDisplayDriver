@@ -121,7 +121,7 @@ p {
 .display_tab_title {
 	position : absolute;
 	text-align: center;
-	background-color: rgba(55, 55, 55, 1.0);
+	background-color: #0080FF;
 	border-bottom: 0px;
 	border-top-right-radius:8px;
 	width : 80px;
@@ -131,7 +131,7 @@ p {
 .display_tab_title.active {
 	border: solid;
 	text-align: center;
-	background-color: rgba(55, 55, 55, 1.0);
+	background-color: #0080FF;
 	border-bottom: 0px;
 	border-top-right-radius:8px;
 }
@@ -139,19 +139,18 @@ p {
 .content_tab_title {
 	position : absolute;
 	text-align: center;
-	background-color: rgba(55, 55, 55, 1.0);
+	background: #04B431;
 	border-bottom: 0px;
 	border-top-right-radius:8px;
 	left : 82px;
 	width : 80px;
 	height : 30px;
-	
 }
 
 .content_tab_title.active {
 	border: solid;
 	text-align: center;
-	background-color: rgba(55, 55, 55, 1.0);
+	background: #04B431;
 	border-bottom: 0px;
 	border-top-right-radius:8px;
 }
@@ -161,12 +160,16 @@ p {
 	height: 700px;
 	width : 250px;
 	overflow-y: auto;
+	border : solid 4px;
+	border-color: #04B431;
 }
 
 .display_area {
 	display: block;
 	height: 700px;
 	overflow: auto;
+	border : solid 4px;
+	border-color: #0080FF;
 }
 
 .rightArea {

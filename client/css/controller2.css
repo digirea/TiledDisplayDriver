@@ -299,3 +299,7 @@ p {
 	position :absolute;
 	left : 40px;
 }
+
+.blacktext {
+	color : black;
+}

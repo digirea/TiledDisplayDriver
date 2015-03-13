@@ -906,51 +906,35 @@
 		importWindowToList(windowData);
 	}
 	
-	/// initialize elemets, events
-	function init() {
-		var textSendButton = document.getElementById('text_send_button'),
-			urlSendButton = document.getElementById('url_send_button'),
-			contentDeleteButton = document.getElementById('content_delete_button'),
-			imageFileInput = document.getElementById('image_file_input'),
-			textFileInput = document.getElementById('text_file_input'),
-			dropZone = document.getElementById('drop_zone'),
-			updateImageInput = document.getElementById('update_image_input'),
-			displayArea = document.getElementById('display_area'),
-			displayTabTitle = document.getElementById('display_tab_title'),
-			displayTabLink = document.getElementById('display_tab_link'),
-			contentArea = document.getElementById('content_area'),
-			contentButtonArea = document.getElementById('content_button_area'),
-			contentTabTitle = document.getElementById('content_tab_title'),
-			contentTabLink = document.getElementById('content_tab_link'),
-			popupBackground = document.getElementById('popup_background'),
-			contentDialog = document.getElementById('content_dialog'),
-			resolutionWidth = document.getElementById('resolution_width'),
-			resolutionHeight = document.getElementById('resolution_height'),
-			displayScaleElem = document.getElementById('display_scale'),
-			deleteAllWindow = document.getElementById('delete_all_window'), // for debug
-			contentX = document.getElementById('content_transform_x'),
+	function initPropertyArea() {
+		var contentX = document.getElementById('content_transform_x'),
 			contentY = document.getElementById('content_transform_y'),
 			contentW = document.getElementById('content_transform_w'),
 			contentH = document.getElementById('content_transform_h'),
 			contentZ = document.getElementById('content_transform_z'),
-			addButton = document.getElementById('content_add_button'),
-			timer = null,
 			rectChangeFunc = function () {
 				changeRect(this.id, parseInt(this.value, 10));
-			},
-			bottomfunc = window.animtab.create('bottom',
-				{'bottomTab' : { min : '0px', max : 'auto' }},
-				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
+			};
 		
-		bottomfunc(false);
-			
-		resolutionWidth.value = 1000;
-		resolutionHeight.value = 900;
-		textSendButton.onclick = function (evt) {
-			sendText(null);
+		contentX.onchange = rectChangeFunc;
+		contentY.onchange = rectChangeFunc;
+		contentW.onchange = rectChangeFunc;
+		contentH.onchange = rectChangeFunc;
+		contentZ.onchange = function () {
+			var val = parseInt(contentZ.value, 10);
+			changeZIndex(val);
 		};
+	}
+	
+	function initAddContentArea() {
+		var textSendButton = document.getElementById('text_send_button'),
+			urlSendButton = document.getElementById('url_send_button'),
+			imageFileInput = document.getElementById('image_file_input'),
+			textFileInput = document.getElementById('text_file_input'),
+			deleteAllWindow = document.getElementById('delete_all_window'), // for debug
+			updateImageInput = document.getElementById('update_image_input');
+		
 		urlSendButton.onclick = sendURL;
-		contentDeleteButton.onclick = deleteContent;
 		updateImageInput.addEventListener('change', function (evt) {
 			replaceImage(evt);
 			updateImageInput.value = "";
@@ -963,7 +947,63 @@
 			openText(evt);
 			textFileInput.value = "";
 		}, false);
+		textSendButton.onclick = function (evt) {
+			sendText(null);
+		};
 		
+		// for debug
+		deleteAllWindow.onclick = function () {
+			socket.emit('debugDeleteWindowAll');
+		};
+	}
+	
+	function initWholeSettingArea() {
+		var popupBackground = document.getElementById('popup_background'),
+			contentDialog = document.getElementById('content_dialog'),
+			resolutionWidth = document.getElementById('resolution_width'),
+			resolutionHeight = document.getElementById('resolution_height'),
+			displayScaleElem = document.getElementById('display_scale');
+			
+		resolutionWidth.value = 1000;
+		resolutionHeight.value = 900;
+
+		resolutionWidth.onchange = function () {
+			updateScreen(displayScale);
+		};
+		resolutionHeight.onchange = function () {
+			updateScreen(displayScale);
+		};
+		displayScaleElem.onchange = function () {
+			displayScale = parseFloat(displayScaleElem.value);
+			if (displayScale < 0) {
+				displayScale = 0.01;
+			} else if (displayScale > 1.0) {
+				displayScale = 1.0;
+			}
+			updateScreen(displayScale);
+		};
+		
+	}
+	
+	function initContentArea(bottomfunc) {
+		var addButton = document.getElementById('content_add_button'),
+			contentDeleteButton = document.getElementById('content_delete_button');
+		
+		addButton.onclick = function () {
+			bottomfunc(true);
+		};
+		contentDeleteButton.onclick = deleteContent;
+	}
+	
+	function initLeftArea(bottomfunc) {
+		var displayArea = document.getElementById('display_area'),
+			displayTabTitle = document.getElementById('display_tab_title'),
+			displayTabLink = document.getElementById('display_tab_link'),
+			contentArea = document.getElementById('content_area'),
+			contentButtonArea = document.getElementById('content_button_area'),
+			contentTabTitle = document.getElementById('content_tab_title'),
+			contentTabLink = document.getElementById('content_tab_link');
+			
 		displayTabTitle.onclick = function () {
 			displayArea.style.display = "block";
 			contentArea.style.display = "none";
@@ -982,37 +1022,22 @@
 			contentTabLink.className = "active";
 			displayTabLink.className = "";
 		};
-		addButton.onclick = function () {
-			bottomfunc(true);
-		};
-		resolutionWidth.onchange = function () {
-			updateScreen(displayScale);
-		};
-		resolutionHeight.onchange = function () {
-			updateScreen(displayScale);
-		};
-		displayScaleElem.onchange = function () {
-			displayScale = parseFloat(displayScaleElem.value);
-			if (displayScale < 0) {
-				displayScale = 0.01;
-			} else if (displayScale > 1.0) {
-				displayScale = 1.0;
-			}
-			updateScreen(displayScale);
-		};
-		contentX.onchange = rectChangeFunc;
-		contentY.onchange = rectChangeFunc;
-		contentW.onchange = rectChangeFunc;
-		contentH.onchange = rectChangeFunc;
-		contentZ.onchange = function () {
-			var val = parseInt(contentZ.value, 10);
-			changeZIndex(val);
-		};
+		initContentArea(bottomfunc);
+		//initDisplayArea();
+	}
+	
+	/// initialize elemets, events
+	function init() {
+		var timer = null,
+			bottomfunc = window.animtab.create('bottom',
+				{'bottomTab' : { min : '0px', max : 'auto' }},
+				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
 		
-		// for debug
-		deleteAllWindow.onclick = function () {
-			socket.emit('debugDeleteWindowAll');
-		};
+		bottomfunc(false);
+		initPropertyArea();
+		initLeftArea(bottomfunc);
+		initAddContentArea();
+		initWholeSettingArea();
 		
 		// resize event
 		window.onresize = function () {

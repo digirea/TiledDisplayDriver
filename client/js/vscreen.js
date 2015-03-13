@@ -10,7 +10,9 @@
 		vscreen_rect = {},
 		center_x,
 		center_y,
-		screens = {};
+		screens = {},
+		whole_subscreens = {},
+		whole_subscreen_id = "whole_sub_window";
 	
 	// utility
 	function scalePos(p, c) {
@@ -67,6 +69,35 @@
 		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
 	}
 	
+	function splitWhole(xcount, ycount) {
+		var i,
+			k,
+			screen,
+			subW = vscreen_rect.orgW / parseFloat(xcount),
+			subH = vscreen_rect.orgH / parseFloat(ycount);
+			
+		for (k = 1; k <= ycount; k = k + 1) {
+			for (i = 1; i <= xcount; i = i + 1) {
+				screen = {
+					id : whole_subscreen_id + ":" + i + ":" + k,
+					x : (i - 1) * subW,
+					y : (k - 1) * subH,
+					w : subW,
+					h : subH
+				};
+				whole_subscreens[screen.id] = screen;
+			}
+		}
+	}
+	
+	function getSplitWholes() {
+		return whole_subscreens;
+	}
+	
+	function clearSplitWholes() {
+		whole_subscreens = {};
+	}
+	
 	function translateWhole(x, y) {
 		vscreen_rect.x = vscreen_rect.x + x;
 		vscreen_rect.y = vscreen_rect.y + y;
@@ -120,6 +151,8 @@
 	
 	/// assign single screen
 	/// if exists, overwrite.
+	/// @param x window coordinate
+	/// @param y window coordinate
 	function assignScreen(id, x, y, w, h) {
 		screens[id] = {
 			id : id,
@@ -182,7 +215,7 @@
 	}
 	
 	function transformScreenInv(screen) {
-		return transformOrgInv(makeRect(screen.orgX, screen.orgY, screen.orgW, screen.orgH));
+		return transformOrgInv(makeRect(screen.x, screen.y, screen.w, screen.h));
 	}
 	
 	window.vscreen = new Vscreen();
@@ -199,6 +232,9 @@
 	window.vscreen.getWholeScale = getWholeScale;
 	window.vscreen.setWholePos = setWholePos;
 	window.vscreen.translateWhole = translateWhole;
+	window.vscreen.splitWhole = splitWhole;
+	window.vscreen.getSplitWholes = getSplitWholes;
+	window.vscreen.clearSplitWholes = clearSplitWholes;
 	// screen
 	window.vscreen.assignScreen = assignScreen;
 	window.vscreen.getScreen = getScreen;

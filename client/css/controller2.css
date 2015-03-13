@@ -104,14 +104,14 @@ p {
 }
 
 .content_area {
-	display: block;
+	display: none;
 	height: 700px;
 	width : 250px;
 	overflow-y: auto;
 }
 
 .display_area {
-	display: none;
+	display: block;
 	height: 700px;
 	overflow: auto;
 }
@@ -157,6 +157,7 @@ p {
 	left: 50%;
 	margin-left:-400px;
 	overflow: auto;
+	z-index: 1;
 }
 
 .bottomTab {
@@ -175,7 +176,6 @@ p {
 	border: solid 1px;
 	border-radius:1px;
 	
-	top : 200px;
 	-moz-transform-origin: 10% 70%;
 	-webkit-transform-origin: 10% 70%;
 	-o-transform-origin: 10% 70%;
@@ -269,6 +269,7 @@ p {
 }
 
 .content_button_area {
+	display : none;
 	position :absolute;
 	width : 160px;
 	bottom : 20px;

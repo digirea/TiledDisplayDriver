@@ -18,6 +18,7 @@
 		windowType = "window",
 		onContentArea = false,
 		wholeWindowID = "onlist:whole_window",
+		wholeSubWindowID = "whole_sub_window",
 		initialWholeWidth = 1000,
 		initialWholeHeight = 900;
 	
@@ -164,6 +165,57 @@
 		transInput.appendChild(group);
 	}
 	
+	function assignSplitWholes(splitWholes) {
+		var screenElem,
+			i,
+			w,
+			previewArea = document.getElementById('preview_area');
+			
+		console.log(splitWholes);
+		for (i in splitWholes) {
+			if (splitWholes.hasOwnProperty(i)) {
+				w = splitWholes[i];
+				console.log(w.id);
+				screenElem = document.createElement('div');
+				screenElem.style.position = "absolute";
+				screenElem.className = "screen";
+				screenElem.id = w.id;
+				screenElem.style.border = 'solid';
+				screenElem.style.borderWidth = '1px';
+				screenElem.style.borderColor = "gray";
+				screenElem.style.zIndex = -99;
+				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(w));
+				previewArea.appendChild(screenElem);
+				setupWindow(screenElem, w.id);
+			}
+		}
+	}
+	
+	function changeWholeSplit(x, y) {
+		var ix = parseInt(x, 10),
+			iy = parseInt(y, 10),
+			splitWholes,
+			elem,
+			i,
+			previewArea = document.getElementById('preview_area');
+		
+		if (isNaN(ix) || isNaN(iy)) {
+			return;
+		}
+		
+		for (i = previewArea.childNodes.length - 1; i >= 0; i = i - 1) {
+			elem = previewArea.childNodes[i];
+			if (elem.hasOwnProperty('id')) {
+				if (elem.id.indexOf(wholeSubWindowID) >= 0) {
+					previewArea.removeChild(elem);
+				}
+			}
+		}
+		vscreen.clearSplitWholes();
+		vscreen.splitWhole(ix, iy);
+		assignSplitWholes(vscreen.getSplitWholes());
+	}
+	
 	function initPropertyArea(id, type) {
 		var contentX,
 			contentY,
@@ -173,6 +225,8 @@
 			wholeW,
 			wholeH,
 			wholeScale,
+			wholeSplitX,
+			wholeSplitY,
 			transInput = document.getElementById('transform_input'),
 			idlabel = document.getElementById('content_id_label'),
 			idtext = document.getElementById('content_id'),
@@ -229,14 +283,24 @@
 			addInputProperty('whole_width', 'w', 'px', '1000');
 			addInputProperty('whole_height', 'h', 'px', '900');
 			addInputProperty('whole_scale', 'scale', '', '0');
+			addInputProperty('whole_split_x', 'split x', '', '1');
+			addInputProperty('whole_split_y', 'split y', '', '1');
 			wholeW = document.getElementById('whole_width');
 			wholeH = document.getElementById('whole_height');
 			wholeScale = document.getElementById('whole_scale');
+			wholeSplitX = document.getElementById('whole_split_x');
+			wholeSplitY = document.getElementById('whole_split_y');
 			wholeW.onchange = function () {
 				updateScreen(displayScale);
 			};
 			wholeH.onchange = function () {
 				updateScreen(displayScale);
+			};
+			wholeSplitX.onchange = function () {
+				changeWholeSplit(this.value, wholeSplitY.value);
+			};
+			wholeSplitY.onchange = function () {
+				changeWholeSplit(wholeSplitX.value, this.value);
 			};
 			wholeScale.onchange = function () {
 				displayScale = parseFloat(this.value);
@@ -420,6 +484,9 @@
 			document.getElementById(wholeWindowID).style.borderColor = "orange";
 			return;
 		}
+		if (id.indexOf(wholeSubWindowID) >= 0) {
+			return;
+		}
 		document.getElementById(wholeWindowID).style.borderColor = "white";
 		elem = getElem(id);
 		if (elem.id !== id) {
@@ -430,7 +497,7 @@
 		}
 		metaData = metaDataDict[id];
 		draggingID = id;
-		console.log("draggingID = id;:" + draggingID);
+		console.log("draggingID = id:" + draggingID);
 		elem.style.border = "solid 2px black";
 		if (metaData.type === windowType) {
 			initPropertyArea(id, "display");
@@ -785,6 +852,7 @@
 	function addScreenRect(windowData) {
 		var whole = vscreen.getWhole(),
 			screens = vscreen.getScreenAll(),
+			split_wholes = vscreen.getSplitWholes(),
 			s,
 			wholeElem = document.createElement('span'),
 			previewArea = document.getElementById('preview_area'),
@@ -817,6 +885,8 @@
 					setupWindow(screenElem, s);
 				}
 			}
+			
+			assignSplitWholes(vscreen.getSplitWholes());
 		}
 	}
 	
@@ -877,6 +947,7 @@
 			}
 		}
 		addScreenRect(windowData);
+		//changeWholeSplit(wholeSplitX.value, this.value);
 	}
 	
 	function importContentToView(metaData, contentData) {
@@ -1179,7 +1250,11 @@
 				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
 		
 		bottomfunc(false);
-		initPropertyArea(null, "content");
+		// initial select
+		initPropertyArea(wholeWindowID, "whole_window");
+		//assignWholeWindowProperty();
+		//document.getElementById(wholeWindowID).style.borderColor = "orange";
+		
 		initLeftArea(bottomfunc);
 		initAddContentArea();
 		initWholeSettingArea();

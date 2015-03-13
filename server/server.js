@@ -181,7 +181,7 @@ ws2.on('request', function (request) {
 	
 	connection.on('close', function () {
 		delete ws2_connections[connection.id];
-		operator.commandDeleteWindow(null, connection, function () {
+		operator.commandDeleteWindow(null, connection, null, function () {
 			console.log("broadcast update");
 			io.sockets.emit(Command.update);
 			ws2.broadcast(Command.update);

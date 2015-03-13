@@ -252,7 +252,18 @@
 		});
 	}
 	
-	function deleteWindow(socketid, endCallback) {
+	function deleteWindow(id, endCallback) {
+		client.del(windowPrefix + id, function (err) {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log("unregister window id:" + id);
+			}
+			endCallback();
+		});
+	}
+	
+	function deleteWindowBySocketID(socketid, endCallback) {
 		var id;
 		if (socketidToHash.hasOwnProperty(socketid)) {
 			id = socketidToHash[socketid];
@@ -411,15 +422,28 @@
 	}
 	
 	/// do DeleteWindow
-	function commandDeleteWindow(socket, ws_connection, endCallback) {
+	function commandDeleteWindow(socket, ws_connection, json, endCallback) {
 		var id = -1;
 		if (socket) { id = socket.id; }
 		if (ws_connection) { id = ws_connection.id; }
-		console.log("commandDeleteWindow : " + id);
-		deleteWindow(id, function () {
-			sendMetaData(Command.doneDeleteWindow, { socketid: id }, socket, ws_connection);
-			endCallback();
-		});
+		if (json) {
+			getWindow(json, function (data) {
+				deleteWindow(json.id, function () {
+					console.log("commandDeleteWindow : " + JSON.stringify(json));
+					sendMetaData(Command.doneDeleteWindow, { id: json.id }, socket, ws_connection);
+					if (socketidToHash.hasOwnProperty(data.socketid)) {
+						delete socketidToHash[data.socketid];
+					}
+					endCallback();
+				});
+			});
+		} else {
+			console.log("commandDeleteWindow : " + id);
+			deleteWindowBySocketID(id, function () {
+				sendMetaData(Command.doneDeleteWindow, { socketid: id }, socket, ws_connection);
+				endCallback();
+			});
+		}
 	}
 	
 	/// do GetWindow command
@@ -510,6 +534,10 @@
 		
 		socket.on(Command.reqUpdateWindow, function (data) {
 			commandUpdateWindow(socket, null, JSON.parse(data), updateWindow);
+		});
+		
+		socket.on(Command.reqDeleteWindow, function (data) {
+			commandDeleteWindow(socket, null, JSON.parse(data), update);
 		});
 		
 		socket.on('debugDeleteWindowAll', function () {

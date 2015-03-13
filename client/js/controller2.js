@@ -104,6 +104,12 @@
 		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
 	}
 	
+	function deleteDisplay() {
+		var displayID = document.getElementById('content_id');
+		console.log('reqDeleteWindow' + displayID.innerHTML);
+		socket.emit('reqDeleteWindow', JSON.stringify({id : displayID.innerHTML}));
+	}
+	
 	function addContent(binary) {
 		socket.emit('reqAddContent', binary);
 	}
@@ -400,6 +406,14 @@
 		}
 	}
 	
+	function enableDisplayDeleteButton(isEnable) {
+		if (isEnable) {
+			document.getElementById('display_delete_button').className = "btn btn-primary";
+		} else {
+			document.getElementById('display_delete_button').className = "btn btn-primary disabled";
+		}
+	}
+	
 	function enableUpdateImageButton(isEnable) {
 		if (isEnable) {
 			document.getElementById('update_image_input').disabled = false;
@@ -439,6 +453,7 @@
 			initPropertyArea(id, "display");
 			assignContentProperty(metaDataDict[id]);
 			enableDeleteButton(false);
+			enableDisplayDeleteButton(true);
 			enableUpdateImageButton(false);
 			changeLeftTab(windowType);
 		} else {
@@ -446,6 +461,7 @@
 			assignContentProperty(metaDataDict[id]);
 			enableDeleteButton(true);
 			enableUpdateImageButton(true);
+			enableDisplayDeleteButton(false);
 			document.getElementById('update_content_id').innerHTML = id;
 			changeLeftTab(metaData.type);
 		}
@@ -1208,10 +1224,17 @@
 		contentDeleteButton.onclick = deleteContent;
 	}
 	
+	function initDisplayArea() {
+		var displayDeleteButton = document.getElementById('display_delete_button');
+		displayDeleteButton.onclick = deleteDisplay;
+	}
+	
+	
 	function initLeftArea(bottomfunc) {
 		var displayArea = document.getElementById('display_area'),
 			displayTabTitle = document.getElementById('display_tab_title'),
 			displayTabLink = document.getElementById('display_tab_link'),
+			displayButtonArea = document.getElementById('display_button_area'),
 			contentArea = document.getElementById('content_area'),
 			contentButtonArea = document.getElementById('content_button_area'),
 			contentTabTitle = document.getElementById('content_tab_title'),
@@ -1221,6 +1244,7 @@
 			displayArea.style.display = "block";
 			contentArea.style.display = "none";
 			contentButtonArea.style.display = "none";
+			displayButtonArea.style.display = "block";
 			displayTabTitle.className = "display_tab_title active";
 			contentTabTitle.className = "content_tab_title";
 			displayTabLink.className = "active";
@@ -1230,13 +1254,14 @@
 			displayArea.style.display = "none";
 			contentArea.style.display = "block";
 			contentButtonArea.style.display = "block";
+			displayButtonArea.style.display = "none";
 			displayTabTitle.className = "display_tab_title";
 			contentTabTitle.className = "content_tab_title active";
 			contentTabLink.className = "active";
 			displayTabLink.className = "";
 		};
 		initContentArea(bottomfunc);
-		//initDisplayArea();
+		initDisplayArea();
 	}
 	
 	/// initialize elemets, events

@@ -161,6 +161,8 @@
 				} else {
 					redis.print(err, reply);
 					metaData.id = id;
+					metaData.orgWidth = metaData.width;
+					metaData.orgHeight = metaData.height;
 					setMetaData(metaData.type, id, metaData, function (metaData) {
 						endCallback(metaData, contentData);
 					});

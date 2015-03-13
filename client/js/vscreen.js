@@ -94,6 +94,22 @@
 		return whole_subscreens;
 	}
 	
+	function getSplitWholeByPos(px, py) {
+		var i,
+			w;
+		for (i in whole_subscreens) {
+			if (whole_subscreens.hasOwnProperty(i)) {
+				w = whole_subscreens[i];
+				if (w.x <= px && px < (w.x + w.w)) {
+					if (w.y <= py && py < (w.y + w.h)) {
+						return w;
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
 	function clearSplitWholes() {
 		whole_subscreens = {};
 	}
@@ -234,6 +250,7 @@
 	window.vscreen.translateWhole = translateWhole;
 	window.vscreen.splitWhole = splitWhole;
 	window.vscreen.getSplitWholes = getSplitWholes;
+	window.vscreen.getSplitWholeByPos = getSplitWholeByPos;
 	window.vscreen.clearSplitWholes = clearSplitWholes;
 	// screen
 	window.vscreen.assignScreen = assignScreen;

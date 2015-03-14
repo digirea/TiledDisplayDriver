@@ -685,18 +685,21 @@
 	}
 	
 	function snapToSplitWhole(elem, metaData, splitWhole) {
-		//console.log(metaData);
 		var orgWidth = parseFloat(metaData.orgWidth),
 			orgHeight = parseFloat(metaData.orgHeight),
-			aspect = orgWidth / orgHeight;
+			vaspect = splitWhole.w / splitWhole.h,
+			aspect = orgWidth / orgHeight,
+			longValue;
 		
 		metaData.posx = splitWhole.x;
 		metaData.posy = splitWhole.y;
-		if (orgWidth > orgHeight) {
+		if (aspect > vaspect) {
+			// content is wider than split area
 			metaData.width = splitWhole.w;
 			metaData.height = splitWhole.w / aspect;
 			//console.log("a", metaData, aspect);
 		} else {
+			// content is highter than split area
 			metaData.height = splitWhole.h;
 			metaData.width = splitWhole.h * aspect;
 			//console.log("b", metaData, aspect);

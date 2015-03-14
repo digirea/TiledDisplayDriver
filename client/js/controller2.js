@@ -230,7 +230,7 @@
 			} else if (displayScale > 1.0) {
 				displayScale = 1.0;
 			}
-			vscreen.setWholeScale(displayScale);
+			vscreen.setWholeScale(displayScale, true);
 			saveCookie();
 			current.innerHTML = displayScale;
 			updateScreen();
@@ -1426,7 +1426,7 @@
 		snap = getCookie('snap_setting');
 		console.log("cookie - snap_setting:" + snap);
 		if (!isNaN(scale) && scale > 0) {
-			vscreen.setWholeScale(scale);
+			vscreen.setWholeScale(scale, true);
 		}
 		if (snap) {
 			if (snap === 'display') {
@@ -1564,7 +1564,6 @@
 	socket.on('update', function () {
 		manipulator.removeManipulator();
 		update();
-		
 		clearWindowList();
 		addWholeWindowToList();
 		updateScreen();

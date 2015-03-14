@@ -136,11 +136,6 @@
 		vscreen_rect.y = y;
 	}
 	
-	function setWholeScale(s) {
-		vscreen_scale = s;
-		assignWhole(vscreen_rect.orgW, vscreen_rect.orgH, center_x, center_y, s);
-	}
-	
 	function getWholeScale() {
 		return vscreen_scale;
 	}
@@ -160,6 +155,13 @@
 		vscreen_rect.orgW = w;
 		vscreen_rect.orgH = h;
 		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
+	}
+	
+	function setWholeScale(s, isApply) {
+		vscreen_scale = s;
+		if (isApply) {
+			assignWhole(vscreen_rect.orgW, vscreen_rect.orgH, center_x, center_y, s);
+		}
 	}
 	
 	function getWhole() {

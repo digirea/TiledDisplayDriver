@@ -1005,22 +1005,13 @@
 	/// update all screens
 	function updateScreen(windowData) {
 		var whole = vscreen.getWhole(),
-			w,
-			h,
 			splitCount = vscreen.getSplitCount(),
-			cx = document.body.scrollWidth / 2,
-			cy = document.body.scrollHeight / 2,
 			previewArea = document.getElementById('preview_area'),
 			screens = previewArea.getElementsByClassName('screen'),
 			scale = vscreen.getWholeScale(),
-			ww = w,
 			i,
 			metaData,
 			elem;
-		
-		if (w !== ww) {
-			return "NaN";
-		}
 		
 		if (windowData) {
 			elem = document.getElementById(windowData.id);
@@ -1032,7 +1023,6 @@
 			// recreate all screens
 			assignVirtualDisplayProperty();
 			assignViewSetting();
-			//vscreen.assignWhole(w, h, cx, cy, scale);
 			for (i = screens.length - 1; i >= 0; i = i - 1) {
 				previewArea.removeChild(screens.item(i));
 			}
@@ -1454,6 +1444,11 @@
 				clearTimeout(timer);
 			}
 			timer = setTimeout(function () {
+				var whole = vscreen.getWhole(),
+					cx = document.body.scrollWidth / 2,
+					cy = document.body.scrollHeight / 2;
+				
+				vscreen.assignWhole(whole.orgW, whole.orgH, cx, cy, vscreen.getWholeScale());
 				manipulator.removeManipulator();
 				updateScreen();
 			}, 200);

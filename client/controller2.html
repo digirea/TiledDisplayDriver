@@ -38,15 +38,27 @@
 
 	<div class="top_control_panel">
 		<div class="top_control">
-			<div class="topmenu4">
+			<div class="topmenu1">
 				<span class="dropdown">
-					<span class="blacktext">Snap Setting</span>
+					<span class="blacktext">Snap</span>
 					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-						<span class="blacktext" id="dropdown_current">Free</span>
+						<span class="blacktext" id="snap_dropdown_current">Free</span>
 						<span class="caret blacktext"></span>
 					</button>
 					<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-						<li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="dropdown_item1">Display</a></li>
+						<li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="dropdown_item1">Free</a></li>
+						<li role="presentation"><a role="menuitem" tabindex="-1" href="#" id="dropdown_item2">Display</a></li>
+					</ul>
+				</span>
+			</div>
+			<div class="topmenu2">
+				<span class="dropdown">
+					<span class="blacktext">Scale</span>
+					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+						<span class="blacktext" id="scale_dropdown_current">0.5</span>
+						<span class="caret blacktext"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1" id="scale_drop_down">
 					</ul>
 				</span>
 			</div>
@@ -112,12 +124,6 @@
 			<p>画像の送信</p>
 			<input type="file" name="filename" id="image_file_input" />
 			<!--input type="button" value="Send" id="image_send_button"></input-->
-		</div>
-		<hr>
-		<hr>
-		<div>
-			<p>ウィンドウ全て削除</p>
-			<input type="button" value="Delete" id="delete_all_window"></input>
 		</div>
 		<hr>
 		<div>

@@ -442,9 +442,9 @@
 	
 	/// do DeleteWindow
 	function commandDeleteWindow(socket, ws_connection, json, endCallback) {
-		var id = -1;
-		if (socket) { id = socket.id; }
-		if (ws_connection) { id = ws_connection.id; }
+		var socketid = -1;
+		if (socket) { socketid = socket.id; }
+		if (ws_connection) { socketid = ws_connection.id; }
 		if (json) {
 			getWindow(json, function (data) {
 				deleteWindow(json.id, function () {
@@ -457,9 +457,9 @@
 				});
 			});
 		} else {
-			console.log("commandDeleteWindow : " + id);
-			deleteWindowBySocketID(id, function () {
-				sendMetaData(Command.doneDeleteWindow, { socketid: id }, socket, ws_connection);
+			console.log("commandDeleteWindow : " + socketid);
+			deleteWindowBySocketID(socketid, function () {
+				sendMetaData(Command.doneDeleteWindow, { socketid: socketid }, socket, ws_connection);
 				endCallback();
 			});
 		}

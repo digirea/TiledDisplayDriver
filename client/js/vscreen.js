@@ -138,6 +138,7 @@
 	
 	function setWholeScale(s) {
 		vscreen_scale = s;
+		assignWhole(vscreen_rect.orgW, vscreen_rect.orgH, center_x, center_y, s);
 	}
 	
 	function getWholeScale() {

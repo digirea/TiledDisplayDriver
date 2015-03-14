@@ -1,5 +1,5 @@
 /*jslint devel:true */
-/*global io, socket, FileReader, Uint8Array, Blob, URL, event */
+/*global io, socket, FileReader, Uint8Array, Blob, URL, event, unescape */
 
 (function (metabinary, vscreen, vsutil, manipulator) {
 	"use strict";
@@ -45,6 +45,33 @@
 	function isContentArea(px, py) {
 		var contentArea = document.getElementById('left_main_area');
 		return (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight));
+	}
+	
+	function getCookie(key) {
+		var i,
+			pos,
+			cookies;
+		if (document.cookie.length > 0) {
+			console.log("all cookie", document.cookie);
+			cookies = [document.cookie];
+			if (document.cookie.indexOf(';') >= 0) {
+				cookies = document.cookie.split(';');
+			}
+			for (i = 0; i < cookies.length; i = i + 1) {
+				pos = cookies[i].indexOf(key + "=");
+				if (pos >= 0) {
+					return unescape(cookies[i].substring(pos + key.length + 1));
+				}
+			}
+		}
+		return "";
+	}
+	
+	function saveCookie() {
+		var displayScale = vscreen.getWholeScale();
+		console.log("saveCookie");
+		document.cookie = 'display_scale=' + displayScale;
+		document.cookie = 'snap_setting=' + snapSetting;
 	}
 	
 	function changeLeftTab(type) {
@@ -139,7 +166,8 @@
 			orgWidth : whole.orgW,
 			orgHeight : whole.orgH,
 			splitX : split.x,
-			splitY : split.y
+			splitY : split.y,
+			scale : vscreen.getWholeScale()
 		};
 		socket.emit('reqUpdateVirtualDisplay', JSON.stringify(windowData));
 	}
@@ -174,6 +202,39 @@
 			group.appendChild(rightSpan);
 		}
 		transInput.appendChild(group);
+	}
+	
+	function addScaleDropdown(id, value) {
+		/*
+			<li role="presentation">
+				<a role="menuitem" tabindex="-1" href="#" id="scale_dropdown_item1">Display</a>
+			</li>
+		*/
+		var dropDown = document.getElementById('scale_drop_down'),
+			current = document.getElementById('scale_dropdown_current'),
+			li = document.createElement('li'),
+			a = document.createElement('a');
+		
+		li.role = "presentation";
+		a.role = "menuitem";
+		a.tabindex = "-1";
+		a.href = "#";
+		a.id = id;
+		a.innerHTML = value;
+		a.onclick = function (evt) {
+			var displayScale = parseFloat(this.innerHTML);
+			if (displayScale < 0) {
+				displayScale = 0.01;
+			} else if (displayScale > 1.0) {
+				displayScale = 1.0;
+			}
+			vscreen.setWholeScale(displayScale);
+			saveCookie();
+			current.innerHTML = displayScale;
+			updateScreen();
+		};
+		li.appendChild(a);
+		dropDown.appendChild(li);
 	}
 	
 	function assignSplitWholes(splitWholes) {
@@ -238,7 +299,6 @@
 			contentZ,
 			wholeW,
 			wholeH,
-			wholeScale,
 			wholeSplitX,
 			wholeSplitY,
 			transInput = document.getElementById('transform_input'),
@@ -296,12 +356,10 @@
 			idtext.innerHTML = "";
 			addInputProperty('whole_width', 'w', 'px', '1000');
 			addInputProperty('whole_height', 'h', 'px', '900');
-			addInputProperty('whole_scale', 'scale', '', '0.5');
 			addInputProperty('whole_split_x', 'split x', '', '1');
 			addInputProperty('whole_split_y', 'split y', '', '1');
 			wholeW = document.getElementById('whole_width');
 			wholeH = document.getElementById('whole_height');
-			wholeScale = document.getElementById('whole_scale');
 			wholeSplitX = document.getElementById('whole_split_x');
 			wholeSplitY = document.getElementById('whole_split_y');
 			wholeW.onchange = function () {
@@ -315,16 +373,6 @@
 			};
 			wholeSplitY.onchange = function () {
 				changeWholeSplit(wholeSplitX.value, this.value);
-			};
-			wholeScale.onchange = function () {
-				var displayScale = parseFloat(this.value);
-				if (displayScale < 0) {
-					displayScale = 0.01;
-				} else if (displayScale > 1.0) {
-					displayScale = 1.0;
-				}
-				vscreen.setWholeScale(displayScale);
-				updateScreen();
 			};
 			donwloadButton.style.display = "none";
 		}
@@ -343,16 +391,39 @@
 		transh.value = parseInt(metaData.height, 10);
 	}
 	
-	function assignWholeWindowProperty() {
+	function assignVirtualDisplayProperty() {
 		var whole = vscreen.getWhole(),
-			scale = vscreen.getWholeScale(),
-			wholeW = document.getElementById('whole_width'),
-			wholeH = document.getElementById('whole_height'),
-			wholeScale = document.getElementById('whole_scale');
+			splitCount = vscreen.getSplitCount(),
+			wholeWidth = document.getElementById('whole_width'),
+			wholeHeight = document.getElementById('whole_height'),
+			wholeSplitX = document.getElementById('whole_split_x'),
+			wholeSplitY = document.getElementById('whole_split_y');
+
+		if (wholeWidth) {
+			wholeWidth.value = parseInt(whole.orgW, 10);
+		}
+		if (wholeHeight) {
+			wholeHeight.value = parseInt(whole.orgH, 10);
+		}
+		if (wholeSplitX) {
+			wholeSplitX.value = splitCount.x;
+		}
+		if (wholeSplitY) {
+			wholeSplitY.value = splitCount.y;
+		}
+	}
+	
+	function assignViewSetting() {
+		var scale = vscreen.getWholeScale(),
+			scale_current = document.getElementById('scale_dropdown_current'),
+			snap_current = document.getElementById('snap_dropdown_current');
 		
-		wholeW.value = parseInt(whole.orgW, 10);
-		wholeH.value = parseInt(whole.orgH, 10);
-		wholeScale.value = scale;
+		scale_current.innerHTML = scale;
+		if (isFreeMode()) {
+			snap_current.innerHTML = 'Free';
+		} else {
+			snap_current.innerHTML = 'Display';
+		}
 	}
 	
 	function onManipulatorMove(evt) {
@@ -447,7 +518,7 @@
 		
 		if (id === wholeWindowID) {
 			initPropertyArea(id, "whole_window");
-			assignWholeWindowProperty();
+			assignVirtualDisplayProperty();
 			document.getElementById(wholeWindowID).style.borderColor = "orange";
 			changeLeftTab(windowType);
 			return;
@@ -582,18 +653,21 @@
 	}
 	
 	function snapToSplitWhole(elem, metaData, splitWhole) {
-		console.log(metaData);
-		var aspect = metaData.width / metaData.height;
+		//console.log(metaData);
+		var orgWidth = parseFloat(metaData.orgWidth),
+			orgHeight = parseFloat(metaData.orgHeight),
+			aspect = orgWidth / orgHeight;
+		
 		metaData.posx = splitWhole.x;
 		metaData.posy = splitWhole.y;
-		if (metaData.width > metaData.height) {
+		if (orgWidth > orgHeight) {
 			metaData.width = splitWhole.w;
 			metaData.height = splitWhole.w / aspect;
-			console.log("a", metaData, aspect);
+			//console.log("a", metaData, aspect);
 		} else {
 			metaData.height = splitWhole.h;
 			metaData.width = splitWhole.h * aspect;
-			console.log("b", metaData, aspect);
+			//console.log("b", metaData, aspect);
 		}
 		manipulator.moveManipulator(elem);
 	}
@@ -602,7 +676,7 @@
 		var splitWholes,
 			i;
 		splitWholes = vscreen.getSplitWholes();
-		console.log("splitWholes", splitWholes);
+		//console.log("splitWholes", splitWholes);
 		for (i in splitWholes) {
 			if (splitWholes.hasOwnProperty(i)) {
 				document.getElementById(splitWholes[i].id).style.background = "transparent";
@@ -709,7 +783,7 @@
 				} else {
 					orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
 					splitWhole = vscreen.getSplitWholeByPos(orgPos.x, orgPos.y);
-					console.log(splitWhole);
+					//console.log(splitWhole);
 					if (splitWhole) {
 						snapToSplitWhole(elem, metaData, splitWhole);
 					}
@@ -918,10 +992,6 @@
 	/// update all screens
 	function updateScreen(windowData) {
 		var whole = vscreen.getWhole(),
-			wholeWidth = document.getElementById('whole_width'),
-			wholeHeight = document.getElementById('whole_height'),
-			wholeSplitX = document.getElementById('whole_split_x'),
-			wholeSplitY = document.getElementById('whole_split_y'),
 			w,
 			h,
 			splitCount = vscreen.getSplitCount(),
@@ -947,18 +1017,8 @@
 			}
 		} else {
 			// recreate all screens
-			if (wholeWidth) {
-				wholeWidth.value = whole.orgW;
-			}
-			if (wholeHeight) {
-				wholeHeight.value = whole.orgH;
-			}
-			if (wholeSplitX) {
-				wholeSplitX.value = splitCount.x;
-			}
-			if (wholeSplitY) {
-				wholeSplitY.value = splitCount.y;
-			}
+			assignVirtualDisplayProperty();
+			assignViewSetting();
 			//vscreen.assignWhole(w, h, cx, cy, scale);
 			for (i = screens.length - 1; i >= 0; i = i - 1) {
 				previewArea.removeChild(screens.item(i));
@@ -987,10 +1047,10 @@
 			wholeHeight = document.getElementById('whole_height'),
 			wholeSplitX = document.getElementById('whole_split_x'),
 			wholeSplitY = document.getElementById('whole_split_y'),
-			wholeScale = document.getElementById('whole_scale'),
+			scale_current = document.getElementById('scale_dropdown_current'),
 			w,
 			h,
-			s = parseFloat(wholeScale.value),
+			s = parseFloat(scale_current.innerHTML),
 			ix = parseInt(wholeSplitX.value, 10),
 			iy = parseInt(wholeSplitY.value, 10),
 			cx = document.body.scrollWidth / 2,
@@ -1000,13 +1060,24 @@
 			w = initialWholeWidth;
 		} else {
 			w = parseInt(wholeWidth.value, 10);
+			if (w <= 1) {
+				wholeWidth.value = 100;
+				w = 100;
+			}
 		}
 		if (!wholeHeight || !whole.hasOwnProperty('h')) {
 			h = initialWholeHeight;
 		} else {
 			h = parseInt(wholeHeight.value, 10);
+			if (h <= 1) {
+				wholeHeight.value = 100;
+				h = 100;
+			}
 		}
-		console.log(wholeScale.value);
+		if (s <= 0) {
+			s = 0.1;
+			scale_current.innerHTML = 0.1;
+		}
 		console.log("changeDisplayValue", w, h, s);
 		if (w && h && s) {
 			vscreen.assignWhole(w, h, cx, cy, s);
@@ -1226,7 +1297,6 @@
 			urlSendButton = document.getElementById('url_send_button'),
 			imageFileInput = document.getElementById('image_file_input'),
 			textFileInput = document.getElementById('text_file_input'),
-			deleteAllWindow = document.getElementById('delete_all_window'), // for debug
 			updateImageInput = document.getElementById('update_image_input');
 		
 		urlSendButton.onclick = sendURL;
@@ -1245,35 +1315,42 @@
 		textSendButton.onclick = function (evt) {
 			sendText(null);
 		};
-		
-		// for debug
-		deleteAllWindow.onclick = function () {
-			socket.emit('debugDeleteWindowAll');
-		};
 	}
 	
-	function initWholeSettingArea() {
-		var dropDownCurrent = document.getElementById('dropdown_current'),
-			dropDownItem1 = document.getElementById('dropdown_item1'),
-			displaySettingItem = document.getElementById('virtual_display_setting');
+	function initViewSettingArea() {
+		var dropDownCurrent = document.getElementById('snap_dropdown_current'),
+			free = document.getElementById('dropdown_item1'),
+			display = document.getElementById('dropdown_item2'),
+			displaySettingItem = document.getElementById('virtual_display_setting'),
+			i;
 			
-		dropDownItem1.onclick = function () {
-			var selected;
-			// swap curent
-			selected = dropDownItem1.innerHTML;
-			dropDownItem1.innerHTML = dropDownCurrent.innerHTML;
-			dropDownCurrent.innerHTML = selected;
-			if (selected === "Free") {
-				console.log("free mode");
-				snapSetting = 'free';
-			} else if (selected === "Display") {
-				console.log("display mode");
-				snapSetting = 'display';
-			}
+		free.onclick = function () {
+			dropDownCurrent.innerHTML = this.innerHTML;
+			console.log("free mode");
+			snapSetting = 'free';
+			saveCookie();
+		};
+		display.onclick = function () {
+			dropDownCurrent.innerHTML = this.innerHTML;
+			console.log("display mode");
+			snapSetting = 'display';
+			saveCookie();
 		};
 		displaySettingItem.onclick = function () {
 			select(wholeWindowID);
 		};
+		
+		addScaleDropdown('display_scale_1', 0.1);
+		addScaleDropdown('display_scale_2', 0.2);
+		addScaleDropdown('display_scale_3', 0.3);
+		addScaleDropdown('display_scale_4', 0.4);
+		addScaleDropdown('display_scale_5', 0.5);
+		addScaleDropdown('display_scale_6', 0.6);
+		addScaleDropdown('display_scale_7', 0.7);
+		addScaleDropdown('display_scale_8', 0.8);
+		addScaleDropdown('display_scale_9', 0.9);
+		addScaleDropdown('display_scale_10', 1.0);
+		//addScaleDropdown('display_scale_11', "custum");
 	}
 	
 	function initContentArea(bottomfunc) {
@@ -1329,20 +1406,32 @@
 	/// initialize elemets, events
 	function init() {
 		var timer = null,
+			scale,
+			snap,
 			bottomfunc = window.animtab.create('bottom',
 				{'bottomTab' : { min : '0px', max : 'auto' }},
 				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
 		
+		scale = parseFloat(getCookie('display_scale'));
+		console.log("cookie - display_scale:" + scale);
+		snap = getCookie('snap_setting');
+		console.log("cookie - snap_setting:" + snap);
+		if (!isNaN(scale) && scale > 0) {
+			vscreen.setWholeScale(scale);
+		}
+		if (snap) {
+			if (snap === 'display') {
+				snapSetting = 'display';
+			}
+		}
+		
 		manipulator.setDraggingOffsetFunc(draggingOffsetFunc);
 		bottomfunc(false);
-		// initial select
-		initPropertyArea(wholeWindowID, "whole_window");
-		//assignWholeWindowProperty();
-		//document.getElementById(wholeWindowID).style.borderColor = "orange";
 		
+		initPropertyArea(wholeWindowID, "whole_window");
 		initLeftArea(bottomfunc);
 		initAddContentArea();
-		initWholeSettingArea();
+		initViewSettingArea();
 		
 		// resize event
 		window.onresize = function () {
@@ -1355,7 +1444,6 @@
 			}, 200);
 		};
 		
-		console.log("clientHeight:" + document.documentElement.clientHeight);
 		updateScreen();
 		vscreen.dump();
 	}

@@ -495,9 +495,9 @@
 	
 	function enableDeleteButton(isEnable) {
 		if (isEnable) {
-			document.getElementById('content_delete_button').className = "btn btn-success";
+			document.getElementById('content_delete_button').className = "btn btn-danger";
 		} else {
-			document.getElementById('content_delete_button').className = "btn btn-success disabled";
+			document.getElementById('content_delete_button').className = "btn btn-danger disabled";
 		}
 	}
 	

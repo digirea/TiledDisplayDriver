@@ -56,6 +56,16 @@
 		//console.log("assignRect:" + JSON.stringify(rect));
 	}
 	
+	function assignZIndex(elem, metaData) {
+		var index;
+		if (metaData.hasOwnProperty('zIndex')) {
+			index = parseInt(metaData.zIndex, 10);
+			if (!isNaN(index)) {
+				elem.style.zIndex = index;
+			}
+		}
+	}
+	
 	function assignMetaData(elem, metaData, useOrg) {
 		var rect;
 		if (useOrg) {
@@ -65,6 +75,7 @@
 		}
 		if (elem && metaData) {
 			assignRect(elem, rect, (metaData.width < 10), (metaData.height < 10));
+			assignZIndex(elem, metaData);
 			if (metaData.type === "text") {
 				resizeText(elem, rect);
 			}

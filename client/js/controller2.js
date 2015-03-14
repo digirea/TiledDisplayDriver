@@ -148,6 +148,11 @@
 		socket.emit('reqAddContent', binary);
 	}
 	
+	function donwloadContent() {
+		var contentID = document.getElementById('content_id');
+		socket.emit('reqDownloadContent', JSON.stringify({id : contentID.innerHTML}));
+	}
+	
 	function updateTransform(metaData) {
 		//console.log(JSON.stringify(metaData));
 		if (metaData.type === windowType) {
@@ -340,6 +345,7 @@
 				changeZIndex(val);
 			};
 			donwloadButton.style.display = "block";
+			donwloadButton.onclick = donwloadContent;
 		}
 		if (type === "display") {
 			idlabel.innerHTML = "Display ID:";
@@ -389,12 +395,16 @@
 		var transx = document.getElementById('content_transform_x'),
 			transy = document.getElementById('content_transform_y'),
 			transw = document.getElementById('content_transform_w'),
-			transh = document.getElementById('content_transform_h');
+			transh = document.getElementById('content_transform_h'),
+			transz = document.getElementById('content_transform_z');
 		
 		transx.value = parseInt(metaData.posx, 10);
 		transy.value = parseInt(metaData.posy, 10);
 		transw.value = parseInt(metaData.width, 10);
 		transh.value = parseInt(metaData.height, 10);
+		if (metaData.hasOwnProperty('zIndex')) {
+			transz.value = parseInt(metaData.zIndex, 10);
+		}
 	}
 	
 	function assignVirtualDisplayProperty() {
@@ -604,9 +614,13 @@
 	
 	/// change zIndex
 	function changeZIndex(index) {
-		var elem = getSelectedElem();
+		var elem = getSelectedElem(),
+			metaData;
 		if (elem) {
+			metaData = metaDataDict[elem.id];
 			elem.style.zIndex = index;
+			metaData.zIndex = index;
+			updateTransform(metaData);
 			console.log("change zindex:" + index);
 		}
 	}

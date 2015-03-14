@@ -164,6 +164,9 @@
 					metaData.id = id;
 					metaData.orgWidth = metaData.width;
 					metaData.orgHeight = metaData.height;
+					if (!metaData.hasOwnProperty('zIndex')) {
+						metaData.zIndex = 0;
+					}
 					setMetaData(metaData.type, id, metaData, function (metaData) {
 						endCallback(metaData, contentData);
 					});

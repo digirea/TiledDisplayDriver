@@ -148,11 +148,6 @@
 		socket.emit('reqAddContent', binary);
 	}
 	
-	function donwloadContent() {
-		var contentID = document.getElementById('content_id');
-		socket.emit('reqDownloadContent', JSON.stringify({id : contentID.innerHTML}));
-	}
-	
 	function updateTransform(metaData) {
 		//console.log(JSON.stringify(metaData));
 		if (metaData.type === windowType) {
@@ -315,7 +310,8 @@
 			transInput = document.getElementById('transform_input'),
 			idlabel = document.getElementById('content_id_label'),
 			idtext = document.getElementById('content_id'),
-			donwloadButton = document.getElementById('download_button'),
+			downloadButton = document.getElementById('download_button'),
+			extension,
 			rectChangeFunc = function () {
 				changeRect(this.id, parseInt(this.value, 10));
 			};
@@ -324,29 +320,6 @@
 			document.getElementById('content_id').innerHTML = id;
 		}
 		transInput.innerHTML = "";
-		if (type === "content") {
-			idlabel.innerHTML = "Content ID:";
-			addInputProperty('content_transform_x', 'x', 'px', '0');
-			addInputProperty('content_transform_y', 'y', 'px', '0');
-			addInputProperty('content_transform_w', 'w', 'px', '0');
-			addInputProperty('content_transform_h', 'h', 'px', '0');
-			addInputProperty('content_transform_z', 'z', 'index', '0');
-			contentX = document.getElementById('content_transform_x');
-			contentY = document.getElementById('content_transform_y');
-			contentW = document.getElementById('content_transform_w');
-			contentH = document.getElementById('content_transform_h');
-			contentZ = document.getElementById('content_transform_z');
-			contentX.onchange = rectChangeFunc;
-			contentY.onchange = rectChangeFunc;
-			contentW.onchange = rectChangeFunc;
-			contentH.onchange = rectChangeFunc;
-			contentZ.onchange = function () {
-				var val = parseInt(contentZ.value, 10);
-				changeZIndex(val);
-			};
-			donwloadButton.style.display = "block";
-			donwloadButton.onclick = donwloadContent;
-		}
 		if (type === "display") {
 			idlabel.innerHTML = "Display ID:";
 			addInputProperty('content_transform_x', 'x', 'px', '0');
@@ -361,9 +334,8 @@
 			contentY.onchange = rectChangeFunc;
 			contentW.onchange = rectChangeFunc;
 			contentH.onchange = rectChangeFunc;
-			donwloadButton.style.display = "none";
-		}
-		if (type === "whole_window") {
+			downloadButton.style.display = "none";
+		} else if (type === "whole_window") {
 			idlabel.innerHTML = "Virtual Display Setting";
 			idtext.innerHTML = "";
 			addInputProperty('whole_width', 'w', 'px', '1000');
@@ -386,7 +358,41 @@
 			wholeSplitY.onchange = function () {
 				changeWholeSplit(wholeSplitX.value, this.value);
 			};
-			donwloadButton.style.display = "none";
+			downloadButton.style.display = "none";
+		} else { // content (text, image, url... )
+			idlabel.innerHTML = "Content ID:";
+			addInputProperty('content_transform_x', 'x', 'px', '0');
+			addInputProperty('content_transform_y', 'y', 'px', '0');
+			addInputProperty('content_transform_w', 'w', 'px', '0');
+			addInputProperty('content_transform_h', 'h', 'px', '0');
+			addInputProperty('content_transform_z', 'z', 'index', '0');
+			contentX = document.getElementById('content_transform_x');
+			contentY = document.getElementById('content_transform_y');
+			contentW = document.getElementById('content_transform_w');
+			contentH = document.getElementById('content_transform_h');
+			contentZ = document.getElementById('content_transform_z');
+			contentX.onchange = rectChangeFunc;
+			contentY.onchange = rectChangeFunc;
+			contentW.onchange = rectChangeFunc;
+			contentH.onchange = rectChangeFunc;
+			contentZ.onchange = function () {
+				var val = parseInt(contentZ.value, 10);
+				changeZIndex(val);
+			};
+			downloadButton.style.display = "block";
+			downloadButton.href = "download?" + id;
+			downloadButton.target = "_blank";
+			if (type === "text") {
+				downloadButton.download = id + ".txt";
+			} else {
+				// image or url
+				if (metaDataDict[id].hasOwnProperty('mime')) {
+					extension = metaDataDict[id].mime.split('/')[1];
+					downloadButton.download = id + "." + extension;
+				} else {
+					downloadButton.download = id + ".img";
+				}
+			}
 		}
 	}
 	
@@ -563,7 +569,7 @@
 			}
 			elem.style.borderColor = windowSelectColor;
 		} else {
-			initPropertyArea(id, "content");
+			initPropertyArea(id, metaData.type);
 			assignContentProperty(metaDataDict[id]);
 			enableDeleteButton(true);
 			enableUpdateImageButton(true);

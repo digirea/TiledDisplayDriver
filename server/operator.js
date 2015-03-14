@@ -684,6 +684,7 @@
 		textClient.setnx(windowIDStr, 0);
 	}
 	
+	Operator.prototype.getContent = getContent;
 	Operator.prototype.registerEvent = registerEvent;
 	Operator.prototype.registerWSEvent = registerWSEvent;
 	Operator.prototype.registerUUID = registerUUID;

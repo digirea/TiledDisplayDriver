@@ -87,10 +87,27 @@ var opsever = http.createServer(function (req, res) {
 	var file,
 		fname,
 		ext,
-		url = req.url;
+		url = req.url,
+		temp,
+		data = "",
+		contentID;
 	if (url === '/') {
 		file = fs.readFileSync('../client/index.html');
 		res.end(file);
+	} else if (url.indexOf('/download?') === 0) {
+		temp = url.split('?');
+		if (temp.length > 1) {
+			contentID = temp[1];
+			if (contentID.length === 8) {
+				operator.getContent(null, contentID, function (reply) {
+					res.end(reply);
+				});
+			} else {
+				res.end(data);
+			}
+		} else {
+			res.end(data);
+		}
 	} else {
 		fs.readFile('../client/' + url, function (err, data) {
 			if (err) {

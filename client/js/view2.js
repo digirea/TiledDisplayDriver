@@ -174,7 +174,7 @@
 				if (json.hasOwnProperty('command')) {
 					if (json.command === "doneAddWindow") {
 						windowData = json;
-						 window.parent.document.title = "Display:" + json.id;
+						window.parent.document.title = "Display2:" + json.id;
 						updateWindow(windowData);
 						return;
 					} else if (json.command === "doneGetWindow") {

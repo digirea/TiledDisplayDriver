@@ -446,16 +446,29 @@
 		if (socket) { socketid = socket.id; }
 		if (ws_connection) { socketid = ws_connection.id; }
 		if (json) {
-			getWindow(json, function (data) {
-				deleteWindow(json.id, function () {
-					console.log("commandDeleteWindow : " + JSON.stringify(json));
-					sendMetaData(Command.doneDeleteWindow, { id: json.id }, socket, ws_connection);
-					if (socketidToHash.hasOwnProperty(data.socketid)) {
-						delete socketidToHash[data.socketid];
-					}
-					endCallback();
+			if (json.hasOwnProperty('type') && json.type === 'all') {
+				client.keys(windowPrefix + '*', function (err, replies) {
+					var multi = textClient.multi();
+					replies.forEach(function (reply, index) {
+						multi.del(reply);
+					});
+					multi.exec(function (err, data) {
+						console.log("debugDeleteWindowAll");
+						endCallback();
+					});
 				});
-			});
+			} else {
+				getWindow(json, function (data) {
+					deleteWindow(json.id, function () {
+						console.log("commandDeleteWindow : " + JSON.stringify(json));
+						sendMetaData(Command.doneDeleteWindow, { id: json.id }, socket, ws_connection);
+						if (socketidToHash.hasOwnProperty(data.socketid)) {
+							delete socketidToHash[data.socketid];
+						}
+						endCallback();
+					});
+				});
+			}
 		} else {
 			console.log("commandDeleteWindow : " + socketid);
 			deleteWindowBySocketID(socketid, function () {
@@ -581,19 +594,6 @@
 		
 		socket.on(Command.reqGetVirtualDisplay, function (data) {
 			commandGetVirtualDisplay(socket, null, JSON.parse(data), function () {});
-		});
-		
-		socket.on('debugDeleteWindowAll', function () {
-			client.keys(windowPrefix + '*', function (err, replies) {
-				var multi = textClient.multi();
-				replies.forEach(function (reply, index) {
-					multi.del(reply);
-				});
-				multi.exec(function (err, data) {
-					console.log("debugDeleteWindowAll");
-					updateWindow();
-				});
-			});
 		});
 		
 		getSessionList();

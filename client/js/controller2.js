@@ -140,6 +140,10 @@
 		socket.emit('reqDeleteWindow', JSON.stringify({id : displayID.innerHTML}));
 	}
 	
+	function deleteDisplayAll() {
+		socket.emit('reqDeleteWindow', JSON.stringify({type : "all", id : ""}));
+	}
+	
 	function addContent(binary) {
 		socket.emit('reqAddContent', binary);
 	}
@@ -1373,8 +1377,10 @@
 	}
 	
 	function initDisplayArea() {
-		var displayDeleteButton = document.getElementById('display_delete_button');
+		var displayDeleteButton = document.getElementById('display_delete_button'),
+			displayDeleteAllButton = document.getElementById('display_delete_all_button');
 		displayDeleteButton.onclick = deleteDisplay;
+		displayDeleteAllButton.onclick = deleteDisplayAll;
 	}
 	
 	

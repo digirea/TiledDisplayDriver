@@ -18,7 +18,9 @@
 		initialWholeWidth = 1000,
 		initialWholeHeight = 900,
 		initialDisplayScale = 0.5,
-		snapSetting = "free";
+		snapSetting = "free",
+		contentSelectColor = "#04B431",
+		windowSelectColor = "#0080FF";
 	
 	socket.on('connect', function () {
 		console.log("connect");
@@ -519,7 +521,7 @@
 		if (id === wholeWindowID) {
 			initPropertyArea(id, "whole_window");
 			assignVirtualDisplayProperty();
-			document.getElementById(wholeWindowID).style.borderColor = "orange";
+			document.getElementById(wholeWindowID).style.borderColor = windowSelectColor;
 			changeLeftTab(windowType);
 			return;
 		}
@@ -531,13 +533,10 @@
 		if (elem.id !== id) {
 			id = elem.id;
 		}
-		if (document.getElementById("onlist:" + id)) {
-			document.getElementById("onlist:" + id).style.borderColor = "orange";
-		}
 		metaData = metaDataDict[id];
 		draggingID = id;
 		console.log("draggingID = id:" + draggingID);
-		elem.style.border = "solid 2px black";
+		elem.style.border = "solid 2px";
 		if (metaData.type === windowType) {
 			initPropertyArea(id, "display");
 			assignContentProperty(metaDataDict[id]);
@@ -545,6 +544,10 @@
 			enableDisplayDeleteButton(true);
 			enableUpdateImageButton(false);
 			changeLeftTab(windowType);
+			if (document.getElementById("onlist:" + id)) {
+				document.getElementById("onlist:" + id).style.borderColor = windowSelectColor;
+			}
+			elem.style.borderColor = windowSelectColor;
 		} else {
 			initPropertyArea(id, "content");
 			assignContentProperty(metaDataDict[id]);
@@ -553,6 +556,10 @@
 			enableDisplayDeleteButton(false);
 			document.getElementById('update_content_id').innerHTML = id;
 			changeLeftTab(metaData.type);
+			if (document.getElementById("onlist:" + id)) {
+				document.getElementById("onlist:" + id).style.borderColor = contentSelectColor;
+			}
+			elem.style.borderColor = contentSelectColor;
 		}
 		if (elem.style.zIndex === "") {
 			elem.style.zIndex = 0;
@@ -577,6 +584,7 @@
 			if (document.getElementById("onlist:" + lastDraggingID)) {
 				document.getElementById("onlist:" + lastDraggingID).style.borderColor = "white";
 			}
+			elem.style.borderColor = "black";
 			lastDraggingID = null;
 		}
 		manipulator.removeManipulator();
@@ -789,6 +797,7 @@
 					}
 					vsutil.assignMetaData(elem, metaData, true);
 					updateTransform(metaData);
+					manipulator.moveManipulator(elem);
 				}
 			}
 			clearSplitHightlight();

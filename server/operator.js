@@ -538,6 +538,11 @@
 			io.sockets.emit(Command.updateWindow);
 		}
 		
+		function showWindowID(data) {
+			ws.broadcast(Command.showWindowID + ":" + data.id);
+			io.sockets.emit(Command.showWindowID, data.id);
+		}
+		
 		/*
 		socket.on("message", function (data) {
 			metabinary.loadMetaBinary(data, function (metaData, binaryData) {
@@ -599,6 +604,10 @@
 			commandGetVirtualDisplay(socket, null, JSON.parse(data), function () {});
 		});
 		
+		socket.on(Command.reqShowWindowID, function (data) {
+			showWindowID(JSON.parse(data));
+		});
+		
 		getSessionList();
 	}
 	
@@ -621,6 +630,11 @@
 		function updateWindow() {
 			ws.broadcast(Command.updateWindow);
 			io.sockets.emit(Command.updateWindow);
+		}
+		
+		function showWindowID(data) {
+			ws.broadcast(Command.showWindowID + ":" + data.id);
+			io.sockets.emit(Command.showWindowID, data.id);
 		}
 		
 		ws_connection.on('message', function (message) {
@@ -646,6 +660,8 @@
 					commandUpdateVirtualDisplay(null, ws_connection, request, updateWindow);
 				} else if (request.command === Command.reqGetVirtualDisplay) {
 					commandGetVirtualDisplay(null, ws_connection, request, function () {});
+				} else if (request.command === Command.reqShowWindowID) {
+					showWindowID(request);
 				}
 			} else {
 				// binary

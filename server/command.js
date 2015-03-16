@@ -19,6 +19,7 @@
 		reqUpdateWindow : "reqUpdateWindow",
 		reqUpdateVirtualDisplay : "reqUpdateVirtualDisplay",
 		reqGetVirtualDisplay : "reqGetVirtualDisplay",
+		reqShowWindowID : "reqShowWindowID",
 		
 		// result command
 		doneAddContent : "doneAddContent",
@@ -33,11 +34,13 @@
 		doneUpdateWindow : "doneUpdateWindow",
 		doneUpdateVirtualDisplay : "doneUpdateVirtualDisplay",
 		doneGetVirtualDisplay : "doneGetVirtualDisplay",
+		doneShowWindowID : "doneShowWindowID",
 		
 		// update request from server
 		update : "update",
 		updateTransform : "updateTransform",
-		updateWindow : "updateWindow"
+		updateWindow : "updateWindow",
+		showWindowID : "showWindowID"
 	};
 	
 	module.exports = Command;

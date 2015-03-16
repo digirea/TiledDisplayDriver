@@ -175,7 +175,7 @@ p {
 
 .display_area {
 	display: block;
-	height: 700px;
+	height: 670px;
 	overflow: auto;
 	border : solid 4px;
 	border-color: #0080FF;
@@ -365,3 +365,13 @@ p {
 .virtual_display_property {
 	display : none;
 }
+
+.property_button {
+	width : 160px;
+	height : 35px;
+}
+
+.show_display_id {
+	margin-bottom: 5px;
+}
+

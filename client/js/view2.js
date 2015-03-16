@@ -148,6 +148,28 @@
 		}
 	}
 	
+	window.document.addEventListener("mousedown", function () {
+		var displayArea = document.getElementById('displayid_area');
+		if (displayArea.style.display !== "none") {
+			displayArea.style.display = "none";
+		}
+	});
+	
+	function showDisplayID(id) {
+		console.log("showDisplayID:" + id);
+		if (id && windowData.id === id) {
+			document.getElementById('displayid_area').style.display = "block";
+			setTimeout(function () {
+				document.getElementById('displayid_area').style.display = "none";
+			}, 8 * 1000);
+		} else if (id === "") {
+			document.getElementById('displayid_area').style.display = "block";
+			setTimeout(function () {
+				document.getElementById('displayid_area').style.display = "none";
+			}, 8 * 1000);
+		}
+	}
+	
 	client.onmessage = function (message) {
 		var json,
 			elem;
@@ -167,6 +189,8 @@
 				updateType = 'window';
 				console.log("updateWindow");
 				update();
+			} else if (message.data.indexOf("showWindowID:") >= 0) {
+				showDisplayID(message.data.split(':')[1]);
 			} else {
 				// recieve metadata
 				json = JSON.parse(message.data);
@@ -174,7 +198,8 @@
 				if (json.hasOwnProperty('command')) {
 					if (json.command === "doneAddWindow") {
 						windowData = json;
-						window.parent.document.title = "Display2:" + json.id;
+						window.parent.document.title = "Display ID:" + json.id;
+						document.getElementById('displayid').innerHTML = "ID:" + json.id;
 						updateWindow(windowData);
 						return;
 					} else if (json.command === "doneGetWindow") {

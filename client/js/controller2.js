@@ -210,6 +210,23 @@
 		transInput.appendChild(group);
 	}
 	
+	function addButtonProperty(id, value, func) {
+		/*
+			<div class="btn btn-success" id="content_add_button">Add</div>
+		*/
+		var transInput = document.getElementById('transform_input'),
+			group = document.createElement('div'),
+			button = document.createElement('div');
+		
+		group.className = "input-group";
+		button.className = "btn btn-primary property_button";
+		button.innerHTML = value;
+		button.id = id;
+		button.onclick = func;
+		group.appendChild(button);
+		transInput.appendChild(group);
+	}
+	
 	function addScaleDropdown(id, value) {
 		/*
 			<li role="presentation">
@@ -318,6 +335,8 @@
 		console.log("initPropertyArea");
 		if (id) {
 			document.getElementById('content_id').innerHTML = id;
+		} else {
+			document.getElementById('content_id').innerHTML = "";
 		}
 		transInput.innerHTML = "";
 		if (type === "display") {
@@ -335,6 +354,7 @@
 			contentW.onchange = rectChangeFunc;
 			contentH.onchange = rectChangeFunc;
 			downloadButton.style.display = "none";
+			
 		} else if (type === "whole_window") {
 			idlabel.innerHTML = "Virtual Display Setting";
 			idtext.innerHTML = "";
@@ -1405,8 +1425,26 @@
 			contentArea = document.getElementById('content_area'),
 			contentButtonArea = document.getElementById('content_button_area'),
 			contentTabTitle = document.getElementById('content_tab_title'),
-			contentTabLink = document.getElementById('content_tab_link');
+			contentTabLink = document.getElementById('content_tab_link'),
+			showIDButton = document.getElementById('show_display_id_button');
 			
+		
+		showIDButton.onclick = function () {
+			var id = document.getElementById('content_id').innerHTML;
+			console.log("reqShowWindowID:" + id);
+			if (id) {
+				if (metaDataDict[id].type === windowType) {
+					socket.emit('reqShowWindowID', JSON.stringify({id : id}));
+					lastDraggingID = id;
+					document.getElementById("onlist:" + id).style.borderColor = windowSelectColor;
+				} else {
+					socket.emit('reqShowWindowID', JSON.stringify({type : 'all', id : ""}));
+				}
+			} else {
+				socket.emit('reqShowWindowID', JSON.stringify({type : 'all', id : ""}));
+			}
+		};
+
 		displayTabTitle.onclick = function () {
 			displayArea.style.display = "block";
 			contentArea.style.display = "none";

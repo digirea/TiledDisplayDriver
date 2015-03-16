@@ -49,6 +49,10 @@
 		return (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight));
 	}
 	
+	function isDisplayTabSelected() {
+		return (document.getElementById('display_tab_link').className.indexOf("active") >= 0);
+	}
+	
 	function getCookie(key) {
 		var i,
 			pos,
@@ -112,6 +116,11 @@
 		return document.getElementById(id);
 	}
 	
+	function getSelectedID() {
+		var contentID = document.getElementById('content_id')
+		return contentID.innerHTML;
+	}
+	
 	function toIntMetaData(metaData) {
 		metaData.posx = parseInt(metaData.posx, 10);
 		metaData.posy = parseInt(metaData.posy, 10);
@@ -130,14 +139,12 @@
 	
 	/// delete content
 	function deleteContent() {
-		var contentID = document.getElementById('content_id');
-		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
+		socket.emit('reqDeleteContent', JSON.stringify({id : getSelectedID()}));
 	}
 	
 	function deleteDisplay() {
-		var displayID = document.getElementById('content_id');
-		console.log('reqDeleteWindow' + displayID.innerHTML);
-		socket.emit('reqDeleteWindow', JSON.stringify({id : displayID.innerHTML}));
+		console.log('reqDeleteWindow' + getSelectedID());
+		socket.emit('reqDeleteWindow', JSON.stringify({id : getSelectedID()}));
 	}
 	
 	function deleteDisplayAll() {
@@ -507,7 +514,9 @@
 				console.log("aspect NaN" + invAspect);
 			}
 			
-			if (currentw < 20) { return; }
+			if (currentw < 20) {
+				currentw = 20;
+			}
 			currenth = currentw * invAspect;
 			ydiff = currentw * invAspect - lasth;
 			
@@ -630,6 +639,25 @@
 		manipulator.removeManipulator();
 	}
 	
+	/// close selected content or window
+	function closeFunc() {
+		var id = getSelectedID(),
+			metaData = null,
+			elem,
+			previewArea = document.getElementById('preview_area');
+		
+		console.log("closeFunc");
+		if (metaDataDict.hasOwnProperty(id)) {
+			unselect();
+			elem = getElem(id);
+			previewArea.removeChild(elem);
+			
+			metaData = metaDataDict[id];
+			metaData.visible = false;
+			updateTransform(metaData);
+		}
+	}
+	
 	function getSelectedElem() {
 		var targetID = document.getElementById('content_id').innerHTML;
 		if (targetID) {
@@ -685,7 +713,18 @@
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
 			var previewArea = document.getElementById('preview_area'),
-				rect = event.target.getBoundingClientRect();
+				rect = event.target.getBoundingClientRect(),
+				metaData;
+			
+			if (metaDataDict.hasOwnProperty(id)) {
+				metaData = metaDataDict[id];
+				if (isDisplayTabSelected() && metaData.type !== windowType) {
+					return false;
+				} else if (!isDisplayTabSelected() && metaData.type === windowType) {
+					return false;
+				}
+			}
+			
 			// erase last border
 			unselect();
 			select(id);
@@ -1264,7 +1303,7 @@
 		importContentToView(metaData, contentData);
 	}
 	
-	function importWindowToView(windowData) {
+function importWindowToView(windowData) {
 		if (windowData.type !== windowType) {
 			return;
 		}
@@ -1278,13 +1317,15 @@
 		} else {
 			windowData.posy = 0;
 		}
-		console.log("import window:" + JSON.stringify(windowData));
 		metaDataDict[windowData.id] = windowData;
-		vscreen.assignScreen(windowData.id, windowData.orgX, windowData.orgY, windowData.orgWidth, windowData.orgHeight);
-		vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
-		vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
-		//console.log("import windowsc:", vscreen.getScreen(windowData.id));
-		updateScreen();
+		if (isVisible(windowData)) {
+			console.log("import window:" + JSON.stringify(windowData));
+			vscreen.assignScreen(windowData.id, windowData.orgX, windowData.orgY, windowData.orgWidth, windowData.orgHeight);
+			vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
+			vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
+			//console.log("import windowsc:", vscreen.getScreen(windowData.id));
+			updateScreen();
+		}
 	}
 	
 	function importWindowToList(windowData) {
@@ -1294,6 +1335,7 @@
 		
 		divElem.innerHTML = "ID:" + windowData.id;
 		divElem.id = onlistID;
+		divElem.className = "screen";
 		divElem.style.position = "relative";
 		divElem.style.top = "5px";
 		divElem.style.left = "20px";
@@ -1492,6 +1534,7 @@
 		}
 		
 		manipulator.setDraggingOffsetFunc(draggingOffsetFunc);
+		manipulator.setCloseFunc(closeFunc);
 		bottomfunc(false);
 		
 		initPropertyArea(wholeWindowID, "whole_window");

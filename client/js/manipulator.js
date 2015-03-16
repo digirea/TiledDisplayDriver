@@ -9,7 +9,8 @@
 		draggingManip = null,
 		windowType = "window",
 		manipulators = [],
-		draggingOffsetFunc = null;
+		draggingOffsetFunc = null,
+		closeFunc = null;
 	
 	function getDraggingManip() {
 		return draggingManip;
@@ -17,6 +18,10 @@
 	
 	function setDraggingOffsetFunc(func) {
 		draggingOffsetFunc = func;
+	}
+	
+	function setCloseFunc(func) {
+		closeFunc = func;
 	}
 	
 	function clearDraggingManip() {
@@ -58,6 +63,9 @@
 		// right top
 		manipulators[3].style.left = (left + width) + "px";
 		manipulators[3].style.top = top + "px";
+		// x button
+		manipulators[4].style.left = (left + width - 30) + "px";
+		manipulators[4].style.top = (top + 20) + "px";
 	}
 	
 	function setupManipulator(manip) {
@@ -80,18 +88,35 @@
 			cursor = "se-resize";
 		} else if (manip.id === '_manip_3') {
 			cursor = "ne-resize";
+		} else if (manip.id === '_manip_4') {
+			// x button
+			manip.style.cursor = "pointer";
+			manip.innerHTML = "<pre>x</pre>";
+			manip.style.textAlign = "center";
+			manip.style.background = "red";
+			manip.style.borderRadius = "3px";
+			manip.style.width = "20px";
+			manip.style.height = "20px";
 		}
-		manip.onmousedown = function (evt) {
-			var rect = event.target.getBoundingClientRect();
-			if (draggingOffsetFunc) {
-				console.log("draggingOffsetFunc");
-				draggingOffsetFunc(evt.clientY - rect.top, evt.clientX - rect.left);
-			}
-			draggingManip = manip;
-		};
-		manip.onmousemove = function (evt) {
-			manip.style.cursor = cursor;
-		};
+		if (manip.id === '_manip_4') {
+			manip.onmousedown = function (evt) {
+				if (closeFunc) {
+					closeFunc();
+				}
+			};
+		} else {
+			manip.onmousedown = function (evt) {
+				var rect = event.target.getBoundingClientRect();
+				if (draggingOffsetFunc) {
+					console.log("draggingOffsetFunc");
+					draggingOffsetFunc(evt.clientY - rect.top, evt.clientX - rect.left);
+				}
+				draggingManip = manip;
+			};
+			manip.onmousemove = function (evt) {
+				manip.style.cursor = cursor;
+			};
+		}
 	}
 	
 	function removeManipulator() {
@@ -106,6 +131,7 @@
 	/// show manipulator rects on elem
 	function showManipulator(elem) {
 		var manips = [
+				document.createElement('span'),
 				document.createElement('span'),
 				document.createElement('span'),
 				document.createElement('span'),
@@ -135,4 +161,5 @@
 	window.manipulator.getDraggingManip = getDraggingManip;
 	window.manipulator.clearDraggingManip = clearDraggingManip;
 	window.manipulator.setDraggingOffsetFunc = setDraggingOffsetFunc;
+	window.manipulator.setCloseFunc = setCloseFunc;
 }());

@@ -28,7 +28,7 @@
 			cx = wh.width / 2.0,
 			cy = wh.height / 2.0;
 		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
-		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height}));
+		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height, visible : false }));
 	}
 	
 	/*
@@ -105,6 +105,17 @@
 				}
 			}
 			vsutil.assignMetaData(elem, metaData, false);
+		}
+	}
+	
+	function setVisibleWindow(metaData) {
+		if (metaData.hasOwnProperty('visible')) {
+			console.log("setVisibleWindow:", metaData);
+			if (metaData.visible === "true") {
+				document.getElementById('preview_area').style.display = "block";
+			} else {
+				document.getElementById('preview_area').style.display = "none";
+			}
 		}
 	}
 	
@@ -206,6 +217,7 @@
 						console.log("doneGetWindow");
 						windowData = json;
 						console.log(windowData);
+						setVisibleWindow(windowData);
 						resizeViewport(windowData);
 						return;
 					}

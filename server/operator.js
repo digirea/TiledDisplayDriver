@@ -156,6 +156,9 @@
 		console.log("mime:" + metaData.mime);
 		
 		generateContentID(function (id) {
+			if (metaData.hasOwnProperty('id') && metaData.id !== "") {
+				id = metaData.id;
+			}
 			client.set(contentPrefix + id, contentData, function (err, reply) {
 				if (err) {
 					console.log("Error on addContent:" + err);
@@ -243,6 +246,9 @@
 	
 	function addWindow(socketid, windowData, endCallback) {
 		generateWindowID(function (id) {
+			if (windowData.hasOwnProperty('id') && windowData.id !== "") {
+				id = windowData.id;
+			}
 			socketidToHash[socketid] = id;
 			console.log("registerWindow: " + id);
 			windowData.id = id;

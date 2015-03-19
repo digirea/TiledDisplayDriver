@@ -178,7 +178,7 @@
 	 * @return MemberExpression
 	 */
 	function getSelectedID() {
-		var contentID = document.getElementById('content_id')
+		var contentID = document.getElementById('content_id');
 		return contentID.innerHTML;
 	}
 	

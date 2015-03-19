@@ -325,7 +325,7 @@
 		 * タブボタンの作成
 		 * @method createButton
 		 * @param {String} direction 方向文字列
-	 	 * @param {Array} targets ターゲットリスト
+		 * @param {Array} targets ターゲットリスト
 		 */
 		function createButton(direction, targets) {
 			separatorElem.addEventListener('click', function () {

@@ -17,7 +17,7 @@
 	
 	/// get image from server
 	/**
-	 * Description
+	 * 全て更新する
 	 * @method update
 	 */
 	function update() {
@@ -26,7 +26,7 @@
 	
 	/// delete content
 	/**
-	 * Description
+	 * 選択中のコンテンツを削除する
 	 * @method deleteContent
 	 */
 	function deleteContent() {
@@ -35,18 +35,18 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツを追加する
 	 * @method addContent
-	 * @param {} binary
+	 * @param {BLOB} binary メタバイナリ
 	 */
 	function addContent(binary) {
 		socket.emit('reqAddContent', binary);
 	}
 	
 	/**
-	 * Description
+	 * トランスフォームを更新する
 	 * @method updateTransform
-	 * @param {} metaData
+	 * @param {Object} metaData メタデータ
 	 */
 	function updateTransform(metaData) {
 		//console.log("reqUpdateTransform");
@@ -54,25 +54,19 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツを更新する
 	 * @method updateContent
-	 * @param {} binary
+	 * @param {Object} binary メタバイナリ
 	 */
 	function updateContent(binary) {
 		socket.emit('reqUpdateContent', binary);
 	}
 	
-	
-	/// move manipulator rects on elem
-	/// @param manips list of manipulator elements
-	/// @param targetElem manipulator target
-	/// @param posx left position of target
-	/// @param posy top position of target
 	/**
-	 * Description
+	 * マニピュレータを動かす
 	 * @method moveManipulator
-	 * @param {} manips
-	 * @param {} targetElem
+	 * @param {Array} manips マニピュレータ
+	 * @param {Element} targetElem 対象としているエレメント
 	 */
 	function moveManipulator(manips, targetElem) {
 		var left,
@@ -104,10 +98,10 @@
 	}
 	
 	/**
-	 * Description
+	 * テキストをリサイズする
 	 * @method resizeText
-	 * @param {} elem
-	 * @param {} rect
+	 * @param {Element} elem 対象エレメント
+	 * @param {Rect} rect 矩形
 	 */
 	function resizeText(elem, rect) {
 		var lineCount = 1,
@@ -126,13 +120,13 @@
 	}
 	
 	/**
-	 * Description
+	 * 矩形を作成する
 	 * @method makeRect
-	 * @param {} left
-	 * @param {} top
-	 * @param {} width
-	 * @param {} height
-	 * @return ObjectExpression
+	 * @param {Number} left 左
+	 * @param {Number} top 上
+	 * @param {Number} width 幅
+	 * @param {Number} height 高さ
+	 * @return Rect
 	 */
 	function makeRect(left, top, width, height) {
 		return {
@@ -144,10 +138,10 @@
 	}
 	
 	/**
-	 * Description
+	 * Intの矩形を作成する
 	 * @method toIntRect
-	 * @param {} metaData
-	 * @return CallExpression
+	 * @param {Object} metaData メタデータ
+	 * @return Rect
 	 */
 	function toIntRect(metaData) {
 		return makeRect(
@@ -159,10 +153,10 @@
 	}
 	
 	/**
-	 * Description
+	 * メタデータを割り当てる
 	 * @method assignMetaData
-	 * @param {} elem
-	 * @param {} metaData
+	 * @param {Element} elem 対象エレメント
+	 * @param {Object} metaData メタデータ
 	 */
 	function assignMetaData(elem, metaData) {
 		elem.style.left = Number(metaData.posx) + "px";
@@ -181,9 +175,9 @@
 	}
 	
 	/**
-	 * Description
+	 * マニピュレータが動いてるときに呼ばれるコールバック
 	 * @method onManipulatorMove
-	 * @param {} evt
+	 * @param {Event} evt マウスイベント
 	 */
 	function onManipulatorMove(evt) {
 		var px, py,
@@ -229,9 +223,9 @@
 	}
 	
 	/**
-	 * Description
+	 * マニピュレータをセットアップする
 	 * @method setupManipulator
-	 * @param {} manip
+	 * @param {Object} manip マニピュレータ
 	 */
 	function setupManipulator(manip) {
 		var manipHalfWidth = 5,
@@ -265,7 +259,7 @@
 	}
 	
 	/**
-	 * Description
+	 * マニピュレータを取り除く
 	 * @method removeManipulator
 	 */
 	function removeManipulator() {
@@ -277,11 +271,10 @@
 		manipulators = [];
 	}
 	
-	/// show manipulator rects on elem
 	/**
-	 * Description
+	 * マニピュレータを表示する
 	 * @method showManipulator
-	 * @param {} elem
+	 * @param {Element} elem 対象のエレメント
 	 */
 	function showManipulator(elem) {
 		var manips = [
@@ -309,10 +302,10 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツのセットアップ
 	 * @method setupContent
-	 * @param {} elem
-	 * @param {} id
+	 * @param {Element} elem エレメント
+	 * @param {String} id コンテンツID
 	 */
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
@@ -343,9 +336,9 @@
 	}
 	
 	/**
-	 * Description
+	 * マウスダウン
 	 * @method onmousedown
-	 * @param {} evt
+	 * @param {Event} evt マウスイベント
 	 */
 	window.document.onmousedown = function (evt) {
 		var elem;
@@ -359,9 +352,9 @@
 		}
 	};
 	/**
-	 * Description
+	 * マウスムーブ
 	 * @method onmousemove
-	 * @param {} evt
+	 * @param {Event} evt マウスイベント
 	 */
 	window.document.onmousemove = function (evt) {
 		var i,
@@ -390,7 +383,7 @@
 		}
 	};
 	/**
-	 * Description
+	 * マウスアップ
 	 * @method onmouseup
 	 */
 	window.document.onmouseup = function () {
@@ -415,7 +408,7 @@
 
 	/// send text to server
 	/**
-	 * Description
+	 * テキストの送信.
 	 * @method sendText
 	 */
 	function sendText() {
@@ -440,7 +433,7 @@
 	
 	/// send url to server
 	/**
-	 * Description
+	 * URLの送信
 	 * @method sendURL
 	 */
 	function sendURL() {
@@ -462,11 +455,11 @@
 	
 	/// send image to server
 	/**
-	 * Description
+	 * 画像の送信
 	 * @method sendImage
-	 * @param {} imagebinary
-	 * @param {} width
-	 * @param {} height
+	 * @param {BLOB} imagebinary 画像バイナリ
+	 * @param {Number} width 幅
+	 * @param {Number} height 高さ
 	 */
 	function sendImage(imagebinary, width, height) {
 		var metaData = {type : "image", posx : 0, posy : 0, width : width, height: height},
@@ -477,9 +470,9 @@
 	
 	/// open image file
 	/**
-	 * Description
+	 * 画像を開く
 	 * @method openImage
-	 * @param {} evt
+	 * @param {Event} evt ファイルイベント
 	 */
 	function openImage(evt) {
 		var files = evt.target.files,
@@ -516,9 +509,9 @@
 	
 	/// replace image file
 	/**
-	 * Description
+	 * 画像の差し替え
 	 * @method replaceImage
-	 * @param {} evt
+	 * @param {Event} evt ファイルイベント
 	 */
 	function replaceImage(evt) {
 		var files = evt.target.files,
@@ -543,10 +536,10 @@
 	
 	/// import content
 	/**
-	 * Description
+	 * コンテンツのインポート
 	 * @method importContent
-	 * @param {} metaData
-	 * @param {} contentData
+	 * @param {Object} metaData メタデータ
+	 * @param {Object} contentData コンテンツデータ
 	 */
 	function importContent(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
@@ -606,7 +599,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 初期化
 	 * @method init
 	 */
 	function init() {

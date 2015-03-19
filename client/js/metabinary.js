@@ -9,6 +9,12 @@
 	//
 	// Array Buffer To String funciton
 	//
+	/**
+	 * Description
+	 * @method arrayBufferToString
+	 * @param {} arraybuf
+	 * @return decodedString
+	 */
 	function arrayBufferToString(arraybuf) {
 		var chars = new Uint8Array(arraybuf),
 			encodedString = "",
@@ -26,6 +32,12 @@
 	//
 	// quate: http://jsperf.com/test-unicode-to-utf8
 	//
+	/**
+	 * Description
+	 * @method utf8StringToArray
+	 * @param {} str
+	 * @return bytes
+	 */
 	function utf8StringToArray(str) {
 		var n = str.length,
 			idx = 0,
@@ -68,6 +80,12 @@
 	/// load metabinary
 	/// @param binary Blob data
 	/// @param endCallback end callback with loaded data (metadata, binary)
+	/**
+	 * Description
+	 * @method loadMetaBinary
+	 * @param {} binary
+	 * @param {} endCallback
+	 */
 	function loadMetaBinary(binary, endCallback) {
 		var reader = new FileReader();
 		reader.addEventListener('loadend', function (e) {
@@ -111,6 +129,13 @@
 	/// create metabinary
 	/// @param metaData json
 	/// @param binary arraybuffer
+	/**
+	 * Description
+	 * @method createMetaBinary
+	 * @param {} metaData
+	 * @param {} data
+	 * @return NewExpression
+	 */
 	function createMetaBinary(metaData, data) {
 		var binary,
 			metaDataStr = JSON.stringify(metaData),

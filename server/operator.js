@@ -4,6 +4,10 @@
 (function () {
 	"use strict";
 	
+	/**
+	 * Description
+	 * @method Operator
+	 */
 	var Operator = function () {},
 		redis = require("redis"),
 		client = redis.createClient(6379, '127.0.0.1', {'return_buffers': true}),
@@ -28,6 +32,12 @@
 		console.log('Error ' + err);
 	});
 	
+	/**
+	 * Description
+	 * @method renderURL
+	 * @param {} url
+	 * @param {} endCallback
+	 */
 	function renderURL(url, endCallback) {
 		var output = "out.png",
 			command = [ phantomjs.path,
@@ -47,6 +57,11 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method generateContentID
+	 * @param {} endCallback
+	 */
 	function generateContentID(endCallback) {
 		var id = util.generateUUID8();
 		console.log("newid: " + id);
@@ -63,6 +78,11 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method generateWindowID
+	 * @param {} endCallback
+	 */
 	function generateWindowID(endCallback) {
 		var id = util.generateUUID8();
 		console.log("newid: " + id);
@@ -79,6 +99,14 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method setMetaData
+	 * @param {} type
+	 * @param {} id
+	 * @param {} data
+	 * @param {} endCallback
+	 */
 	function setMetaData(type, id, data, endCallback) {
 		var metaData = data;
 		
@@ -109,6 +137,13 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method getMetaData
+	 * @param {} type
+	 * @param {} id
+	 * @param {} endCallback
+	 */
 	function getMetaData(type, id, endCallback) {
 		if (type === 'all') {
 			textClient.keys(metadataPrefix + '*', function (err, replies) {
@@ -138,6 +173,13 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method addContent
+	 * @param {} metaData
+	 * @param {} data
+	 * @param {} endCallback
+	 */
 	function addContent(metaData, data, endCallback) {
 		var contentData = null;
 		if (metaData.type === 'text') {
@@ -178,6 +220,13 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method getContent
+	 * @param {} type
+	 * @param {} id
+	 * @param {} endCallback
+	 */
 	function getContent(type, id, endCallback) {
 		if (type === 'all') {
 			client.keys(contentPrefix + '*', function (err, replies) {
@@ -202,6 +251,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method deleteContent
+	 * @param {} id
+	 * @param {} endCallback
+	 */
 	function deleteContent(id, endCallback) {
 		client.exists(contentPrefix + id, function (err, doesExist) {
 			if (!err && doesExist) {
@@ -216,6 +271,13 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method updateContent
+	 * @param {} metaData
+	 * @param {} data
+	 * @param {} endCallback
+	 */
 	function updateContent(metaData, data, endCallback) {
 		var contentData = null;
 		console.log("updateContent:" + metaData.id);
@@ -244,6 +306,13 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method addWindow
+	 * @param {} socketid
+	 * @param {} windowData
+	 * @param {} endCallback
+	 */
 	function addWindow(socketid, windowData, endCallback) {
 		generateWindowID(function (id) {
 			if (windowData.hasOwnProperty('id') && windowData.id !== "") {
@@ -262,6 +331,12 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method setVirtualDisplay
+	 * @param {} windowData
+	 * @param {} endCallback
+	 */
 	function setVirtualDisplay(windowData, endCallback) {
 		if (windowData) {
 			textClient.hmset(virtualDisplayIDStr, windowData, function (err, reply) {
@@ -270,6 +345,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method getVirtualDisplay
+	 * @param {} endCallback
+	 */
 	function getVirtualDisplay(endCallback) {
 		textClient.hgetall(virtualDisplayIDStr, function (err, data) {
 			if (data) {
@@ -280,6 +360,12 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method deleteWindow
+	 * @param {} id
+	 * @param {} endCallback
+	 */
 	function deleteWindow(id, endCallback) {
 		client.del(windowPrefix + id, function (err) {
 			if (err) {
@@ -291,6 +377,12 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method deleteWindowBySocketID
+	 * @param {} socketid
+	 * @param {} endCallback
+	 */
 	function deleteWindowBySocketID(socketid, endCallback) {
 		var id;
 		if (socketidToHash.hasOwnProperty(socketid)) {
@@ -306,6 +398,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method getWindow
+	 * @param {} windowData
+	 * @param {} endCallback
+	 */
 	function getWindow(windowData, endCallback) {
 		if (windowData.hasOwnProperty('type') && windowData.type === 'all') {
 			console.log("getWindowAll");
@@ -330,6 +428,13 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method updateWindow
+	 * @param {} socketid
+	 * @param {} windowData
+	 * @param {} endCallback
+	 */
 	function updateWindow(socketid, windowData, endCallback) {
 		if (!windowData.hasOwnProperty("id")) { return; }
 		textClient.hmset(windowPrefix + windowData.id, windowData, function (err, reply) {
@@ -337,6 +442,10 @@
 		});
 	}
 	
+	/**
+	 * Description
+	 * @method getSessionList
+	 */
 	function getSessionList() {
 		client.smembers('sessions', function (err, replies) {
 			replies.forEach(function (id, index) {
@@ -346,6 +455,14 @@
 	}
 	
 	/// send metadata with command using socket.io or ws.
+	/**
+	 * Description
+	 * @method sendMetaData
+	 * @param {} command
+	 * @param {} metaData
+	 * @param {} socket
+	 * @param {} ws_connection
+	 */
 	function sendMetaData(command, metaData, socket, ws_connection) {
 		metaData.command = command;
 		if (socket) {
@@ -356,6 +473,14 @@
 	}
 	
 	/// send binary with command using socket.io or ws.
+	/**
+	 * Description
+	 * @method sendBinary
+	 * @param {} command
+	 * @param {} binary
+	 * @param {} socket
+	 * @param {} ws_connection
+	 */
 	function sendBinary(command, binary, socket, ws_connection) {
 		if (socket) {
 			socket.emit(command, binary);
@@ -365,6 +490,15 @@
 	}
 	
 	/// do addContent command
+	/**
+	 * Description
+	 * @method commandAddContent
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} metaData
+	 * @param {} binaryData
+	 * @param {} endCallback
+	 */
 	function commandAddContent(socket, ws_connection, metaData, binaryData, endCallback) {
 		console.log("commandAddContent");
 		if (metaData.type === 'url') {
@@ -387,6 +521,14 @@
 	}
 	
 	/// do GetContent command
+	/**
+	 * Description
+	 * @method commandGetContent
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandGetContent(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetContent:" + json.id);
 		getMetaData(json.type, json.id, function (meta) {
@@ -402,6 +544,14 @@
 	}
 	
 	/// do GetMetaData command
+	/**
+	 * Description
+	 * @method commandGetMetaData
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandGetMetaData(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetMetaData:" + json.type + "/" + json.id);
 		getMetaData(json.type, json.id, function (metaData) {
@@ -411,6 +561,14 @@
 	}
 	
 	/// do DeleteContent command
+	/**
+	 * Description
+	 * @method commandDeleteContent
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandDeleteContent(socket, ws_connection, json, endCallback) {
 		//console.log("commandDeleteContent:" + json.id);
 		deleteContent(json.id, function (id) {
@@ -420,6 +578,15 @@
 	}
 	
 	/// do UpdateContent command
+	/**
+	 * Description
+	 * @method commandUpdateContent
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} metaData
+	 * @param {} binaryData
+	 * @param {} endCallback
+	 */
 	function commandUpdateContent(socket, ws_connection, metaData, binaryData, endCallback) {
 		//console.log("commandUpdateContent");
 		updateContent(metaData, binaryData, function (id) {
@@ -429,6 +596,14 @@
 	}
 	
 	/// do UpdateTransform command
+	/**
+	 * Description
+	 * @method commandUpdateTransform
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandUpdateTransform(socket, ws_connection, json, endCallback) {
 		//console.log("commandUpdateTransform:" + json.id);
 		setMetaData(json.type, json.id, json, function () {
@@ -438,6 +613,14 @@
 	}
 	
 	/// do AddWindow command
+	/**
+	 * Description
+	 * @method commandAddWindow
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandAddWindow(socket, ws_connection, json, endCallback) {
 		console.log("commandAddWindow : " + JSON.stringify(json));
 		var id = -1;
@@ -450,6 +633,14 @@
 	}
 	
 	/// do DeleteWindow
+	/**
+	 * Description
+	 * @method commandDeleteWindow
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandDeleteWindow(socket, ws_connection, json, endCallback) {
 		var socketid = -1;
 		if (socket) { socketid = socket.id; }
@@ -488,6 +679,14 @@
 	}
 	
 	/// do UpdateVirtualDisplay command
+	/**
+	 * Description
+	 * @method commandUpdateVirtualDisplay
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandUpdateVirtualDisplay(socket, ws_connection, json, endCallback) {
 		if (json) {
 			setVirtualDisplay(json, function (data) {
@@ -496,6 +695,14 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method commandGetVirtualDisplay
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandGetVirtualDisplay(socket, ws_connection, json, endCallback) {
 		getVirtualDisplay(function (data) {
 			sendMetaData(Command.doneGetVirtualDisplay, data, socket, ws_connection);
@@ -504,6 +711,14 @@
 	}
 	
 	/// do GetWindow command
+	/**
+	 * Description
+	 * @method commandGetWindow
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandGetWindow(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetWindow : " + JSON.stringify(json));
 		getWindow(json, function (windowData) {
@@ -513,6 +728,14 @@
 	}
 	
 	/// do UpdateWindow command
+	/**
+	 * Description
+	 * @method commandUpdateWindow
+	 * @param {} socket
+	 * @param {} ws_connection
+	 * @param {} json
+	 * @param {} endCallback
+	 */
 	function commandUpdateWindow(socket, ws_connection, json, endCallback) {
 		var id = -1;
 		if (socket) { id = socket.id; }
@@ -527,6 +750,13 @@
 	/// @param socket
 	/// @param io
 	/// @param ws display's ws connection
+	/**
+	 * Description
+	 * @method registerEvent
+	 * @param {} socket
+	 * @param {} io
+	 * @param {} ws
+	 */
 	function registerEvent(socket, io, ws) {
 		
 		function update() {
@@ -621,6 +851,13 @@
 	/// @param ws_connection controller's ws connection
 	/// @param io
 	/// @param ws display's ws instance
+	/**
+	 * Description
+	 * @method registerWSEvent
+	 * @param {} ws_connection
+	 * @param {} io
+	 * @param {} ws
+	 */
 	function registerWSEvent(ws_connection, io, ws) {
 		
 		function update() {
@@ -689,6 +926,11 @@
 	}
 	
 	/// @param id server's id
+	/**
+	 * Description
+	 * @method registerUUID
+	 * @param {} id
+	 */
 	function registerUUID(id) {
 		uuidPrefix = id + ":";
 		client.sadd(frontPrefix + 'sessions', id);

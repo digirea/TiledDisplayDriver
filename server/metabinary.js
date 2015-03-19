@@ -14,6 +14,13 @@
 	/// -  { id: 1, posx: 0, ...}  - metadata (json string)
 	/// -  0xfefefe                - binarydata (blob)
 	/// --------------------------------------------------------
+	/**
+	 * Description
+	 * @method createMetaBinary
+	 * @param {} metaData
+	 * @param {} binary
+	 * @return buffer
+	 */
 	function createMetaBinary(metaData, binary) {
 		var buffer,
 			pos = 0,
@@ -41,6 +48,12 @@
 		return buffer;
 	}
 	
+	/**
+	 * Description
+	 * @method loadMetaBinary
+	 * @param {} binary
+	 * @param {} endCallback
+	 */
 	function loadMetaBinary(binary, endCallback) {
 		var head = binary.slice(0, headerStr.length).toString('ascii'),
 			metaSize,

@@ -5,6 +5,10 @@
 (function () {
 	"use strict";
 	
+	/**
+	 * Description
+	 * @method Vscreen
+	 */
 	var Vscreen = function () {},
 		vscreen_scale = 0.5,
 		vscreen_rect = {},
@@ -17,14 +21,37 @@
 		split_y = 1;
 	
 	// utility
+	/**
+	 * Description
+	 * @method scalePos
+	 * @param {} p
+	 * @param {} c
+	 * @return BinaryExpression
+	 */
 	function scalePos(p, c) {
 		return (p - c) * vscreen_scale + c;
 	}
 	
+	/**
+	 * Description
+	 * @method scalePosInv
+	 * @param {} p
+	 * @param {} c
+	 * @return BinaryExpression
+	 */
 	function scalePosInv(p, c) {
 		return (p - c) / vscreen_scale + c;
 	}
 	
+	/**
+	 * Description
+	 * @method makeRect
+	 * @param {} left
+	 * @param {} top
+	 * @param {} width
+	 * @param {} height
+	 * @return ObjectExpression
+	 */
 	function makeRect(left, top, width, height) {
 		return {
 			x : left,
@@ -34,6 +61,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method transform
+	 * @param {} rect
+	 * @return ObjectExpression
+	 */
 	function transform(rect) {
 		return {
 			x : scalePos(vscreen_rect.x + rect.x, center_x),
@@ -43,6 +76,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method transformOrg
+	 * @param {} rect
+	 * @return ObjectExpression
+	 */
 	function transformOrg(rect) {
 		return {
 			x : scalePos(vscreen_rect.orgX + rect.x, center_x),
@@ -52,6 +91,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method transformOrgInv
+	 * @param {} rect
+	 * @return ObjectExpression
+	 */
 	function transformOrgInv(rect) {
 		return {
 			x : scalePosInv(rect.x - vscreen_rect.orgX * vscreen_scale, center_x),
@@ -61,6 +106,13 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method setWholeSize
+	 * @param {} w
+	 * @param {} h
+	 * @param {} s
+	 */
 	function setWholeSize(w, h, s) {
 		vscreen_rect.x = scalePos(center_x - w * 0.5, center_x);
 		vscreen_rect.y = scalePos(center_y - h * 0.5, center_y);
@@ -71,6 +123,12 @@
 		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
 	}
 	
+	/**
+	 * Description
+	 * @method splitWhole
+	 * @param {} xcount
+	 * @param {} ycount
+	 */
 	function splitWhole(xcount, ycount) {
 		var i,
 			k,
@@ -95,10 +153,22 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method getSplitWholes
+	 * @return whole_subscreens
+	 */
 	function getSplitWholes() {
 		return whole_subscreens;
 	}
 	
+	/**
+	 * Description
+	 * @method getSplitWholeByPos
+	 * @param {} px
+	 * @param {} py
+	 * @return Literal
+	 */
 	function getSplitWholeByPos(px, py) {
 		var i,
 			w;
@@ -115,6 +185,11 @@
 		return null;
 	}
 	
+	/**
+	 * Description
+	 * @method getSplitCount
+	 * @return ObjectExpression
+	 */
 	function getSplitCount() {
 		return {
 			x : split_x,
@@ -122,26 +197,56 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method clearSplitWholes
+	 */
 	function clearSplitWholes() {
 		whole_subscreens = {};
 	}
 	
+	/**
+	 * Description
+	 * @method translateWhole
+	 * @param {} x
+	 * @param {} y
+	 */
 	function translateWhole(x, y) {
 		vscreen_rect.x = vscreen_rect.x + x;
 		vscreen_rect.y = vscreen_rect.y + y;
 	}
 	
+	/**
+	 * Description
+	 * @method setWholePos
+	 * @param {} x
+	 * @param {} y
+	 */
 	function setWholePos(x, y) {
 		vscreen_rect.x = x;
 		vscreen_rect.y = y;
 	}
 	
+	/**
+	 * Description
+	 * @method getWholeScale
+	 * @return vscreen_scale
+	 */
 	function getWholeScale() {
 		return vscreen_scale;
 	}
 	
 	/// assign whole virtual screen
 	/// if exists, overwrite
+	/**
+	 * Description
+	 * @method assignWhole
+	 * @param {} w
+	 * @param {} h
+	 * @param {} cx
+	 * @param {} cy
+	 * @param {} s
+	 */
 	function assignWhole(w, h, cx, cy, s) {
 		var i,
 			screen,
@@ -157,6 +262,12 @@
 		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
 	}
 	
+	/**
+	 * Description
+	 * @method setWholeScale
+	 * @param {} s
+	 * @param {} isApply
+	 */
 	function setWholeScale(s, isApply) {
 		vscreen_scale = s;
 		if (isApply) {
@@ -164,10 +275,20 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method getWhole
+	 * @return vscreen_rect
+	 */
 	function getWhole() {
 		return vscreen_rect;
 	}
 	
+	/**
+	 * Description
+	 * @method getCenter
+	 * @return ObjectExpression
+	 */
 	function getCenter() {
 		return {
 			x : center_x,
@@ -175,6 +296,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method setWholeCenter
+	 * @param {} x
+	 * @param {} y
+	 */
 	function setWholeCenter(x, y) {
 		center_x = x;
 		center_y = y;
@@ -184,6 +311,15 @@
 	/// if exists, overwrite.
 	/// @param x window coordinate
 	/// @param y window coordinate
+	/**
+	 * Description
+	 * @method assignScreen
+	 * @param {} id
+	 * @param {} x
+	 * @param {} y
+	 * @param {} w
+	 * @param {} h
+	 */
 	function assignScreen(id, x, y, w, h) {
 		screens[id] = {
 			id : id,
@@ -198,6 +334,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method getScreen
+	 * @param {} id
+	 * @return Literal
+	 */
 	function getScreen(id) {
 		if (screens.hasOwnProperty(id)) {
 			return screens[id];
@@ -205,10 +347,22 @@
 		return null;
 	}
 	
+	/**
+	 * Description
+	 * @method getScreenAll
+	 * @return screens
+	 */
 	function getScreenAll() {
 		return screens;
 	}
 	
+	/**
+	 * Description
+	 * @method setScreenSize
+	 * @param {} id
+	 * @param {} w
+	 * @param {} h
+	 */
 	function setScreenSize(id, w, h) {
 		var screen = getScreen(id);
 		if (screen) {
@@ -217,6 +371,13 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method setScreenPos
+	 * @param {} id
+	 * @param {} x
+	 * @param {} y
+	 */
 	function setScreenPos(id, x, y) {
 		var screen = getScreen(id);
 		if (screen) {
@@ -225,6 +386,10 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method dump
+	 */
 	function dump() {
 		var s;
 		console.log("center_x:" + center_x);
@@ -237,14 +402,30 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method clearScreenAll
+	 */
 	function clearScreenAll() {
 		screens = {};
 	}
 	
+	/**
+	 * Description
+	 * @method transformScreen
+	 * @param {} screen
+	 * @return CallExpression
+	 */
 	function transformScreen(screen) {
 		return transformOrg(makeRect(screen.x, screen.y, screen.w, screen.h));
 	}
 	
+	/**
+	 * Description
+	 * @method transformScreenInv
+	 * @param {} screen
+	 * @return CallExpression
+	 */
 	function transformScreenInv(screen) {
 		return transformOrgInv(makeRect(screen.x, screen.y, screen.w, screen.h));
 	}

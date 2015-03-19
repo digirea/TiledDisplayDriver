@@ -4,15 +4,31 @@
 (function () {
 	"use strict";
 	
+	/**
+	 * Description
+	 * @method Sender
+	 */
 	var Sender = function () {},
 		operator,
 		metabinary = require('./metabinary.js'),
 		Command = require('./command.js');
 	
+	/**
+	 * Description
+	 * @method setOperator
+	 * @param {} ope
+	 */
 	function setOperator(ope) {
 		operator = ope;
 	}
 	
+	/**
+	 * Description
+	 * @method registerWSEvent
+	 * @param {} ws_connection
+	 * @param {} io
+	 * @param {} ws
+	 */
 	function registerWSEvent(ws_connection, io, ws) {
 		ws_connection.on('message', function (message) {
 			var request;

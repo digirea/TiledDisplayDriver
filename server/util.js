@@ -9,6 +9,12 @@ var fs = require('fs'),
 //-------------------------------------
 // Utility functions
 //-------------------------------------
+/**
+ * Description
+ * @method getFiles
+ * @param {} dir
+ * @param {} list
+ */
 function getFiles(dir, list) {
 	"use strict";
 	var i,
@@ -43,6 +49,12 @@ function getFiles(dir, list) {
 	}
 }
 
+/**
+ * Description
+ * @method getExtention
+ * @param {} fileName
+ * @return CallExpression
+ */
 function getExtention(fileName) {
 	"use strict";
 	var ret,
@@ -60,6 +72,11 @@ function getExtention(fileName) {
 	return ret.toString().toLowerCase();
 }
 
+/**
+ * Description
+ * @method removeFile
+ * @param {} filePath
+ */
 function removeFile(filePath) {
 	"use strict";
 	if (fs.existsSync(filePath) && !fs.statSync(filePath).isDirectory()) {
@@ -67,6 +84,11 @@ function removeFile(filePath) {
 	}
 }
 
+/**
+ * Description
+ * @method removeDir
+ * @param {} dirPath
+ */
 function removeDir(dirPath) {
 	"use strict";
 	if (fs.existsSync(dirPath) && fs.statSync(dirPath).isDirectory()) {
@@ -74,6 +96,11 @@ function removeDir(dirPath) {
 	}
 }
 
+/**
+ * Description
+ * @method mkdirSync
+ * @param {} path
+ */
 var mkdirSync = function (path) {
 	"use strict";
 	try {
@@ -87,6 +114,15 @@ var mkdirSync = function (path) {
 
 /// launch application
 /// @param command list with args e.g. [ "hoge.exe", "arg1", "arg2" ]
+/**
+ * Description
+ * @method launchApp
+ * @param {} command
+ * @param {} startcallback
+ * @param {} endcallback
+ * @param {} logname
+ * @return proc
+ */
 function launchApp(command, startcallback, endcallback, logname) {
 	"use strict";
 	var child,
@@ -134,6 +170,11 @@ function launchApp(command, startcallback, endcallback, logname) {
 	return proc;
 }
 
+/**
+ * Description
+ * @method kill
+ * @param {} proc
+ */
 function kill(proc) {
 	"use strict";
 	if (process.platform === 'win32') {
@@ -144,6 +185,12 @@ function kill(proc) {
 	}
 }
 
+/**
+ * Description
+ * @method isRelative
+ * @param {} p
+ * @return BinaryExpression
+ */
 function isRelative(p) {
 	"use strict";
 	var normal = path.normalize(p),
@@ -151,6 +198,12 @@ function isRelative(p) {
 	return normal !== absolute;
 }
 
+/**
+ * Description
+ * @method uuidFromBytes
+ * @param {} rnd
+ * @return CallExpression
+ */
 function uuidFromBytes(rnd) {
 	"use strict";
 	rnd[6] = (rnd[6] & 0x0f) | 0x40;
@@ -160,6 +213,11 @@ function uuidFromBytes(rnd) {
 	return rnd.join('-');
 }
 
+/**
+ * Description
+ * @method generateUUID
+ * @param {} callback
+ */
 function generateUUID(callback) {
 	"use strict";
 	if (typeof (callback) !== 'function') {
@@ -171,11 +229,22 @@ function generateUUID(callback) {
 	});
 }
 
+/**
+ * Description
+ * @method generateUUID8
+ * @return CallExpression
+ */
 function generateUUID8() {
 	'use strict';
 	return generateUUID().slice(0, 8);
 }
 
+/**
+ * Description
+ * @method detectImageType
+ * @param {} binary
+ * @return Literal
+ */
 function detectImageType(binary) {
 	"use strict";
 	if (!binary || binary.length < 4) { return "unknown"; }

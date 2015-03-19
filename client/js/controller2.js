@@ -27,32 +27,73 @@
 		socket.emit('reqRegisterEvent', "v1");
 	});
 	
+	/**
+	 * Description
+	 * @method draggingOffsetFunc
+	 * @param {} top
+	 * @param {} left
+	 */
 	function draggingOffsetFunc(top, left) {
 		dragOffsetTop = top;
 		dragOffsetLeft = left;
 	}
 	
+	/**
+	 * Description
+	 * @method isVisible
+	 * @param {} metaData
+	 * @return LogicalExpression
+	 */
 	function isVisible(metaData) {
 		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
 	}
 	
+	/**
+	 * Description
+	 * @method isFreeMode
+	 * @return BinaryExpression
+	 */
 	function isFreeMode() {
 		return snapSetting === 'free';
 	}
 	
+	/**
+	 * Description
+	 * @method isUnvisibleID
+	 * @param {} id
+	 * @return BinaryExpression
+	 */
 	function isUnvisibleID(id) {
 		return (id.indexOf("onlist:") >= 0);
 	}
 	
+	/**
+	 * Description
+	 * @method isContentArea
+	 * @param {} px
+	 * @param {} py
+	 * @return LogicalExpression
+	 */
 	function isContentArea(px, py) {
 		var contentArea = document.getElementById('left_main_area');
 		return (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight));
 	}
 	
+	/**
+	 * Description
+	 * @method isDisplayTabSelected
+	 * @return BinaryExpression
+	 */
 	function isDisplayTabSelected() {
 		return (document.getElementById('display_tab_link').className.indexOf("active") >= 0);
 	}
 	
+	/**
+	 * Description
+	 * @method getCookie
+	 * @param {} key
+	 * @return Literal
+	 */
 	function getCookie(key) {
 		var i,
 			pos,
@@ -73,6 +114,10 @@
 		return "";
 	}
 	
+	/**
+	 * Description
+	 * @method saveCookie
+	 */
 	function saveCookie() {
 		var displayScale = vscreen.getWholeScale();
 		console.log("saveCookie");
@@ -80,6 +125,11 @@
 		document.cookie = 'snap_setting=' + snapSetting;
 	}
 	
+	/**
+	 * Description
+	 * @method changeLeftTab
+	 * @param {} type
+	 */
 	function changeLeftTab(type) {
 		var displayTabTitle = document.getElementById('display_tab_title'),
 			contentTabTitle = document.getElementById('content_tab_title');
@@ -90,6 +140,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method getElem
+	 * @param {} id
+	 * @return CallExpression
+	 */
 	function getElem(id) {
 		var elem,
 			uid,
@@ -116,11 +172,22 @@
 		return document.getElementById(id);
 	}
 	
+	/**
+	 * Description
+	 * @method getSelectedID
+	 * @return MemberExpression
+	 */
 	function getSelectedID() {
 		var contentID = document.getElementById('content_id')
 		return contentID.innerHTML;
 	}
 	
+	/**
+	 * Description
+	 * @method toIntMetaData
+	 * @param {} metaData
+	 * @return metaData
+	 */
 	function toIntMetaData(metaData) {
 		metaData.posx = parseInt(metaData.posx, 10);
 		metaData.posy = parseInt(metaData.posy, 10);
@@ -130,6 +197,10 @@
 	}
 	
 	/// get image from server
+	/**
+	 * Description
+	 * @method update
+	 */
 	function update() {
 		vscreen.clearScreenAll();
 		socket.emit('reqGetVirtualDisplay', JSON.stringify({type: "all", id: ""}));
@@ -138,23 +209,45 @@
 	}
 	
 	/// delete content
+	/**
+	 * Description
+	 * @method deleteContent
+	 */
 	function deleteContent() {
 		socket.emit('reqDeleteContent', JSON.stringify({id : getSelectedID()}));
 	}
 	
+	/**
+	 * Description
+	 * @method deleteDisplay
+	 */
 	function deleteDisplay() {
 		console.log('reqDeleteWindow' + getSelectedID());
 		socket.emit('reqDeleteWindow', JSON.stringify({id : getSelectedID()}));
 	}
 	
+	/**
+	 * Description
+	 * @method deleteDisplayAll
+	 */
 	function deleteDisplayAll() {
 		socket.emit('reqDeleteWindow', JSON.stringify({type : "all", id : ""}));
 	}
 	
+	/**
+	 * Description
+	 * @method addContent
+	 * @param {} binary
+	 */
 	function addContent(binary) {
 		socket.emit('reqAddContent', binary);
 	}
 	
+	/**
+	 * Description
+	 * @method updateTransform
+	 * @param {} metaData
+	 */
 	function updateTransform(metaData) {
 		//console.log(JSON.stringify(metaData));
 		if (metaData.type === windowType) {
@@ -166,10 +259,19 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method updateContent
+	 * @param {} binary
+	 */
 	function updateContent(binary) {
 		socket.emit('reqUpdateContent', binary);
 	}
 	
+	/**
+	 * Description
+	 * @method updateWindowData
+	 */
 	function updateWindowData() {
 		var windowData,
 			whole = vscreen.getWhole(),
@@ -185,6 +287,14 @@
 		socket.emit('reqUpdateVirtualDisplay', JSON.stringify(windowData));
 	}
 	
+	/**
+	 * Description
+	 * @method addInputProperty
+	 * @param {} id
+	 * @param {} leftLabel
+	 * @param {} rightLabel
+	 * @param {} value
+	 */
 	function addInputProperty(id, leftLabel, rightLabel, value) {
 		/*
 			<div class="input-group">
@@ -217,6 +327,13 @@
 		transInput.appendChild(group);
 	}
 	
+	/**
+	 * Description
+	 * @method addButtonProperty
+	 * @param {} id
+	 * @param {} value
+	 * @param {} func
+	 */
 	function addButtonProperty(id, value, func) {
 		/*
 			<div class="btn btn-success" id="content_add_button">Add</div>
@@ -234,6 +351,12 @@
 		transInput.appendChild(group);
 	}
 	
+	/**
+	 * Description
+	 * @method addScaleDropdown
+	 * @param {} id
+	 * @param {} value
+	 */
 	function addScaleDropdown(id, value) {
 		/*
 			<li role="presentation">
@@ -251,6 +374,11 @@
 		a.href = "#";
 		a.id = id;
 		a.innerHTML = value;
+		/**
+		 * Description
+		 * @method onclick
+		 * @param {} evt
+		 */
 		a.onclick = function (evt) {
 			var displayScale = parseFloat(this.innerHTML);
 			if (displayScale < 0) {
@@ -267,6 +395,11 @@
 		dropDown.appendChild(li);
 	}
 	
+	/**
+	 * Description
+	 * @method assignSplitWholes
+	 * @param {} splitWholes
+	 */
 	function assignSplitWholes(splitWholes) {
 		var screenElem,
 			i,
@@ -293,6 +426,13 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method changeWholeSplit
+	 * @param {} x
+	 * @param {} y
+	 * @param {} withoutUpdate
+	 */
 	function changeWholeSplit(x, y, withoutUpdate) {
 		var ix = parseInt(x, 10),
 			iy = parseInt(y, 10),
@@ -321,6 +461,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method initPropertyArea
+	 * @param {} id
+	 * @param {} type
+	 */
 	function initPropertyArea(id, type) {
 		var contentX,
 			contentY,
@@ -423,6 +569,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignContentProperty
+	 * @param {} metaData
+	 */
 	function assignContentProperty(metaData) {
 		console.log("assignContentProperty:" + JSON.stringify(metaData));
 		var transx = document.getElementById('content_transform_x'),
@@ -440,6 +591,10 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignVirtualDisplayProperty
+	 */
 	function assignVirtualDisplayProperty() {
 		var whole = vscreen.getWhole(),
 			splitCount = vscreen.getSplitCount(),
@@ -462,6 +617,10 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignViewSetting
+	 */
 	function assignViewSetting() {
 		var scale = vscreen.getWholeScale(),
 			scale_current = document.getElementById('scale_dropdown_current'),
@@ -475,6 +634,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method onManipulatorMove
+	 * @param {} evt
+	 */
 	function onManipulatorMove(evt) {
 		var px, py,
 			lastx, lasty,
@@ -538,6 +702,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method enableDeleteButton
+	 * @param {} isEnable
+	 */
 	function enableDeleteButton(isEnable) {
 		if (isEnable) {
 			document.getElementById('content_delete_button').className = "btn btn-danger";
@@ -546,6 +715,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method enableDisplayDeleteButton
+	 * @param {} isEnable
+	 */
 	function enableDisplayDeleteButton(isEnable) {
 		if (isEnable) {
 			document.getElementById('display_delete_button').className = "btn btn-primary";
@@ -554,6 +728,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method enableUpdateImageButton
+	 * @param {} isEnable
+	 */
 	function enableUpdateImageButton(isEnable) {
 		if (isEnable) {
 			document.getElementById('update_image_input').disabled = false;
@@ -563,6 +742,11 @@
 	}
 	
 	/// select content or window
+	/**
+	 * Description
+	 * @method select
+	 * @param {} id
+	 */
 	function select(id) {
 		var elem,
 			metaData;
@@ -620,6 +804,10 @@
 	}
 	
 	/// unselect content or window
+	/**
+	 * Description
+	 * @method unselect
+	 */
 	function unselect() {
 		var elem,
 			metaData;
@@ -640,6 +828,10 @@
 	}
 	
 	/// close selected content or window
+	/**
+	 * Description
+	 * @method closeFunc
+	 */
 	function closeFunc() {
 		var id = getSelectedID(),
 			metaData = null,
@@ -658,6 +850,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method getSelectedElem
+	 * @return Literal
+	 */
 	function getSelectedElem() {
 		var targetID = document.getElementById('content_id').innerHTML;
 		if (targetID) {
@@ -667,6 +864,11 @@
 	}
 	
 	/// change zIndex
+	/**
+	 * Description
+	 * @method changeZIndex
+	 * @param {} index
+	 */
 	function changeZIndex(index) {
 		var elem = getSelectedElem(),
 			metaData;
@@ -680,6 +882,12 @@
 	}
 	
 	/// change rect
+	/**
+	 * Description
+	 * @method changeRect
+	 * @param {} id
+	 * @param {} value
+	 */
 	function changeRect(id, value) {
 		var elem = getSelectedElem(),
 			metaData,
@@ -710,6 +918,12 @@
 	}
 	
 	/// setup content
+	/**
+	 * Description
+	 * @method setupContent
+	 * @param {} elem
+	 * @param {} id
+	 */
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
 			var previewArea = document.getElementById('preview_area'),
@@ -739,10 +953,23 @@
 	}
 	
 	///  setup window
+	/**
+	 * Description
+	 * @method setupWindow
+	 * @param {} elem
+	 * @param {} id
+	 */
 	function setupWindow(elem, id) {
 		setupContent(elem, id);
 	}
 	
+	/**
+	 * Description
+	 * @method snapToSplitWhole
+	 * @param {} elem
+	 * @param {} metaData
+	 * @param {} splitWhole
+	 */
 	function snapToSplitWhole(elem, metaData, splitWhole) {
 		var orgWidth = parseFloat(metaData.orgWidth),
 			orgHeight = parseFloat(metaData.orgHeight),
@@ -766,6 +993,10 @@
 		manipulator.moveManipulator(elem);
 	}
 	
+	/**
+	 * Description
+	 * @method clearSplitHightlight
+	 */
 	function clearSplitHightlight() {
 		var splitWholes,
 			i;
@@ -901,6 +1132,11 @@
 	});
 	
 	/// send text to server
+	/**
+	 * Description
+	 * @method sendText
+	 * @param {} text
+	 */
 	function sendText(text) {
 		var previewArea = document.getElementById('preview_area'),
 			textInput = document.getElementById('text_input'),
@@ -941,6 +1177,10 @@
 	}
 	
 	/// send url to server
+	/**
+	 * Description
+	 * @method sendURL
+	 */
 	function sendURL() {
 		console.log("sendurl");
 		var previewArea = document.getElementById('preview_area'),
@@ -959,6 +1199,13 @@
 	}
 	
 	/// send image to server
+	/**
+	 * Description
+	 * @method sendImage
+	 * @param {} imagebinary
+	 * @param {} width
+	 * @param {} height
+	 */
 	function sendImage(imagebinary, width, height) {
 		var metaData = {type : "image", posx : 0, posy : 0, width : width, height: height},
 			binary = metabinary.createMetaBinary(metaData, imagebinary);
@@ -967,6 +1214,11 @@
 	}
 	
 	/// open image file
+	/**
+	 * Description
+	 * @method openImage
+	 * @param {} evt
+	 */
 	function openImage(evt) {
 		var files = evt.target.files,
 			file,
@@ -1001,6 +1253,11 @@
 	}
 	
 	/// open text file
+	/**
+	 * Description
+	 * @method openText
+	 * @param {} evt
+	 */
 	function openText(evt) {
 		var files = evt.target.files,
 			file,
@@ -1021,6 +1278,11 @@
 	}
 	
 	/// replace image file
+	/**
+	 * Description
+	 * @method replaceImage
+	 * @param {} evt
+	 */
 	function replaceImage(evt) {
 		var files = evt.target.files,
 			file,
@@ -1043,6 +1305,11 @@
 	}
 	
 	/// add all screens
+	/**
+	 * Description
+	 * @method addScreenRect
+	 * @param {} windowData
+	 */
 	function addScreenRect(windowData) {
 		var whole = vscreen.getWhole(),
 			screens = vscreen.getScreenAll(),
@@ -1085,6 +1352,11 @@
 	}
 	
 	/// update all screens
+	/**
+	 * Description
+	 * @method updateScreen
+	 * @param {} windowData
+	 */
 	function updateScreen(windowData) {
 		var whole = vscreen.getWhole(),
 			splitCount = vscreen.getSplitCount(),
@@ -1126,6 +1398,10 @@
 		//changeWholeSplit(wholeSplitX.value, this.value);
 	}
 	
+	/**
+	 * Description
+	 * @method changeDisplayValue
+	 */
 	function changeDisplayValue() {
 		var whole = vscreen.getWhole(),
 			wholeWidth = document.getElementById('whole_width'),
@@ -1175,6 +1451,12 @@
 		changeWholeSplit(ix, iy, true);
 	}
 	
+	/**
+	 * Description
+	 * @method importContentToView
+	 * @param {} metaData
+	 * @param {} contentData
+	 */
 	function importContentToView(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
 			elem,
@@ -1232,6 +1514,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method importContentToList
+	 * @param {} metaData
+	 * @param {} contentData
+	 */
 	function importContentToList(metaData, contentData) {
 		var hasVisible = metaData.hasOwnProperty('visible'),
 			contentArea = document.getElementById('content_area'),
@@ -1298,12 +1586,23 @@
 	}
 	
 	/// import content
+	/**
+	 * Description
+	 * @method importContent
+	 * @param {} metaData
+	 * @param {} contentData
+	 */
 	function importContent(metaData, contentData) {
 		importContentToList(metaData, contentData);
 		importContentToView(metaData, contentData);
 	}
 	
-function importWindowToView(windowData) {
+	/**
+	 * Description
+	 * @method importWindowToView
+	 * @param {} windowData
+	 */
+	function importWindowToView(windowData) {
 		if (windowData.type !== windowType) {
 			return;
 		}
@@ -1328,6 +1627,11 @@ function importWindowToView(windowData) {
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method importWindowToList
+	 * @param {} windowData
+	 */
 	function importWindowToList(windowData) {
 		var displayArea = document.getElementById('display_area'),
 			divElem = document.createElement("div"),
@@ -1349,6 +1653,10 @@ function importWindowToView(windowData) {
 		displayArea.appendChild(divElem);
 	}
 	
+	/**
+	 * Description
+	 * @method addWholeWindowToList
+	 */
 	function addWholeWindowToList() {
 		var displayArea = document.getElementById('display_area'),
 			divElem = document.createElement("div"),
@@ -1369,17 +1677,30 @@ function importWindowToView(windowData) {
 		displayArea.appendChild(divElem);
 	}
 	
+	/**
+	 * Description
+	 * @method clearWindowList
+	 */
 	function clearWindowList() {
 		var displayArea = document.getElementById('display_area');
 		displayArea.innerHTML = "";
 	}
 	
 	/// import window
+	/**
+	 * Description
+	 * @method importWindow
+	 * @param {} windowData
+	 */
 	function importWindow(windowData) {
 		importWindowToView(windowData);
 		importWindowToList(windowData);
 	}
 	
+	/**
+	 * Description
+	 * @method initAddContentArea
+	 */
 	function initAddContentArea() {
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),
@@ -1405,6 +1726,10 @@ function importWindowToView(windowData) {
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method initViewSettingArea
+	 */
 	function initViewSettingArea() {
 		var dropDownCurrent = document.getElementById('snap_dropdown_current'),
 			free = document.getElementById('dropdown_item1'),
@@ -1418,12 +1743,14 @@ function importWindowToView(windowData) {
 			snapSetting = 'free';
 			saveCookie();
 		};
+
 		display.onclick = function () {
 			dropDownCurrent.innerHTML = this.innerHTML;
 			console.log("display mode");
 			snapSetting = 'display';
 			saveCookie();
 		};
+
 		displaySettingItem.onclick = function () {
 			select(wholeWindowID);
 		};
@@ -1441,6 +1768,11 @@ function importWindowToView(windowData) {
 		//addScaleDropdown('display_scale_11', "custum");
 	}
 	
+	/**
+	 * Description
+	 * @method initContentArea
+	 * @param {} bottomfunc
+	 */
 	function initContentArea(bottomfunc) {
 		var addButton = document.getElementById('content_add_button'),
 			contentDeleteButton = document.getElementById('content_delete_button');
@@ -1451,6 +1783,10 @@ function importWindowToView(windowData) {
 		contentDeleteButton.onclick = deleteContent;
 	}
 	
+	/**
+	 * Description
+	 * @method initDisplayArea
+	 */
 	function initDisplayArea() {
 		var displayDeleteButton = document.getElementById('display_delete_button'),
 			displayDeleteAllButton = document.getElementById('display_delete_all_button');
@@ -1459,6 +1795,11 @@ function importWindowToView(windowData) {
 	}
 	
 	
+	/**
+	 * Description
+	 * @method initLeftArea
+	 * @param {} bottomfunc
+	 */
 	function initLeftArea(bottomfunc) {
 		var displayArea = document.getElementById('display_area'),
 			displayTabTitle = document.getElementById('display_tab_title'),
@@ -1497,6 +1838,7 @@ function importWindowToView(windowData) {
 			displayTabLink.className = "active";
 			contentTabLink.className = "";
 		};
+
 		contentTabTitle.onclick = function () {
 			displayArea.style.display = "none";
 			contentArea.style.display = "block";
@@ -1512,6 +1854,10 @@ function importWindowToView(windowData) {
 	}
 	
 	/// initialize elemets, events
+	/**
+	 * Description
+	 * @method init
+	 */
 	function init() {
 		var timer = null,
 			scale,

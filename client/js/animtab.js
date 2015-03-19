@@ -8,26 +8,70 @@
 		initialOverflow = {},
 		isMoving = {};
 	
+	/**
+	 * key, valueを与えると連想配列で返す
+	 * @method to_json
+	 * @param {Object} key キー
+	 * @param {Object} value 値
+	 * @return json 連祖配列
+	 */
 	function to_json(key, value) {
 		var json = {};
 		json[key] = value;
 		return json;
 	}
 	
+	/**
+	 * "px"付きの文字列からpxを取り数値文字列として返す.
+	 * @method to_num
+	 * @param {String} pixelStr px付き文字列
+	 * @return CallExpression 数値文字列
+	 */
 	function to_num(pixelStr) {
 		return pixelStr.split('px').join('');
 	}
 	
 	/// initialize dialog and set separator 
+	/**
+	 * ドラッグ可能なセパレータをセットアップ
+	 * @method setupSeparator
+	 * @param {String} direction 方向文字列
+	 * @param {Element} separator セパレータエレメント
+	 * @param {Element} button ボタンエレメント
+	 * @param {Array} targets ターゲットリスト
+	 * @param {String} whstr 幅高さ文字列
+	 */
 	function setupSeparator(direction, separator, button, targets, whstr) {
 		var dragging = "no", // "no", "ready", "yes"
 			buttonID = Object.keys(button)[0],
 			targetID = Object.keys(targets)[0],
 			buttonElem = document.getElementById(buttonID),
-			diffButtonTargetMax = 0;
+			diffButtonTargetMax = 0,
+			id,
+			maxValue = 0,
+			targetMaxOffset = {},
+			target;
 		
 		diffButtonTargetMax = to_num(button[buttonID].max) - to_num(targets[targetID].max);
 		//console.log("diffButtonTargetMax" + diffButtonTargetMax);
+		
+		// find max value
+		for (id in targets) {
+			if (targets.hasOwnProperty(id)) {
+				target = targets[id];
+				if (to_num(target.max) > maxValue) {
+					maxValue = to_num(target.max);
+				}
+			}
+		}
+		
+		// create targetMaxOffset dict
+		for (id in targets) {
+			if (targets.hasOwnProperty(id)) {
+				target = targets[id];
+				targetMaxOffset[id] = maxValue - to_num(target.max);
+			}
+		}
 		
 		separator.onmousedown = function (e) {
 			var target,
@@ -43,6 +87,7 @@
 				}
 			}
 		};
+		
 		separator.onmouseover = function (e) {
 			//e.preventDefault();
 			
@@ -98,8 +143,8 @@
 				for (id in targets) {
 					if (targets.hasOwnProperty(id)) {
 						target = document.getElementById(id);
-						target.style[whstr] = pos + 'px';
-						targets[id].max = pos + 'px';
+						target.style[whstr] = (pos - targetMaxOffset[id]) + 'px';
+						targets[id].max = (pos - targetMaxOffset[id]) + 'px';
 					}
 				}
 				separator.style[direction] = pos + 'px';
@@ -112,7 +157,18 @@
 		});
 	}
 	
-	function create(direction, button, targets, textlabel) {
+	/**
+	 * タブの作成
+	 * @method create
+	 * @param {String} direction 方向文字列
+	 * @param {Element} button ボタンエレメント
+	 * @param {Array} targets ターゲットリスト
+	 * @param {String} textlabel テキストラベル
+	 * @param {Function} cbopen オープンコールバック
+	 * @param {Function} cbclose クローズコールバック
+	 * @return createAnimateButton タブ開閉ファンクション
+	 */
+	function create(direction, button, targets, textlabel, cbopen, cbclose) {
 		var buttonElem = document.createElement("input"),
 			separatorElem = document.createElement("span"),
 			buttonID = Object.keys(button)[0],
@@ -120,7 +176,7 @@
 			buttonMax = button[buttonID].max,
 			whstr,
 			json,
-			time = 500,
+			time = 100,
 			state = 0,
 			targetElem,
 			targetMin,
@@ -187,6 +243,11 @@
 		button[buttonID].min = buttonMin;
 		button[buttonID].max = buttonMax;
 		
+		/**
+		 * アニメーション付きで開閉するタブボタンを作る
+		 * @method createAnimateButton
+		 * @param {Boolean} isOpen trueの場合タブが開く.falseの場合タブが閉じる.
+		 */
 		function createAnimateButton(isOpen) {
 			var i = 0,
 				id,
@@ -227,6 +288,7 @@
 			}
 			
 			function beforeSep() {}
+
 			function afterSep() {}
 			
 			for (id in targets) {
@@ -236,12 +298,18 @@
 					targetMin = targets[id].min;
 					targetMax = targets[id].max;
 					if (state === 0) {
+						if (cbopen) {
+							cbopen();
+						}
 						state = 1;
 						$animate(targetElem, to_json(whstr, { from: targetMax, to: targetMin }), time, beforeTarget);
 						//$animate(buttonElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeButton);
 						$animate(separatorElem, to_json(direction, { from : buttonMax, to : buttonMin }), time, beforeSep);
 					} else if (state === 2) {
 						state = 3;
+						if (cbclose) {
+							cbclose();
+						}
 						$animate(targetElem, to_json(whstr, { from: targetMin, to: targetMax }), time, afterTarget);
 						//$animate(buttonElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterButton);
 						$animate(separatorElem, to_json(direction, { from : buttonMin, to : buttonMax }), time, afterSep);
@@ -253,6 +321,12 @@
 		isMoving[separatorElem] = false;
 		setupSeparator(direction, separatorElem, button, targets, whstr);
 		
+		/**
+		 * タブボタンの作成
+		 * @method createButton
+		 * @param {String} direction 方向文字列
+	 	 * @param {Array} targets ターゲットリスト
+		 */
 		function createButton(direction, targets) {
 			separatorElem.addEventListener('click', function () {
 				if (isMoving.hasOwnProperty(separatorElem)) {

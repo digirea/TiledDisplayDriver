@@ -5,8 +5,18 @@
 (function (vscreen) {
 	"use strict";
 	
+	/**
+	 * Description
+	 * @method VscreenUtil
+	 */
 	var VscreenUtil = function () {};
 	
+	/**
+	 * Description
+	 * @method toFloatRect
+	 * @param {} metaData
+	 * @return CallExpression
+	 */
 	function toFloatRect(metaData) {
 		return vscreen.makeRect(
 			parseFloat(metaData.posx),
@@ -16,6 +26,12 @@
 		);
 	}
 	
+	/**
+	 * Description
+	 * @method toIntRect
+	 * @param {} metaData
+	 * @return CallExpression
+	 */
 	function toIntRect(metaData) {
 		return vscreen.makeRect(
 			parseInt(metaData.posx, 10),
@@ -25,6 +41,12 @@
 		);
 	}
 	
+	/**
+	 * Description
+	 * @method resizeText
+	 * @param {} elem
+	 * @param {} rect
+	 */
 	function resizeText(elem, rect) {
 		var lineCount = 1,
 			fsize;
@@ -41,6 +63,14 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignRect
+	 * @param {} elem
+	 * @param {} rect
+	 * @param {} withoutWidth
+	 * @param {} withoutHeight
+	 */
 	function assignRect(elem, rect, withoutWidth, withoutHeight) {
 		if (elem && rect) {
 			elem.style.position = 'absolute';
@@ -56,6 +86,12 @@
 		//console.log("assignRect:" + JSON.stringify(rect));
 	}
 	
+	/**
+	 * Description
+	 * @method assignZIndex
+	 * @param {} elem
+	 * @param {} metaData
+	 */
 	function assignZIndex(elem, metaData) {
 		var index;
 		if (metaData.hasOwnProperty('zIndex')) {
@@ -66,6 +102,13 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignMetaData
+	 * @param {} elem
+	 * @param {} metaData
+	 * @param {} useOrg
+	 */
 	function assignMetaData(elem, metaData, useOrg) {
 		var rect;
 		if (useOrg) {
@@ -82,6 +125,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignScreenRect
+	 * @param {} elem
+	 * @param {} rect
+	 */
 	function assignScreenRect(elem, rect) {
 		if (elem && rect) {
 			elem.style.position = 'absolute';
@@ -93,6 +142,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method transInv
+	 * @param {} metaData
+	 * @return metaData
+	 */
 	function transInv(metaData) {
 		var rect = vscreen.transformOrgInv(toFloatRect(metaData));
 		metaData.posx = rect.x;
@@ -102,6 +157,12 @@
 		return metaData;
 	}
 	
+	/**
+	 * Description
+	 * @method trans
+	 * @param {} metaData
+	 * @return metaData
+	 */
 	function trans(metaData) {
 		var rect = vscreen.transformOrg(toFloatRect(metaData));
 		metaData.posx = rect.x;
@@ -111,6 +172,11 @@
 		return metaData;
 	}
 	
+	/**
+	 * Description
+	 * @method transPosInv
+	 * @param {} metaData
+	 */
 	function transPosInv(metaData) {
 		var rect = vscreen.transformOrgInv(
 			vscreen.makeRect(parseFloat(metaData.posx, 10), parseFloat(metaData.posy, 10), 0, 0)

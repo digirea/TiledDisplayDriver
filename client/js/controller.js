@@ -16,25 +16,48 @@
 		metaDataDict = {};
 	
 	/// get image from server
+	/**
+	 * Description
+	 * @method update
+	 */
 	function update() {
 		socket.emit('reqGetContent', JSON.stringify({type: "all", id: ""}));
 	}
 	
 	/// delete content
+	/**
+	 * Description
+	 * @method deleteContent
+	 */
 	function deleteContent() {
 		var contentID = document.getElementById('delete_content_id');
 		socket.emit('reqDeleteContent', JSON.stringify({id : contentID.innerHTML}));
 	}
 	
+	/**
+	 * Description
+	 * @method addContent
+	 * @param {} binary
+	 */
 	function addContent(binary) {
 		socket.emit('reqAddContent', binary);
 	}
 	
+	/**
+	 * Description
+	 * @method updateTransform
+	 * @param {} metaData
+	 */
 	function updateTransform(metaData) {
 		//console.log("reqUpdateTransform");
 		socket.emit('reqUpdateTransform', JSON.stringify(metaData));
 	}
 	
+	/**
+	 * Description
+	 * @method updateContent
+	 * @param {} binary
+	 */
 	function updateContent(binary) {
 		socket.emit('reqUpdateContent', binary);
 	}
@@ -45,6 +68,12 @@
 	/// @param targetElem manipulator target
 	/// @param posx left position of target
 	/// @param posy top position of target
+	/**
+	 * Description
+	 * @method moveManipulator
+	 * @param {} manips
+	 * @param {} targetElem
+	 */
 	function moveManipulator(manips, targetElem) {
 		var left,
 			top,
@@ -74,6 +103,12 @@
 		manips[3].style.top = top + "px";
 	}
 	
+	/**
+	 * Description
+	 * @method resizeText
+	 * @param {} elem
+	 * @param {} rect
+	 */
 	function resizeText(elem, rect) {
 		var lineCount = 1,
 			fsize;
@@ -90,6 +125,15 @@
 		elem.style.height = rect.h + 'px';
 	}
 	
+	/**
+	 * Description
+	 * @method makeRect
+	 * @param {} left
+	 * @param {} top
+	 * @param {} width
+	 * @param {} height
+	 * @return ObjectExpression
+	 */
 	function makeRect(left, top, width, height) {
 		return {
 			x : left,
@@ -99,6 +143,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method toIntRect
+	 * @param {} metaData
+	 * @return CallExpression
+	 */
 	function toIntRect(metaData) {
 		return makeRect(
 			parseInt(metaData.posx, 10),
@@ -108,6 +158,12 @@
 		);
 	}
 	
+	/**
+	 * Description
+	 * @method assignMetaData
+	 * @param {} elem
+	 * @param {} metaData
+	 */
 	function assignMetaData(elem, metaData) {
 		elem.style.left = Number(metaData.posx) + "px";
 		elem.style.top = Number(metaData.posy) + "px";
@@ -124,6 +180,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method onManipulatorMove
+	 * @param {} evt
+	 */
 	function onManipulatorMove(evt) {
 		var px, py,
 			lastx, lasty,
@@ -167,6 +228,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method setupManipulator
+	 * @param {} manip
+	 */
 	function setupManipulator(manip) {
 		var manipHalfWidth = 5,
 			manipHalfHeight = 5,
@@ -198,6 +264,10 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method removeManipulator
+	 */
 	function removeManipulator() {
 		var i,
 			previewArea = document.getElementById('preview_area');
@@ -208,6 +278,11 @@
 	}
 	
 	/// show manipulator rects on elem
+	/**
+	 * Description
+	 * @method showManipulator
+	 * @param {} elem
+	 */
 	function showManipulator(elem) {
 		var manips = [
 				document.createElement('span'),
@@ -233,6 +308,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method setupContent
+	 * @param {} elem
+	 * @param {} id
+	 */
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
 			var previewArea = document.getElementById('preview_area'),
@@ -261,6 +342,11 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method onmousedown
+	 * @param {} evt
+	 */
 	window.document.onmousedown = function (evt) {
 		var elem;
 		// erase last border
@@ -272,6 +358,11 @@
 			removeManipulator();
 		}
 	};
+	/**
+	 * Description
+	 * @method onmousemove
+	 * @param {} evt
+	 */
 	window.document.onmousemove = function (evt) {
 		var i,
 			metaData,
@@ -298,6 +389,10 @@
 			evt.preventDefault();
 		}
 	};
+	/**
+	 * Description
+	 * @method onmouseup
+	 */
 	window.document.onmouseup = function () {
 		var previewArea = document.getElementById('preview_area'),
 			metaData,
@@ -319,6 +414,10 @@
 	};
 
 	/// send text to server
+	/**
+	 * Description
+	 * @method sendText
+	 */
 	function sendText() {
 		console.log("sendtest");
 		var previewArea = document.getElementById('preview_area'),
@@ -340,6 +439,10 @@
 	}
 	
 	/// send url to server
+	/**
+	 * Description
+	 * @method sendURL
+	 */
 	function sendURL() {
 		console.log("sendurl");
 		var previewArea = document.getElementById('preview_area'),
@@ -358,6 +461,13 @@
 	}
 	
 	/// send image to server
+	/**
+	 * Description
+	 * @method sendImage
+	 * @param {} imagebinary
+	 * @param {} width
+	 * @param {} height
+	 */
 	function sendImage(imagebinary, width, height) {
 		var metaData = {type : "image", posx : 0, posy : 0, width : width, height: height},
 			binary = metabinary.createMetaBinary(metaData, imagebinary);
@@ -366,6 +476,11 @@
 	}
 	
 	/// open image file
+	/**
+	 * Description
+	 * @method openImage
+	 * @param {} evt
+	 */
 	function openImage(evt) {
 		var files = evt.target.files,
 			file,
@@ -400,6 +515,11 @@
 	}
 	
 	/// replace image file
+	/**
+	 * Description
+	 * @method replaceImage
+	 * @param {} evt
+	 */
 	function replaceImage(evt) {
 		var files = evt.target.files,
 			file,
@@ -422,6 +542,12 @@
 	}
 	
 	/// import content
+	/**
+	 * Description
+	 * @method importContent
+	 * @param {} metaData
+	 * @param {} contentData
+	 */
 	function importContent(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
 			elem,
@@ -479,6 +605,10 @@
 		//console.log(metaData);
 	}
 	
+	/**
+	 * Description
+	 * @method init
+	 */
 	function init() {
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),

@@ -5,6 +5,10 @@
 (function () {
 	"use strict";
 	
+	/**
+	 * Description
+	 * @method Manipulator
+	 */
 	var Manipulator = function () {},
 		draggingManip = null,
 		windowType = "window",
@@ -12,18 +16,37 @@
 		draggingOffsetFunc = null,
 		closeFunc = null;
 	
+	/**
+	 * Description
+	 * @method getDraggingManip
+	 * @return draggingManip
+	 */
 	function getDraggingManip() {
 		return draggingManip;
 	}
 	
+	/**
+	 * Description
+	 * @method setDraggingOffsetFunc
+	 * @param {} func
+	 */
 	function setDraggingOffsetFunc(func) {
 		draggingOffsetFunc = func;
 	}
 	
+	/**
+	 * Description
+	 * @method setCloseFunc
+	 * @param {} func
+	 */
 	function setCloseFunc(func) {
 		closeFunc = func;
 	}
 	
+	/**
+	 * Description
+	 * @method clearDraggingManip
+	 */
 	function clearDraggingManip() {
 		draggingManip = null;
 	}
@@ -31,6 +54,11 @@
 	/// move manipulator rects on elem
 	/// @param manips list of manipulator elements
 	/// @param targetElem manipulator target
+	/**
+	 * Description
+	 * @method moveManipulator
+	 * @param {} targetElem
+	 */
 	function moveManipulator(targetElem) {
 		if (manipulators.length < 3) {
 			console.log("manipulators:", manipulators);
@@ -68,6 +96,11 @@
 		manipulators[4].style.top = (top + 20) + "px";
 	}
 	
+	/**
+	 * Description
+	 * @method setupManipulator
+	 * @param {} manip
+	 */
 	function setupManipulator(manip) {
 		var manipHalfWidth = 5,
 			manipHalfHeight = 5,
@@ -119,6 +152,10 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method removeManipulator
+	 */
 	function removeManipulator() {
 		var i,
 			previewArea = document.getElementById('preview_area');
@@ -129,6 +166,11 @@
 	}
 	
 	/// show manipulator rects on elem
+	/**
+	 * Description
+	 * @method showManipulator
+	 * @param {} elem
+	 */
 	function showManipulator(elem) {
 		var manips = [
 				document.createElement('span'),

@@ -8,15 +8,27 @@
 	var client = new WebSocket("ws://" + location.hostname + ":8081/v1/"),
 		updateType = "all";
 	
+	/**
+	 * Description
+	 * @method onopen
+	 */
 	client.onopen = function () {
 		client.send("view");
 	};
 	
+	/**
+	 * Description
+	 * @method onclose
+	 */
 	client.onclose = function () {
 		console.log('close');
 	};
 
 	/// update all contants
+	/**
+	 * Description
+	 * @method update
+	 */
 	function update() {
 		var previewArea = document.getElementById('preview_area');
 		
@@ -32,11 +44,21 @@
 	
 	/// initialize.
 	/// setup gui events
+	/**
+	 * Description
+	 * @method init
+	 */
 	function init() {
 	}
 	
 	window.onload = init;
 
+	/**
+	 * Description
+	 * @method resizeText
+	 * @param {} elem
+	 * @param {} rect
+	 */
 	function resizeText(elem, rect) {
 		var lineCount = 1,
 			fsize;
@@ -53,6 +75,15 @@
 		elem.style.height = rect.h + 'px';
 	}
 	
+	/**
+	 * Description
+	 * @method makeRect
+	 * @param {} left
+	 * @param {} top
+	 * @param {} width
+	 * @param {} height
+	 * @return ObjectExpression
+	 */
 	function makeRect(left, top, width, height) {
 		return {
 			x : left,
@@ -62,6 +93,12 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method toIntRect
+	 * @param {} metaData
+	 * @return CallExpression
+	 */
 	function toIntRect(metaData) {
 		return makeRect(
 			parseInt(metaData.posx, 10),
@@ -71,6 +108,12 @@
 		);
 	}
 	
+	/**
+	 * Description
+	 * @method assignMetaData
+	 * @param {} elem
+	 * @param {} metaData
+	 */
 	function assignMetaData(elem, metaData) {
 		elem.style.left = Number(metaData.posx) + "px";
 		elem.style.top = Number(metaData.posy) + "px";
@@ -87,6 +130,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignMetaBinary
+	 * @param {} metaData
+	 * @param {} contentData
+	 */
 	function assignMetaBinary(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
 			tagName,
@@ -125,6 +174,11 @@
 		assignMetaData(elem, metaData);
 	}
 	
+	/**
+	 * Description
+	 * @method onmessage
+	 * @param {} message
+	 */
 	client.onmessage = function (message) {
 		var json;
 		//console.log('> got message');

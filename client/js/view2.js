@@ -12,10 +12,21 @@
 		metaDataDict = {},
 		windowType = "window";
 	
+	/**
+	 * Description
+	 * @method isVisible
+	 * @param {} metaData
+	 * @return LogicalExpression
+	 */
 	function isVisible(metaData) {
 		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
 	}
 	
+	/**
+	 * Description
+	 * @method getWindowSize
+	 * @return ObjectExpression
+	 */
 	function getWindowSize() {
 		return {
 			width : document.documentElement.clientWidth,
@@ -23,6 +34,10 @@
 		};
 	}
 	
+	/**
+	 * Description
+	 * @method registerWindow
+	 */
 	function registerWindow() {
 		var wh = getWindowSize(),
 			cx = wh.width / 2.0,
@@ -31,15 +46,10 @@
 		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height, visible : false }));
 	}
 	
-	/*
-	function updateWholeWindow() {
-		var wh = getWindowSize(),
-			cx = wh / 2.0,
-			cy = wh / 2.0;
-		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
-	}
-	*/
-	
+	/**
+	 * Description
+	 * @method onopen
+	 */
 	client.onopen = function () {
 		client.send("view");
 		if (!windowData) {
@@ -47,11 +57,19 @@
 		}
 	};
 	
+	/**
+	 * Description
+	 * @method onclose
+	 */
 	client.onclose = function () {
 		console.log('close');
 	};
 
 	/// update all contants
+	/**
+	 * Description
+	 * @method update
+	 */
 	function update() {
 		var previewArea = document.getElementById('preview_area');
 		
@@ -67,6 +85,12 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method assignMetaBinary
+	 * @param {} metaData
+	 * @param {} contentData
+	 */
 	function assignMetaBinary(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
 			tagName,
@@ -108,6 +132,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method setVisibleWindow
+	 * @param {} metaData
+	 */
 	function setVisibleWindow(metaData) {
 		if (metaData.hasOwnProperty('visible')) {
 			console.log("setVisibleWindow:", metaData);
@@ -119,6 +148,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method updateWindow
+	 * @param {} metaData
+	 */
 	function updateWindow(metaData) {
 		var cx = parseFloat(metaData.posx, 10),
 			cy = parseFloat(metaData.posy, 10),
@@ -138,6 +172,11 @@
 		vscreen.translateWhole(-cx, -cy);
 	}
 	
+	/**
+	 * Description
+	 * @method resizeViewport
+	 * @param {} windowData
+	 */
 	function resizeViewport(windowData) {
 		var wh = getWindowSize(),
 			cx = wh.width / 2.0,
@@ -166,6 +205,11 @@
 		}
 	});
 	
+	/**
+	 * Description
+	 * @method showDisplayID
+	 * @param {} id
+	 */
 	function showDisplayID(id) {
 		console.log("showDisplayID:" + id);
 		if (id && windowData.id === id) {
@@ -181,6 +225,11 @@
 		}
 	}
 	
+	/**
+	 * Description
+	 * @method onmessage
+	 * @param {} message
+	 */
 	client.onmessage = function (message) {
 		var json,
 			elem;
@@ -248,6 +297,10 @@
 	
 	/// initialize.
 	/// setup gui events
+	/**
+	 * Description
+	 * @method init
+	 */
 	function init() {
 		
 		// resize event

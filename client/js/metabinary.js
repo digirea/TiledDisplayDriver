@@ -10,10 +10,10 @@
 	// Array Buffer To String funciton
 	//
 	/**
-	 * Description
+	 * arrayBufferをStringに変換して返す
 	 * @method arrayBufferToString
-	 * @param {} arraybuf
-	 * @return decodedString
+	 * @param {ArrayBuffer} arraybuf arrayBuffer
+	 * @return URLデコードした文字列
 	 */
 	function arrayBufferToString(arraybuf) {
 		var chars = new Uint8Array(arraybuf),
@@ -33,10 +33,10 @@
 	// quate: http://jsperf.com/test-unicode-to-utf8
 	//
 	/**
-	 * Description
+	 * UTF8文字列をArrayBufferに変換して返す
 	 * @method utf8StringToArray
-	 * @param {} str
-	 * @return bytes
+	 * @param {String} str UTF8文字列
+	 * @return ArrayBuffer
 	 */
 	function utf8StringToArray(str) {
 		var n = str.length,
@@ -81,10 +81,10 @@
 	/// @param binary Blob data
 	/// @param endCallback end callback with loaded data (metadata, binary)
 	/**
-	 * Description
+	 * メタバイナリの読み込み.
 	 * @method loadMetaBinary
-	 * @param {} binary
-	 * @param {} endCallback
+	 * @param {BLOB} binary バイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function loadMetaBinary(binary, endCallback) {
 		var reader = new FileReader();
@@ -130,11 +130,11 @@
 	/// @param metaData json
 	/// @param binary arraybuffer
 	/**
-	 * Description
+	 * メタバイナリの作成
 	 * @method createMetaBinary
-	 * @param {} metaData
-	 * @param {} data
-	 * @return NewExpression
+	 * @param {Object} metaData メタデータ
+	 * @param {Object} data バイナリデータまたはUTF8文字列
+	 * @return メタバイナリ
 	 */
 	function createMetaBinary(metaData, data) {
 		var binary,

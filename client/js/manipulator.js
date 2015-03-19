@@ -6,7 +6,7 @@
 	"use strict";
 	
 	/**
-	 * Description
+	 * マニピュレータ
 	 * @method Manipulator
 	 */
 	var Manipulator = function () {},
@@ -17,34 +17,34 @@
 		closeFunc = null;
 	
 	/**
-	 * Description
+	 * ドラッグ中のマニピュレータを返す.
 	 * @method getDraggingManip
-	 * @return draggingManip
+	 * @return ドラッグ中のマニピュレータ
 	 */
 	function getDraggingManip() {
 		return draggingManip;
 	}
 	
 	/**
-	 * Description
+	 * ドラッグ中のオフセットコールバックの設定
 	 * @method setDraggingOffsetFunc
-	 * @param {} func
+	 * @param {Function} func ドラッグ中のオフセットコールバック
 	 */
 	function setDraggingOffsetFunc(func) {
 		draggingOffsetFunc = func;
 	}
 	
 	/**
-	 * Description
+	 * クローズコールバックの設定
 	 * @method setCloseFunc
-	 * @param {} func
+	 * @param {Function} func クローズコールバック
 	 */
 	function setCloseFunc(func) {
 		closeFunc = func;
 	}
 	
 	/**
-	 * Description
+	 * ドラッグ中のマニピュレータをクリア
 	 * @method clearDraggingManip
 	 */
 	function clearDraggingManip() {
@@ -55,9 +55,9 @@
 	/// @param manips list of manipulator elements
 	/// @param targetElem manipulator target
 	/**
-	 * Description
+	 * マニピュレータを移動させる
 	 * @method moveManipulator
-	 * @param {} targetElem
+	 * @param {Element} targetElem 移動したエレメント
 	 */
 	function moveManipulator(targetElem) {
 		if (manipulators.length < 3) {
@@ -97,9 +97,9 @@
 	}
 	
 	/**
-	 * Description
+	 * マニピュレータのセットアップ
 	 * @method setupManipulator
-	 * @param {} manip
+	 * @param {Element} manip マニピュレータエレメント
 	 */
 	function setupManipulator(manip) {
 		var manipHalfWidth = 5,
@@ -153,7 +153,7 @@
 	}
 	
 	/**
-	 * Description
+	 * マニピュレータを取り除く
 	 * @method removeManipulator
 	 */
 	function removeManipulator() {
@@ -167,9 +167,9 @@
 	
 	/// show manipulator rects on elem
 	/**
-	 * Description
+	 * マニピュレータを表示
 	 * @method showManipulator
-	 * @param {} elem
+	 * @param {Element} elem 対象エレメント
 	 */
 	function showManipulator(elem) {
 		var manips = [

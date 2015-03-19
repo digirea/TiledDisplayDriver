@@ -1,4 +1,4 @@
-/*jslint devel:true*/
+﻿/*jslint devel:true*/
 /*global io, socket, FileReader, Uint8Array, Blob, URL, event */
 
 /// virtual screen
@@ -6,7 +6,7 @@
 	"use strict";
 	
 	/**
-	 * Description
+	 * 仮想スクリーン
 	 * @method Vscreen
 	 */
 	var Vscreen = function () {},
@@ -22,34 +22,34 @@
 	
 	// utility
 	/**
-	 * Description
+	 * 現在のスケールを考慮した位置を返す.
 	 * @method scalePos
-	 * @param {} p
-	 * @param {} c
-	 * @return BinaryExpression
+	 * @param {Number} p 位置
+	 * @param {Number} c 中心位置
+	 * @return 現在のスケールを考慮した位置
 	 */
 	function scalePos(p, c) {
 		return (p - c) * vscreen_scale + c;
 	}
 	
 	/**
-	 * Description
+	 * スケールを考慮した位置の逆算を返す
 	 * @method scalePosInv
-	 * @param {} p
-	 * @param {} c
-	 * @return BinaryExpression
+	 * @param {Number} p 位置
+	 * @param {Number} c 中心位置
+	 * @return スケールを考慮した位置の逆算
 	 */
 	function scalePosInv(p, c) {
 		return (p - c) / vscreen_scale + c;
 	}
 	
 	/**
-	 * Description
+	 * 四角形の作成
 	 * @method makeRect
-	 * @param {} left
-	 * @param {} top
-	 * @param {} width
-	 * @param {} height
+	 * @param {Number} left 左
+	 * @param {Number} top 上
+	 * @param {Number} width 幅
+	 * @param {Number} height 高さ
 	 * @return ObjectExpression
 	 */
 	function makeRect(left, top, width, height) {
@@ -62,10 +62,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 四角形を現在の仮想スクリーン(全体)で座標変換
 	 * @method transform
-	 * @param {} rect
-	 * @return ObjectExpression
+	 * @param {Rect} rect 四角形
+	 * @return 座標変換した四角形
 	 */
 	function transform(rect) {
 		return {
@@ -77,10 +77,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 四角形を初期仮想スクリーン(全体)で座標変換
 	 * @method transformOrg
-	 * @param {} rect
-	 * @return ObjectExpression
+	 * @param {Rect} rect 四角形
+	 * @return 座標変換した四角形
 	 */
 	function transformOrg(rect) {
 		return {
@@ -92,10 +92,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 四角形を初期仮想スクリーン(全体)で座標逆変換
 	 * @method transformOrgInv
-	 * @param {} rect
-	 * @return ObjectExpression
+	 * @param {Rect} rect 四角形
+	 * @return 座標逆変換した四角形
 	 */
 	function transformOrgInv(rect) {
 		return {
@@ -107,11 +107,11 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン(全体)のサイズの設定
 	 * @method setWholeSize
-	 * @param {} w
-	 * @param {} h
-	 * @param {} s
+	 * @param {Number} w 幅
+	 * @param {Number} h 高さ
+	 * @param {Number} s スケール
 	 */
 	function setWholeSize(w, h, s) {
 		vscreen_rect.x = scalePos(center_x - w * 0.5, center_x);
@@ -124,10 +124,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン(全体)の分割
 	 * @method splitWhole
-	 * @param {} xcount
-	 * @param {} ycount
+	 * @param {Number} xcount x方向分割数
+	 * @param {Number} ycount y方向分割数
 	 */
 	function splitWhole(xcount, ycount) {
 		var i,
@@ -154,20 +154,20 @@
 	}
 	
 	/**
-	 * Description
+	 * 分割したスクリーン(サブスクリーン)の取得.
 	 * @method getSplitWholes
-	 * @return whole_subscreens
+	 * @return 分割したスクリーン(サブスクリーン)
 	 */
 	function getSplitWholes() {
 		return whole_subscreens;
 	}
 	
 	/**
-	 * Description
+	 * 位置から、分割したスクリーン(サブスクリーン)を取得する.
 	 * @method getSplitWholeByPos
-	 * @param {} px
-	 * @param {} py
-	 * @return Literal
+	 * @param {Number} px x座標
+	 * @param {Number} py y座標
+	 * @return 分割したスクリーン(サブスクリーン)
 	 */
 	function getSplitWholeByPos(px, py) {
 		var i,
@@ -186,9 +186,9 @@
 	}
 	
 	/**
-	 * Description
+	 * 分割数を返す
 	 * @method getSplitCount
-	 * @return ObjectExpression
+	 * @return 分割数
 	 */
 	function getSplitCount() {
 		return {
@@ -198,7 +198,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 分割したスクリーン(サブスクリーン)のクリア
 	 * @method clearSplitWholes
 	 */
 	function clearSplitWholes() {
@@ -206,10 +206,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体を移動
 	 * @method translateWhole
-	 * @param {} x
-	 * @param {} y
+	 * @param {Number} x x座標
+	 * @param {Number} y y座標
 	 */
 	function translateWhole(x, y) {
 		vscreen_rect.x = vscreen_rect.x + x;
@@ -217,10 +217,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体の位置をセット
 	 * @method setWholePos
-	 * @param {} x
-	 * @param {} y
+	 * @param {Number} x x座標
+	 * @param {Number} y y座標
 	 */
 	function setWholePos(x, y) {
 		vscreen_rect.x = x;
@@ -228,9 +228,9 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体のスケールを返す
 	 * @method getWholeScale
-	 * @return vscreen_scale
+	 * @return 仮想スクリーン全体のスケール
 	 */
 	function getWholeScale() {
 		return vscreen_scale;
@@ -239,13 +239,13 @@
 	/// assign whole virtual screen
 	/// if exists, overwrite
 	/**
-	 * Description
+	 * 仮想スクリーン全体を設定
 	 * @method assignWhole
-	 * @param {} w
-	 * @param {} h
-	 * @param {} cx
-	 * @param {} cy
-	 * @param {} s
+	 * @param {Number} w 幅
+	 * @param {Number} h 高さ
+	 * @param {Number} cx 中心x座標
+	 * @param {Number} cy 中心y座標
+	 * @param {Number} s スケール
 	 */
 	function assignWhole(w, h, cx, cy, s) {
 		var i,
@@ -263,10 +263,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体のスケールを設定.
 	 * @method setWholeScale
-	 * @param {} s
-	 * @param {} isApply
+	 * @param {Number} s スケール
+	 * @param {Boolean} isApply 即適用して全体のRectを再計算するかどうか
 	 */
 	function setWholeScale(s, isApply) {
 		vscreen_scale = s;
@@ -276,18 +276,18 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体のRectを取得
 	 * @method getWhole
-	 * @return vscreen_rect
+	 * @return 仮想スクリーン全体のRect
 	 */
 	function getWhole() {
 		return vscreen_rect;
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体の中心を取得
 	 * @method getCenter
-	 * @return ObjectExpression
+	 * @return 中心
 	 */
 	function getCenter() {
 		return {
@@ -297,10 +297,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 仮想スクリーン全体の中心を設定
 	 * @method setWholeCenter
-	 * @param {} x
-	 * @param {} y
+	 * @param {Number} x x座標
+	 * @param {Number} y y座標
 	 */
 	function setWholeCenter(x, y) {
 		center_x = x;
@@ -312,13 +312,13 @@
 	/// @param x window coordinate
 	/// @param y window coordinate
 	/**
-	 * Description
+	 * スクリーンの設定
 	 * @method assignScreen
-	 * @param {} id
-	 * @param {} x
-	 * @param {} y
-	 * @param {} w
-	 * @param {} h
+	 * @param {String} id スクリーンのID
+	 * @param {Number} x x座標
+	 * @param {Number} y y座標
+	 * @param {Number} w 幅
+	 * @param {Number} h 高さ
 	 */
 	function assignScreen(id, x, y, w, h) {
 		screens[id] = {
@@ -335,10 +335,10 @@
 	}
 	
 	/**
-	 * Description
+	 * スクリーンの取得
 	 * @method getScreen
-	 * @param {} id
-	 * @return Literal
+	 * @param {String} id ID
+	 * @return スクリーン
 	 */
 	function getScreen(id) {
 		if (screens.hasOwnProperty(id)) {
@@ -348,20 +348,20 @@
 	}
 	
 	/**
-	 * Description
+	 * スクリーンをすべて取得
 	 * @method getScreenAll
-	 * @return screens
+	 * @return スクリーンの連想配列
 	 */
 	function getScreenAll() {
 		return screens;
 	}
 	
 	/**
-	 * Description
+	 * スクリーンサイズの設定
 	 * @method setScreenSize
-	 * @param {} id
-	 * @param {} w
-	 * @param {} h
+	 * @param {String} id ID
+	 * @param {Number} w 幅
+	 * @param {Number} h 高さ
 	 */
 	function setScreenSize(id, w, h) {
 		var screen = getScreen(id);
@@ -372,11 +372,11 @@
 	}
 	
 	/**
-	 * Description
+	 * スクリーンの位置を設定
 	 * @method setScreenPos
-	 * @param {} id
-	 * @param {} x
-	 * @param {} y
+	 * @param {String} id ID
+	 * @param {Number} x x座標
+	 * @param {Number} y y座標
 	 */
 	function setScreenPos(id, x, y) {
 		var screen = getScreen(id);
@@ -387,7 +387,7 @@
 	}
 	
 	/**
-	 * Description
+	 * デバッグ用出力
 	 * @method dump
 	 */
 	function dump() {
@@ -403,7 +403,7 @@
 	}
 	
 	/**
-	 * Description
+	 * スクリーンをすべてクリア
 	 * @method clearScreenAll
 	 */
 	function clearScreenAll() {
@@ -411,20 +411,20 @@
 	}
 	
 	/**
-	 * Description
+	 * スクリーンを初期仮想スクリーンにより座標変換
 	 * @method transformScreen
-	 * @param {} screen
-	 * @return CallExpression
+	 * @param {Screen} screen スクリーン
+	 * @return 座標変換後のスクリーンを返す
 	 */
 	function transformScreen(screen) {
 		return transformOrg(makeRect(screen.x, screen.y, screen.w, screen.h));
 	}
 	
 	/**
-	 * Description
+	 * スクリーンを初期仮想スクリーンにより座標逆変換
 	 * @method transformScreenInv
-	 * @param {} screen
-	 * @return CallExpression
+	 * @param {Screen} screen スクリーン
+	 * @return 座標逆変換のスクリーンを返す
 	 */
 	function transformScreenInv(screen) {
 		return transformOrgInv(makeRect(screen.x, screen.y, screen.w, screen.h));

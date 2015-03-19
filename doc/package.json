@@ -1,0 +1,11 @@
+{
+  "name": "generatedoc",
+  "private": true,
+  "version": "1.0.0",
+  "description": "document",
+  "main": "replace.js",
+  "dependencies": {
+    "jsdoc": "*",
+    "replace": "*"
+  }
+}

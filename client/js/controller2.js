@@ -317,7 +317,7 @@
 		input.className = "form-control";
 		input.id = id;
 		input.value = value;
-		input.nodeType = "text";
+		//input.nodeType = "text";
 		
 		group.appendChild(leftSpan);
 		group.appendChild(input);
@@ -927,7 +927,7 @@
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
 			var previewArea = document.getElementById('preview_area'),
-				rect = event.target.getBoundingClientRect(),
+				rect = evt.target.getBoundingClientRect(),
 				metaData;
 			
 			if (metaDataDict.hasOwnProperty(id)) {
@@ -1031,7 +1031,7 @@
 			elemOnPos,
 			onInvisibleContent,
 			leftArea = document.getElementById('leftArea'),
-			rect = event.target.getBoundingClientRect(),
+			rect = evt.target.getBoundingClientRect(),
 			orgPos,
 			splitWhole;
 		

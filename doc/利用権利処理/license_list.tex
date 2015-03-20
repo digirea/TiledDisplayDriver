@@ -1,0 +1,107 @@
+\documentclass[a4paper,10pt,oneside]{jsbook}
+%
+\usepackage{amsmath,amssymb,bm}
+\usepackage{bm}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{ascmac}
+\usepackage{makeidx}
+\usepackage{txfonts}
+\usepackage{indentfirst}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{comment}
+\AtBeginDvi{\special {pdf:tounicode EUC-UCS2}}
+\usepackage[dvipdfmx, setpagesize=false, bookmarks=true, bookmarksnumbered=true]{hyperref}
+%
+\makeindex
+%
+\newcommand{\diff}{\mathrm{d}}            %微分記号
+\newcommand{\divergence}{\mathrm{div}\,}  %ダイバージェンス
+\newcommand{\grad}{\mathrm{grad}\,}       %グラディエント
+\newcommand{\rot}{\mathrm{rot}\,}         %ローテーション
+%
+\setlength{\textwidth}{\fullwidth}
+\setlength{\textheight}{44\baselineskip}
+\addtolength{\textheight}{\topskip}
+\setlength{\voffset}{-0.6in}
+%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 表紙
+\begin{titlepage}
+\noindent
+独立行政法人　理化学研究所　御中
+\begin{center}
+	\vspace{8cm}
+	{\Huge \textbf{協調ワークスペースドライバと\\協調フレームワークのプロトタイプ整備} } \\
+	\vspace{1cm}
+	{\Huge \textbf{利用外部ライブラリ リスト}} \\
+	\vspace{10cm}
+	{\Large \textbf{2015年3月20日}} \\
+	\vspace{0.5cm}
+	{\Large \textbf{株式会社イマジカ デジタルスケープ}}
+\end{center}
+\end{titlepage}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 目次
+\tableofcontents
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 本文
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{使用モジュールおよび権利処理}
+協調ワークスペースドライバと協調フレームワークのプロトタイプ整備において，利用した既存モジュールとその権利処理について記載する．
+各利用モジュールの名称，権利者，権利処理内容，URLを表\ref{ops}に記載する．
+
+\begin{table}[htbp]
+\begin{center}
+\caption{利用モジュールおよび権利処理一覧}
+\label{ops}
+\begin{tabular}{|l|l|l|l|}
+\hline
+名称 & 権利者 & 権利処理 & URL \\
+\hline
+\hline
+node.js & \shortstack[l]{Joyent, Inc. and \\ other Node contributors} & MIT License & https://nodejs.org/ \\
+\hline
+socket.io & Automattic & MIT License & http://socket.io/  \\
+\hline
+redis & Salvatore Sanfilippo & \shortstack[l]{three-clause\\BSD license} & http://redis.io/ \\
+\hline
+Qatrix & Angel Lai &  MIT License & http://qatrix.com/\\
+\hline
+PhantomJS & Ariya Hidayat & \shortstack[l]{three-clause\\BSD license}  & http://phantomjs.org/\\
+\hline
+Qt & Digia Plc  & LGPL 2.1 & http://qt-project.org/\\
+\hline
+Mongoose & Sergey Lyubka  & MIT License & https://github.com/cesanta/mongoose\\
+\hline
+Breakpad & Google Inc & \shortstack[l]{three-clause\\BSD license} & http://code.google.com/p/google-breakpad/\\
+\hline
+OpenSSL & The OpenSSL Project & \shortstack[l]{OpenSSL License\\SSLeay License} & http://www.openssl.org/\\
+\hline
+Linenoise & \shortstack[l]{Salvatore Sanfilippo\\Pieter Noordhuis} & \shortstack[l]{two-clause\\BSD license} & https://github.com/tadmarshall/linenoise\\
+\hline
+QCommandLine & Corentin Chary  & LGPL 2.1 & http://www.webkit.org/\\
+\hline
+wkhtmlpdf & wkhtmltopdf authors & LGPL 2.1 & http://code.google.com/p/wkhtmltopdf/\\
+\hline
+Webkit & Apple Inc  & LGPL 2.1 & http://www.webkit.org/\\
+\hline
+phantomjs & The Obvious Corporation & Apache License & https://github.com/Medium/phantomjs\\
+\hline
+WebSocket-Node & Worlize & Apache 2.0 License & https://github.com/theturtle32/WebSocket-Node\\
+\hline
+Bootstrap & Twitter, Inc. &  MIT License & https://github.com/twbs/bootstrap\\
+\hline
+Bootstrap without jQuery & Daniel Davis &  MIT License & https://github.com/tagawa/bootstrap-without-jquery\\
+\hline
+
+\end{tabular}
+\end{center}
+\end{table}
+
+\end{document}

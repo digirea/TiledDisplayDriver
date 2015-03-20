@@ -1998,6 +1998,7 @@
 			updateScreen();
 		} else {
 			// running first time
+			changeDisplayValue();
 			updateWindowData();
 		}
 	});

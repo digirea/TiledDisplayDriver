@@ -6,16 +6,16 @@
 	"use strict";
 	
 	/**
-	 * Description
+	 * 仮想スクリーンユーティリティ
 	 * @method VscreenUtil
 	 */
 	var VscreenUtil = function () {};
 	
 	/**
-	 * Description
+	 * Floatの矩形を作成
 	 * @method toFloatRect
-	 * @param {} metaData
-	 * @return CallExpression
+	 * @param {Object} metaData メタデータ
+	 * @return 浮動小数の矩形
 	 */
 	function toFloatRect(metaData) {
 		return vscreen.makeRect(
@@ -27,10 +27,10 @@
 	}
 	
 	/**
-	 * Description
+	 * Intの矩形を作成
 	 * @method toIntRect
-	 * @param {} metaData
-	 * @return CallExpression
+	 * @param {Object} metaData メタデータ
+	 * @return Intの矩形
 	 */
 	function toIntRect(metaData) {
 		return vscreen.makeRect(
@@ -42,10 +42,10 @@
 	}
 	
 	/**
-	 * Description
+	 * テキストのリサイズ
 	 * @method resizeText
-	 * @param {} elem
-	 * @param {} rect
+	 * @param {Element} elem 対象エレメント
+	 * @param {Rect} rect 矩形
 	 */
 	function resizeText(elem, rect) {
 		var lineCount = 1,
@@ -64,12 +64,12 @@
 	}
 	
 	/**
-	 * Description
+	 * 矩形を割り当て
 	 * @method assignRect
-	 * @param {} elem
-	 * @param {} rect
-	 * @param {} withoutWidth
-	 * @param {} withoutHeight
+	 * @param {Element} elem 対象エレメント
+	 * @param {Rect} rect 矩形
+	 * @param {Number} withoutWidth trueの場合幅を割り当てない
+	 * @param {Number} withoutHeight trueの場合高さを割り当てない
 	 */
 	function assignRect(elem, rect, withoutWidth, withoutHeight) {
 		if (elem && rect) {
@@ -87,10 +87,10 @@
 	}
 	
 	/**
-	 * Description
+	 * Zインデックスを割り当て
 	 * @method assignZIndex
-	 * @param {} elem
-	 * @param {} metaData
+	 * @param {Element} elem エレメント
+	 * @param {Object} metaData メタデータ
 	 */
 	function assignZIndex(elem, metaData) {
 		var index;
@@ -103,11 +103,11 @@
 	}
 	
 	/**
-	 * Description
+	 * メタデータを割り当て
 	 * @method assignMetaData
-	 * @param {} elem
-	 * @param {} metaData
-	 * @param {} useOrg
+	 * @param {Element} elem エレメント
+	 * @param {Object} metaData メタデータ
+	 * @param {} useOrg 
 	 */
 	function assignMetaData(elem, metaData, useOrg) {
 		var rect;

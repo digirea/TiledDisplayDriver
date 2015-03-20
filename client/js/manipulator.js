@@ -139,7 +139,7 @@
 			};
 		} else {
 			manip.onmousedown = function (evt) {
-				var rect = event.target.getBoundingClientRect();
+				var rect = evt.target.getBoundingClientRect();
 				if (draggingOffsetFunc) {
 					console.log("draggingOffsetFunc");
 					draggingOffsetFunc(evt.clientY - rect.top, evt.clientX - rect.left);

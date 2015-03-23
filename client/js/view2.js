@@ -36,14 +36,63 @@
 	
 	/**
 	 * Description
+	 * @method getCookie
+	 * @param {} key
+	 * @return Literal
+	 */
+	function getCookie(key) {
+		var i,
+			pos,
+			cookies;
+		if (document.cookie.length > 0) {
+			console.log("all cookie", document.cookie);
+			cookies = [document.cookie];
+			if (document.cookie.indexOf(';') >= 0) {
+				cookies = document.cookie.split(';');
+			}
+			for (i = 0; i < cookies.length; i = i + 1) {
+				pos = cookies[i].indexOf(key + "=");
+				if (pos >= 0) {
+					return unescape(cookies[i].substring(pos + key.length + 1));
+				}
+			}
+		}
+		return "";
+	}
+	
+	/**
+	 * Description
+	 * @method saveCookie
+	 */
+	function saveCookie() {
+		if (windowData) {
+			console.log("saveCookie");
+			document.cookie = 'window_id=' + windowData.id;
+			document.cookie = 'posx=' + windowData.posx;
+			document.cookie = 'posy=' + windowData.posy;
+			document.cookie = 'visible=' + windowData.visible;
+		}
+	}
+	
+	/**
+	 * Description
 	 * @method registerWindow
 	 */
 	function registerWindow() {
 		var wh = getWindowSize(),
 			cx = wh.width / 2.0,
-			cy = wh.height / 2.0;
+			cy = wh.height / 2.0,
+			window_id = getCookie('window_id'),
+			visible = getCookie('visible'),
+			posx = getCookie('posx'),
+			posy = getCookie('posy');
 		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
-		client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height, visible : false }));
+		
+		if (window_id !== "" && window_id.length === 8) {
+			client.send(JSON.stringify({ command : 'reqAddWindow', id : window_id, posx : posx, posy : posy, width : wh.width, height : wh.height, visible : visible }));
+		} else {
+			client.send(JSON.stringify({ command : 'reqAddWindow', posx : 0, posy : 0, width : wh.width, height : wh.height, visible : false }));
+		}
 	}
 	
 	/**
@@ -258,6 +307,7 @@
 				if (json.hasOwnProperty('command')) {
 					if (json.command === "doneAddWindow") {
 						windowData = json;
+						saveCookie();
 						window.parent.document.title = "Display ID:" + json.id;
 						document.getElementById('displayid').innerHTML = "ID:" + json.id;
 						updateWindow(windowData);
@@ -265,6 +315,7 @@
 					} else if (json.command === "doneGetWindow") {
 						console.log("doneGetWindow");
 						windowData = json;
+						saveCookie();
 						console.log(windowData);
 						setVisibleWindow(windowData);
 						resizeViewport(windowData);
@@ -314,6 +365,7 @@
 			}, 200);
 		};
 		*/
+		
 	}
 	
 	window.onload = init;

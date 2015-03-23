@@ -2034,9 +2034,24 @@
 		var timer = null,
 			scale,
 			snap,
-			bottomfunc = window.animtab.create('bottom',
+			contentstab = window.animtab.create('left', {
+					'leftTab' : { min : '0px', max : 'auto' },
+				}, {
+					'leftArea' : { min : '0px', max : '250px' },
+				}, 'Contents'
+			),
+			/*bottomfunc = window.animtab.create('bottom',
 				{ 'bottomTab' : { min : '0px', max : 'auto' }},
-				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent'),
+				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent'),*/
+			bottomfunc = function (show) {
+				if (show) {
+					$show($('overall_block'));
+					$show($('bottomArea'));
+				} else {
+					$hide($('overall_block'));
+					$hide($('bottomArea'));
+				}
+			},
 			rightfunc = window.animtab.create('right',
 				{ 'rightTab' : { min : '0px', max : 'auto' }},
 				{ 'rightArea' : { min : '0px', max : '250px' }}, 'Property');
@@ -2099,6 +2114,9 @@
 			if (lastDraggingID && !manipulator.getDraggingManip()) {
 				unselect();
 			}
+		});
+		document.getElementById('overall_block').addEventListener('click', function (evt) {
+			bottomfunc(false);
 		});
 		
 		updateScreen();

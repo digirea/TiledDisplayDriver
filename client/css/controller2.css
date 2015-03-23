@@ -229,20 +229,31 @@ p {
 	z-index: 100000;
 }
 
+.overallBlock {
+	background-color: rgba(0,0,0,0.5);
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: 100001;
+}
 .bottomArea {
 	/*
 	border: solid;
 	border-color: rgba(100, 100, 100, 0.5);
 	*/
+	padding: 20px;
 	background-color: rgba(55, 55, 55, 1.0);
 	position : absolute;
-	height : 400px;
+	height : 600px;
 	width : 800px;
 	bottom : 0px;
+	top: 150px;
 	left: 50%;
 	margin-left:-400px;
 	overflow: auto;
-	z-index: 100000;
+	z-index: 100002;
 }
 
 .bottomTab {

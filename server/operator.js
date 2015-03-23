@@ -409,10 +409,10 @@
 	 */
 	function getWindow(windowData, endCallback) {
 		if (windowData.hasOwnProperty('type') && windowData.type === 'all') {
-			console.log("getWindowAll");
+			//console.log("getWindowAll");
 			textClient.keys(windowPrefix + '*', function (err, replies) {
 				replies.forEach(function (id, index) {
-					console.log("getWindowAllID:" + id);
+					//console.log("getWindowAllID:" + id);
 					textClient.hgetall(id, function (err, reply) {
 						if (!err) {
 							endCallback(reply);

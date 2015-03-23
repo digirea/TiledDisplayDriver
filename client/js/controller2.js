@@ -1807,13 +1807,24 @@
 	 * Description
 	 * @method initViewSettingArea
 	 */
-	function initViewSettingArea() {
+	function initViewSettingArea(rightfunc) {
 		var dropDownCurrent = document.getElementById('snap_dropdown_current'),
+			dropdownMenu1 = document.getElementById('dropdownMenu1'),
+			dropdownMenu2 = document.getElementById('dropdownMenu2'),
 			free = document.getElementById('dropdown_item1'),
 			display = document.getElementById('dropdown_item2'),
 			displaySettingItem = document.getElementById('virtual_display_setting'),
 			i;
-			
+		
+		/*
+		dropdownMenu1.onmousedown = function () {
+			rightfunc(false);
+		};
+		dropdownMenu2.onmousedown = function () {
+			rightfunc(false);
+		};
+		*/
+	
 		free.onclick = function () {
 			dropDownCurrent.innerHTML = this.innerHTML;
 			console.log("free mode");
@@ -1830,6 +1841,7 @@
 
 		displaySettingItem.onclick = function () {
 			select(wholeWindowListID);
+			rightfunc(true);
 		};
 		
 		addScaleDropdown('display_scale_1', 0.1);
@@ -1949,8 +1961,11 @@
 			scale,
 			snap,
 			bottomfunc = window.animtab.create('bottom',
-				{'bottomTab' : { min : '0px', max : 'auto' }},
-				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
+				{ 'bottomTab' : { min : '0px', max : 'auto' }},
+				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent'),
+			rightfunc = window.animtab.create('right',
+				{ 'rightTab' : { min : '0px', max : 'auto' }},
+				{ 'rightArea' : { min : '0px', max : '250px' }}, 'Property');
 		
 		scale = parseFloat(getCookie('display_scale'));
 		console.log("cookie - display_scale:" + scale);
@@ -1972,7 +1987,7 @@
 		initPropertyArea(wholeWindowListID, "whole_window");
 		initLeftArea(bottomfunc);
 		initAddContentArea();
-		initViewSettingArea();
+		initViewSettingArea(rightfunc);
 		
 		// resize event
 		window.onresize = function () {

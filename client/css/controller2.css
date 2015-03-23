@@ -312,6 +312,7 @@ p {
 	position: absolute;
 	right : 150px;
 	padding-top : 10px;
+	z-index: 100001;
 }
 
 .topmenu2 {
@@ -394,3 +395,12 @@ p {
 	margin-bottom: 5px;
 }
 
+#display_preview_area {
+	z-index: 1;
+	opacity: 1.0;
+}
+
+#content_preview_area {
+	z-index: 0;
+	opacity: 0.3;
+}

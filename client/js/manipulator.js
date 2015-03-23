@@ -14,7 +14,8 @@
 		windowType = "window",
 		manipulators = [],
 		draggingOffsetFunc = null,
-		closeFunc = null;
+		closeFunc = null,
+		parent = null;
 	
 	/**
 	 * ドラッグ中のマニピュレータを返す.
@@ -158,11 +159,14 @@
 	 */
 	function removeManipulator() {
 		var i,
-			previewArea = document.getElementById('preview_area');
-		for (i = 0; i < manipulators.length; i = i + 1) {
-			previewArea.removeChild(manipulators[i]);
+			previewArea = parent;
+		if (previewArea) {
+			for (i = 0; i < manipulators.length; i = i + 1) {
+				previewArea.removeChild(manipulators[i]);
+			}
 		}
 		manipulators = [];
+		parent = null;
 	}
 	
 	/// show manipulator rects on elem
@@ -170,8 +174,9 @@
 	 * マニピュレータを表示
 	 * @method showManipulator
 	 * @param {Element} elem 対象エレメント
+	 * @param {Element} previewArea 表示先エレメント
 	 */
-	function showManipulator(elem) {
+	function showManipulator(elem, previewArea) {
 		var manips = [
 				document.createElement('span'),
 				document.createElement('span'),
@@ -180,11 +185,12 @@
 				document.createElement('span')
 			],
 			manip,
-			previewArea = document.getElementById('preview_area'),
+			previewArea,
 			i;
 		
 		moveManipulator(manips, elem);
 		removeManipulator();
+		parent = previewArea;
 		
 		for (i = 0; i < manips.length; i = i + 1) {
 			manip = manips[i];

@@ -13,7 +13,8 @@
 		metaDataDict = {},
 		windowType = "window",
 		onContentArea = false,
-		wholeWindowID = "onlist:whole_window",
+		wholeWindowID = "whole_window",
+		wholeWindowListID = "onlist:whole_window",
 		wholeSubWindowID = "whole_sub_window",
 		initialWholeWidth = 1000,
 		initialWholeHeight = 900,
@@ -70,12 +71,15 @@
 	/**
 	 * Description
 	 * @method isContentArea
-	 * @param {} px
-	 * @param {} py
 	 * @return LogicalExpression
 	 */
-	function isContentArea(px, py) {
-		var contentArea = document.getElementById('left_main_area');
+	function isContentArea(evt) {
+		var contentArea = document.getElementById('left_main_area'),
+			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft),
+			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
+		if (!contentArea) {
+			return false;
+		}
 		return (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight));
 	}
 	
@@ -146,13 +150,13 @@
 	 * @param {} id
 	 * @return CallExpression
 	 */
-	function getElem(id) {
+	function getElem(id, isContentArea) {
 		var elem,
 			uid,
-			previewArea = document.getElementById('preview_area'),
+			previewArea,
 			child;
 		
-		if (id === wholeWindowID) { return null; }
+		if (id === wholeWindowListID) { return null; }
 		if (isUnvisibleID(id)) {
 			uid = id.split('onlist:').join('');
 			if (document.getElementById(uid)) {
@@ -163,6 +167,16 @@
 				child = document.getElementById(id).childNodes[0].cloneNode();
 				child.innerHTML = document.getElementById(id).childNodes[0].innerHTML;
 				elem.appendChild(child);
+				
+				if (isDisplayTabSelected()) {
+					previewArea = document.getElementById('display_preview_area');
+				} else {
+					previewArea = document.getElementById('content_preview_area');
+				}
+				if (isContentArea) {
+					elem.style.display = "none";
+				}
+				
 				previewArea.appendChild(elem);
 				setupContent(elem, uid);
 				elem.style.marginTop = "0px";
@@ -276,7 +290,9 @@
 		var windowData,
 			whole = vscreen.getWhole(),
 			split = vscreen.getSplitCount();
-			
+		
+		console.log("updateWindowData");
+		
 		windowData = {
 			orgWidth : whole.orgW,
 			orgHeight : whole.orgH,
@@ -404,24 +420,28 @@
 		var screenElem,
 			i,
 			w,
-			previewArea = document.getElementById('preview_area');
+			previewArea = document.getElementById('display_preview_area');
 			
-		console.log(splitWholes);
+		console.log("assignSplitWholes");
+		
+		//console.log(splitWholes);
 		for (i in splitWholes) {
 			if (splitWholes.hasOwnProperty(i)) {
 				w = splitWholes[i];
 				console.log(w.id);
-				screenElem = document.createElement('div');
-				screenElem.style.position = "absolute";
-				screenElem.className = "screen";
-				screenElem.id = w.id;
-				screenElem.style.border = 'solid';
-				screenElem.style.borderWidth = '1px';
-				screenElem.style.borderColor = "gray";
-				screenElem.style.zIndex = -99;
-				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(w));
-				previewArea.appendChild(screenElem);
-				setupWindow(screenElem, w.id);
+				if (!document.getElementById(w.id)) {
+					screenElem = document.createElement('div');
+					screenElem.style.position = "absolute";
+					screenElem.className = "screen";
+					screenElem.id = w.id;
+					screenElem.style.border = 'solid';
+					screenElem.style.borderWidth = '1px';
+					screenElem.style.borderColor = "gray";
+					screenElem.style.zIndex = -100000;
+					vsutil.assignScreenRect(screenElem, vscreen.transformScreen(w));
+					previewArea.appendChild(screenElem);
+					setupWindow(screenElem, w.id);
+				}
 			}
 		}
 	}
@@ -439,7 +459,7 @@
 			splitWholes,
 			elem,
 			i,
-			previewArea = document.getElementById('preview_area');
+			previewArea = document.getElementById('display_preview_area');
 		
 		if (isNaN(ix) || isNaN(iy)) {
 			return;
@@ -589,6 +609,21 @@
 		if (metaData.hasOwnProperty('zIndex')) {
 			transz.value = parseInt(metaData.zIndex, 10);
 		}
+	}
+	
+	function clearProperty() {
+		var transx = document.getElementById('content_transform_x'),
+			transy = document.getElementById('content_transform_y'),
+			transw = document.getElementById('content_transform_w'),
+			transh = document.getElementById('content_transform_h'),
+			transz = document.getElementById('content_transform_z'),
+			content_id = document.getElementById('content_id');
+		if (transx) { transx.value = 0; }
+		if (transy) { transy.value = 0; }
+		if (transw) { transw.value = 0; }
+		if (transh) { transh.value = 0; }
+		if (transz) { transz.value = 0; }
+		if (content_id) { content_id.innerHTML = ""; }
 	}
 	
 	/**
@@ -747,26 +782,30 @@
 	 * @method select
 	 * @param {} id
 	 */
-	function select(id) {
+	function select(id, isContentArea) {
 		var elem,
-			metaData;
+			metaData,
+			initialVisible;
 		
-		if (id === wholeWindowID) {
+		if (id === wholeWindowListID || id === wholeWindowID) {
 			initPropertyArea(id, "whole_window");
 			assignVirtualDisplayProperty();
-			document.getElementById(wholeWindowID).style.borderColor = windowSelectColor;
+			document.getElementById(wholeWindowListID).style.borderColor = windowSelectColor;
 			changeLeftTab(windowType);
 			return;
 		}
 		if (id.indexOf(wholeSubWindowID) >= 0) {
 			return;
 		}
-		document.getElementById(wholeWindowID).style.borderColor = "white";
-		elem = getElem(id);
+		document.getElementById(wholeWindowListID).style.borderColor = "white";
+		elem = getElem(id, isContentArea);
 		if (elem.id !== id) {
 			id = elem.id;
 		}
+		//elem.style.visibility = "visible";
 		metaData = metaDataDict[id];
+		console.log("metaData", metaData);
+		initialVisible = metaData.visible;
 		draggingID = id;
 		console.log("draggingID = id:" + draggingID);
 		elem.style.border = "solid 2px";
@@ -781,6 +820,7 @@
 				document.getElementById("onlist:" + id).style.borderColor = windowSelectColor;
 			}
 			elem.style.borderColor = windowSelectColor;
+			manipulator.showManipulator(elem, document.getElementById('display_preview_area'));
 		} else {
 			initPropertyArea(id, metaData.type);
 			assignContentProperty(metaDataDict[id]);
@@ -793,14 +833,16 @@
 				document.getElementById("onlist:" + id).style.borderColor = contentSelectColor;
 			}
 			elem.style.borderColor = contentSelectColor;
+			manipulator.showManipulator(elem, document.getElementById('content_preview_area'));
 		}
 		if (elem.style.zIndex === "") {
 			elem.style.zIndex = 0;
 		}
-		//document.getElementById('content_transform_z').value = elem.style.zIndex;
-		//console.log("showManipulator" , elem);
-		manipulator.showManipulator(elem);
-		manipulator.moveManipulator(elem);
+		if (initialVisible === "true" || initialVisible === true) {
+			manipulator.moveManipulator(elem);
+		} else {
+			manipulator.removeManipulator();
+		}
 	}
 	
 	/// unselect content or window
@@ -814,17 +856,20 @@
 		
 		if (lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
-			metaData = metaDataDict[lastDraggingID];
-			if (metaData.type !== windowType && isVisible(metaData)) {
-				elem.style.border = "";
+			if (elem) {
+				metaData = metaDataDict[lastDraggingID];
+				if (metaData.type !== windowType && isVisible(metaData)) {
+					elem.style.border = "";
+				}
+				if (document.getElementById("onlist:" + lastDraggingID)) {
+					document.getElementById("onlist:" + lastDraggingID).style.borderColor = "white";
+				}
+				elem.style.borderColor = "black";
 			}
-			if (document.getElementById("onlist:" + lastDraggingID)) {
-				document.getElementById("onlist:" + lastDraggingID).style.borderColor = "white";
-			}
-			elem.style.borderColor = "black";
 			lastDraggingID = null;
 		}
 		manipulator.removeManipulator();
+		clearProperty();
 	}
 	
 	/// close selected content or window
@@ -836,16 +881,23 @@
 		var id = getSelectedID(),
 			metaData = null,
 			elem,
-			previewArea = document.getElementById('preview_area');
+			previewArea;
 		
 		console.log("closeFunc");
 		if (metaDataDict.hasOwnProperty(id)) {
 			unselect();
-			elem = getElem(id);
-			previewArea.removeChild(elem);
+			elem = getElem(id, false);
 			
 			metaData = metaDataDict[id];
 			metaData.visible = false;
+			
+			if (metaData.type === "window") {
+				previewArea = document.getElementById('display_preview_area');
+			} else {
+				previewArea = document.getElementById('content_preview_area');
+			}
+			previewArea.removeChild(elem);
+			
 			updateTransform(metaData);
 		}
 	}
@@ -917,7 +969,20 @@
 		}
 	}
 	
-	/// setup content
+	function isInsideElement(elem, x, y) {
+		var posx = parseInt(elem.style.left.split("px").join(''), 10),
+			posy = parseInt(elem.style.top.split("px").join(''), 10),
+			width = parseInt(elem.style.width.split("px").join(''), 10),
+			height = parseInt(elem.style.height.split("px").join(''), 10);
+		
+		if (metaDataDict.hasOwnProperty(elem.id)) {
+			return (posx <= x && posy <= y &&
+					(posx + width) > x &&
+					(posy + height) > y);
+		}
+		return false;
+	}
+
 	/**
 	 * Description
 	 * @method setupContent
@@ -926,22 +991,51 @@
 	 */
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
-			var previewArea = document.getElementById('preview_area'),
-				rect = evt.target.getBoundingClientRect(),
-				metaData;
+			var rect = evt.target.getBoundingClientRect(),
+				metaData = null,
+				otherPreviewArea = document.getElementById('content_preview_area'),
+				childs,
+				i,
+				topElement = null,
+				e;
 			
 			if (metaDataDict.hasOwnProperty(id)) {
 				metaData = metaDataDict[id];
-				if (isDisplayTabSelected() && metaData.type !== windowType) {
-					return false;
-				} else if (!isDisplayTabSelected() && metaData.type === windowType) {
-					return false;
+				if (metaData.type !== windowType) {
+					otherPreviewArea = document.getElementById('display_preview_area');
 				}
+			}
+
+			
+			if (id === wholeWindowID ||
+				(metaData && !isDisplayTabSelected() && metaData.type === windowType) ||
+				(metaData && isDisplayTabSelected() && metaData.type !== windowType)) {
+				console.log(metaData);
+				childs = otherPreviewArea.childNodes;
+
+				for (i = 0; i < childs.length; i = i + 1) {
+					if (childs[i].onmousedown) {
+						if (!topElement || topElement.zIndex < childs[i].zIndex) {
+							if (isInsideElement(childs[i], evt.clientX, evt.clientY)) {
+								topElement = childs[i];
+							}
+						}
+					}
+				}
+				if (topElement) {
+					//console.log("left", elem.offsetLeft - topElement.offsetLeft);
+					//console.log("top", elem.offsetTop - topElement.offsetTop);
+					topElement.onmousedown(evt);
+					dragOffsetTop = evt.clientY - topElement.getBoundingClientRect().top;
+					dragOffsetLeft = evt.clientX - topElement.getBoundingClientRect().left;
+				}
+				return;
 			}
 			
 			// erase last border
 			unselect();
-			select(id);
+			select(id, isContentArea(evt));
+			
 			evt = (evt) || window.event;
 			dragOffsetTop = evt.clientY - rect.top;
 			dragOffsetLeft = evt.clientX - rect.left;
@@ -1039,9 +1133,10 @@
 		
 		if (draggingID) {
 			// detect content list area
-			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
-			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
-			if (isContentArea(px, py)) { return; }
+			if (isContentArea(evt)) {
+				elem = document.getElementById(draggingID);
+				return;
+			}
 
 			// clear splitwhole colors
 			clearSplitHightlight();
@@ -1057,6 +1152,9 @@
 
 			// translate
 			elem = document.getElementById(draggingID);
+			if (elem.style.display === "none") {
+				elem.style.display = "block";
+			}
 			metaData = metaDataDict[draggingID];
 			
 			metaData.posx = evt.clientX - dragOffsetLeft;
@@ -1071,6 +1169,7 @@
 			evt.stopPropagation();
 			evt.preventDefault();
 		} else if (lastDraggingID && manipulator.getDraggingManip()) {
+			console.log("iscontentarea");
 			// scaling
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
@@ -1085,20 +1184,17 @@
 	
 	// add content mouseup event
 	window.document.addEventListener("mouseup", function (evt) {
-		var previewArea = document.getElementById('preview_area'),
-			contentArea = document.getElementById('content_area'),
+		var contentArea = document.getElementById('content_area'),
 			metaData,
 			elem,
 			px,
 			py,
 			orgPos,
 			splitWhole;
-		if (draggingID) {
+		if (draggingID && metaDataDict.hasOwnProperty(draggingID)) {
 			elem = document.getElementById(draggingID);
 			metaData = metaDataDict[draggingID];
-			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
-			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
-			if (!isContentArea(px, py)) {
+			if (!isContentArea(evt)) {
 				console.log("not onContentArea");
 				metaData.visible = true;
 				elem.style.color = "black";
@@ -1138,7 +1234,7 @@
 	 * @param {} text
 	 */
 	function sendText(text) {
-		var previewArea = document.getElementById('preview_area'),
+		var previewArea = document.getElementById('content_preview_area'),
 			textInput = document.getElementById('text_input'),
 			elem = document.createElement('pre'),
 			width = (textInput.clientWidth + 1),
@@ -1160,6 +1256,7 @@
 		// calculate width, height
 		width = elem.offsetWidth / vscreen.getWholeScale();
 		height = elem.offsetHeight / vscreen.getWholeScale();
+		/*
 		if (width > vscreen.getWhole().orgW) {
 			width = vscreen.getWhole().orgW;
 			elem.style.overflow = "auto";
@@ -1168,6 +1265,7 @@
 			height = vscreen.getWhole().orgH;
 			elem.style.overflow = "auto";
 		}
+		*/
 		previewArea.removeChild(elem);
 		binary = metabinary.createMetaBinary({type : "text", posx : 0, posy : 0, width : width, height : height}, textData);
 
@@ -1182,7 +1280,7 @@
 	 */
 	function sendURL() {
 		console.log("sendurl");
-		var previewArea = document.getElementById('preview_area'),
+		var previewArea = document.getElementById('content_preview_area'),
 			urlInput = document.getElementById('url_input'),
 			img = document.createElement('img'),
 			binary = metabinary.createMetaBinary({type : "url"}, urlInput.value);
@@ -1314,40 +1412,46 @@
 			screens = vscreen.getScreenAll(),
 			split_wholes = vscreen.getSplitWholes(),
 			s,
-			wholeElem = document.createElement('span'),
-			previewArea = document.getElementById('preview_area'),
+			wholeElem,
+			previewArea = document.getElementById('display_preview_area'),
 			screenElem;
 		
 		if (windowData) {
 			screenElem = document.getElementById(windowData.id);
-			vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[windowData.id]));
-		} else {
-			console.log("screens:" + JSON.stringify(vscreen));
-
-			wholeElem.style.border = 'solid';
-			wholeElem.style.zIndex = -100;
-			wholeElem.className = "screen";
-			wholeElem.style.color = "black";
-			vsutil.assignScreenRect(wholeElem, whole);
-			previewArea.appendChild(wholeElem);
-
-			console.log("wholeElemwholeElem");
-
-			for (s in screens) {
-				if (screens.hasOwnProperty(s)) {
-					screenElem = document.createElement('div');
-					screenElem.className = "screen";
-					screenElem.id = s;
-					console.log("screenElemID:" + JSON.stringify(screens[s]));
-					screenElem.style.border = 'solid';
-					vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
-					previewArea.appendChild(screenElem);
-					setupWindow(screenElem, s);
-				}
+			if (screenElem) {
+				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[windowData.id]));
+				return;
 			}
-			
-			assignSplitWholes(vscreen.getSplitWholes());
 		}
+
+		wholeElem = document.getElementById(wholeWindowID);
+		if (!wholeElem) {
+			wholeElem = document.createElement('span');
+		}
+		console.log("screens:" + JSON.stringify(vscreen));
+		wholeElem.style.border = 'solid';
+		wholeElem.style.zIndex = -1000;
+		wholeElem.className = "screen";
+		wholeElem.id = wholeWindowID;
+		wholeElem.style.color = "black";
+		setupWindow(wholeElem, wholeElem.id);
+		vsutil.assignScreenRect(wholeElem, whole);
+		previewArea.appendChild(wholeElem);
+		for (s in screens) {
+			if (screens.hasOwnProperty(s)) {
+				screenElem = document.createElement('div');
+				screenElem.className = "screen";
+				screenElem.style.zIndex = -100;
+				screenElem.style.display = "block";
+				screenElem.id = s;
+				console.log("screenElemID:" + JSON.stringify(screens[s]));
+				screenElem.style.border = 'solid';
+				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
+				previewArea.appendChild(screenElem);
+				setupWindow(screenElem, s);
+			}
+		}
+		assignSplitWholes(vscreen.getSplitWholes());
 	}
 	
 	/// update all screens
@@ -1359,18 +1463,21 @@
 	function updateScreen(windowData) {
 		var whole = vscreen.getWhole(),
 			splitCount = vscreen.getSplitCount(),
-			previewArea = document.getElementById('preview_area'),
+			previewArea = document.getElementById('display_preview_area'),
 			screens = previewArea.getElementsByClassName('screen'),
 			scale = vscreen.getWholeScale(),
 			i,
 			metaData,
 			elem;
 		
+		console.log("updateScreen", windowData);
 		if (windowData) {
 			elem = document.getElementById(windowData.id);
 			if (elem) {
 				console.log("assignScreenRect");
 				vsutil.assignMetaData(elem, windowData, true);
+				elem.style.display = "block";
+				return;
 			}
 		} else {
 			// recreate all screens
@@ -1388,6 +1495,8 @@
 							if (elem) {
 								vsutil.assignMetaData(elem, metaData, true);
 							}
+						} else {
+							elem.style.display = "block";
 						}
 					}
 				}
@@ -1457,7 +1566,7 @@
 	 * @param {} contentData
 	 */
 	function importContentToView(metaData, contentData) {
-		var previewArea = document.getElementById('preview_area'),
+		var previewArea = document.getElementById('content_preview_area'),
 			elem,
 			tagName,
 			blob,
@@ -1465,7 +1574,7 @@
 
 		if (isVisible(metaData)) {
 			metaDataDict[metaData.id] = metaData;
-			console.log("doneGetContent:" + JSON.stringify(metaData));
+			console.log("importContentToView:" + JSON.stringify(metaData));
 
 			if (metaData.type === 'text') {
 				tagName = 'pre';
@@ -1567,9 +1676,11 @@
 				contentElem.src = URL.createObjectURL(blob);
 
 				contentElem.onload = function () {
+					var aspect;
 					if (contentElem.offsetHeight > 200) {
-						divElem.style.width = "";
+						aspect = contentElem.offsetWidth / contentElem.offsetHeight;
 						divElem.style.height = "100px";
+						divElem.style.width = 100 * aspect;
 					}
 				};
 			}
@@ -1603,6 +1714,8 @@
 	 * @param {} windowData
 	 */
 	function importWindowToView(windowData) {
+		var displayArea,
+			screen;
 		if (windowData.type !== windowType) {
 			return;
 		}
@@ -1623,7 +1736,13 @@
 			vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
 			vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
 			//console.log("import windowsc:", vscreen.getScreen(windowData.id));
-			updateScreen();
+			updateScreen(windowData);
+		} else {
+			displayArea = document.getElementById("display_preview_area");
+			screen = document.getElementById(windowData.id);
+			if (displayArea && screen) {
+				screen.style.display = "none";
+			}
 		}
 	}
 	
@@ -1634,9 +1753,15 @@
 	 */
 	function importWindowToList(windowData) {
 		var displayArea = document.getElementById('display_area'),
-			divElem = document.createElement("div"),
+			divElem,
 			onlistID = "onlist:" + windowData.id;
 		
+		divElem = document.getElementById(onlistID);
+		if (divElem) { return; }
+		
+		console.log("importWindowToList");
+		
+		divElem = document.createElement("div");
 		divElem.innerHTML = "ID:" + windowData.id;
 		divElem.id = onlistID;
 		divElem.className = "screen";
@@ -1730,13 +1855,24 @@
 	 * Description
 	 * @method initViewSettingArea
 	 */
-	function initViewSettingArea() {
+	function initViewSettingArea(rightfunc) {
 		var dropDownCurrent = document.getElementById('snap_dropdown_current'),
+			dropdownMenu1 = document.getElementById('dropdownMenu1'),
+			dropdownMenu2 = document.getElementById('dropdownMenu2'),
 			free = document.getElementById('dropdown_item1'),
 			display = document.getElementById('dropdown_item2'),
 			displaySettingItem = document.getElementById('virtual_display_setting'),
 			i;
-			
+		
+		/*
+		dropdownMenu1.onmousedown = function () {
+			rightfunc(false);
+		};
+		dropdownMenu2.onmousedown = function () {
+			rightfunc(false);
+		};
+		*/
+	
 		free.onclick = function () {
 			dropDownCurrent.innerHTML = this.innerHTML;
 			console.log("free mode");
@@ -1752,7 +1888,8 @@
 		};
 
 		displaySettingItem.onclick = function () {
-			select(wholeWindowID);
+			select(wholeWindowListID);
+			rightfunc(true);
 		};
 		
 		addScaleDropdown('display_scale_1', 0.1);
@@ -1809,8 +1946,9 @@
 			contentButtonArea = document.getElementById('content_button_area'),
 			contentTabTitle = document.getElementById('content_tab_title'),
 			contentTabLink = document.getElementById('content_tab_link'),
-			showIDButton = document.getElementById('show_display_id_button');
-			
+			showIDButton = document.getElementById('show_display_id_button'),
+			displayPreviewArea = document.getElementById('display_preview_area'),
+			contentPreviewArea = document.getElementById('content_preview_area');
 		
 		showIDButton.onclick = function () {
 			var id = document.getElementById('content_id').innerHTML;
@@ -1837,6 +1975,10 @@
 			contentTabTitle.className = "content_tab_title";
 			displayTabLink.className = "active";
 			contentTabLink.className = "";
+			displayPreviewArea.style.opacity = 1.0;
+			contentPreviewArea.style.opacity = 0.3;
+			displayPreviewArea.style.zIndex = 10;
+			contentPreviewArea.style.zIndex = -1000;
 		};
 
 		contentTabTitle.onclick = function () {
@@ -1848,6 +1990,10 @@
 			contentTabTitle.className = "content_tab_title active";
 			contentTabLink.className = "active";
 			displayTabLink.className = "";
+			displayPreviewArea.style.opacity = 0.3;
+			contentPreviewArea.style.opacity = 1.0;
+			displayPreviewArea.style.zIndex = -1000;
+			contentPreviewArea.style.zIndex = 10;
 		};
 		initContentArea(bottomfunc);
 		initDisplayArea();
@@ -1863,8 +2009,11 @@
 			scale,
 			snap,
 			bottomfunc = window.animtab.create('bottom',
-				{'bottomTab' : { min : '0px', max : 'auto' }},
-				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent');
+				{ 'bottomTab' : { min : '0px', max : 'auto' }},
+				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent'),
+			rightfunc = window.animtab.create('right',
+				{ 'rightTab' : { min : '0px', max : 'auto' }},
+				{ 'rightArea' : { min : '0px', max : '250px' }}, 'Property');
 		
 		scale = parseFloat(getCookie('display_scale'));
 		console.log("cookie - display_scale:" + scale);
@@ -1883,10 +2032,10 @@
 		manipulator.setCloseFunc(closeFunc);
 		bottomfunc(false);
 		
-		initPropertyArea(wholeWindowID, "whole_window");
+		initPropertyArea(wholeWindowListID, "whole_window");
 		initLeftArea(bottomfunc);
 		initAddContentArea();
-		initViewSettingArea();
+		initViewSettingArea(rightfunc);
 		
 		// resize event
 		window.onresize = function () {
@@ -1947,7 +2096,7 @@
 		console.log("doneDeleteContent");
 		var json = JSON.parse(reply),
 			contentArea = document.getElementById('content_area'),
-			previewArea = document.getElementById('preview_area'),
+			previewArea = document.getElementById('content_preview_area'),
 			contentID = document.getElementById('content_id'),
 			deleted = document.getElementById(json.id);
 		previewArea.removeChild(deleted);
@@ -2009,8 +2158,9 @@
 	
 	socket.on('updateWindow', function () {
 		console.log('updateWindow');
+		//updateScreen();
 		//clearWindowList();
-		//socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
+		socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
 	});
 	
 	socket.on('update', function () {

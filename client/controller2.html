@@ -26,7 +26,7 @@
 			<span class="head_menu_content" id="">
 				<span class="head_menu_content_inner">
 					<span class="active"><a href="#" class="head_menu_content_text active">Controller <span class="sr-only">(current)</span></a></span>
-					<span><a href="view2.html" class="head_menu_content_text">Display</a></span>
+					<span><a href="view2.html" class="head_menu_content_text" target="_blank">Display</a></span>
 				</span>
 			</span>
 			<span class="head_vdisplay_menu">
@@ -55,7 +55,7 @@
 			<div class="topmenu2">
 				<span class="dropdown">
 					<span class="blacktext stopselect">Scale</span>
-					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
+					<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu2" data-toggle="dropdown" aria-expanded="true">
 						<span class="blacktext" id="scale_dropdown_current">0.5</span>
 						<span class="caret blacktext"></span>
 					</button>
@@ -140,7 +140,9 @@
 	</div>
 		
 	<!--img src="" id="image_preview" /-->
-	<div id="preview_area" class="preview_area">
+	<div id="content_preview_area" class="preview_area">
+	</div>
+	<div id="display_preview_area" class="preview_area">
 	</div>
 	
 	<div class="popup_background" id="popup_background"></div>
@@ -151,12 +153,6 @@
 			}, {
 				'leftArea' : { min : '0px', max : '250px' },
 			}, 'Contents'
-		);
-		window.animtab.create('right', {
-				'rightTab' : { min : '0px', max : 'auto' },
-			}, {
-				'rightArea' : { min : '0px', max : '250px' },
-			}, 'Property'
 		);
 	</script>
 	<script type="text/javascript" src="js/bootstrap-without-jquery.min.js"></script>

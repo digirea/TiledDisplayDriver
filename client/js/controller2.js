@@ -71,12 +71,13 @@
 	/**
 	 * Description
 	 * @method isContentArea
-	 * @param {} px
-	 * @param {} py
 	 * @return LogicalExpression
 	 */
-	function isContentArea(px, py) {
-		var contentArea = document.getElementById('left_main_area');
+	function isContentArea(evt) {
+		var contentArea = document.getElementById('left_main_area'),
+			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft),
+			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
+		
 		return (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight));
 	}
 	
@@ -147,7 +148,7 @@
 	 * @param {} id
 	 * @return CallExpression
 	 */
-	function getElem(id) {
+	function getElem(id, isContentArea) {
 		var elem,
 			uid,
 			previewArea,
@@ -169,6 +170,9 @@
 					previewArea = document.getElementById('display_preview_area');
 				} else {
 					previewArea = document.getElementById('content_preview_area');
+				}
+				if (isContentArea) {
+					elem.style.display = "none";
 				}
 				
 				previewArea.appendChild(elem);
@@ -284,7 +288,9 @@
 		var windowData,
 			whole = vscreen.getWhole(),
 			split = vscreen.getSplitCount();
-			
+		
+		console.log("updateWindowData");
+		
 		windowData = {
 			orgWidth : whole.orgW,
 			orgHeight : whole.orgH,
@@ -414,22 +420,26 @@
 			w,
 			previewArea = document.getElementById('display_preview_area');
 			
-		console.log(splitWholes);
+		console.log("assignSplitWholes");
+		
+		//console.log(splitWholes);
 		for (i in splitWholes) {
 			if (splitWholes.hasOwnProperty(i)) {
 				w = splitWholes[i];
 				console.log(w.id);
-				screenElem = document.createElement('div');
-				screenElem.style.position = "absolute";
-				screenElem.className = "screen";
-				screenElem.id = w.id;
-				screenElem.style.border = 'solid';
-				screenElem.style.borderWidth = '1px';
-				screenElem.style.borderColor = "gray";
-				screenElem.style.zIndex = -100000;
-				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(w));
-				previewArea.appendChild(screenElem);
-				setupWindow(screenElem, w.id);
+				if (!document.getElementById(w.id)) {
+					screenElem = document.createElement('div');
+					screenElem.style.position = "absolute";
+					screenElem.className = "screen";
+					screenElem.id = w.id;
+					screenElem.style.border = 'solid';
+					screenElem.style.borderWidth = '1px';
+					screenElem.style.borderColor = "gray";
+					screenElem.style.zIndex = -100000;
+					vsutil.assignScreenRect(screenElem, vscreen.transformScreen(w));
+					previewArea.appendChild(screenElem);
+					setupWindow(screenElem, w.id);
+				}
 			}
 		}
 	}
@@ -770,9 +780,10 @@
 	 * @method select
 	 * @param {} id
 	 */
-	function select(id) {
+	function select(id, isContentArea) {
 		var elem,
-			metaData;
+			metaData,
+			initialVisible;
 		
 		if (id === wholeWindowListID || id === wholeWindowID) {
 			initPropertyArea(id, "whole_window");
@@ -785,11 +796,14 @@
 			return;
 		}
 		document.getElementById(wholeWindowListID).style.borderColor = "white";
-		elem = getElem(id);
+		elem = getElem(id, isContentArea);
 		if (elem.id !== id) {
 			id = elem.id;
 		}
+		//elem.style.visibility = "visible";
 		metaData = metaDataDict[id];
+		console.log("metaData", metaData);
+		initialVisible = metaData.visible;
 		draggingID = id;
 		console.log("draggingID = id:" + draggingID);
 		elem.style.border = "solid 2px";
@@ -822,7 +836,11 @@
 		if (elem.style.zIndex === "") {
 			elem.style.zIndex = 0;
 		}
-		manipulator.moveManipulator(elem);
+		if (initialVisible === "true" || initialVisible === true) {
+			manipulator.moveManipulator(elem);
+		} else {
+			manipulator.removeManipulator();
+		}
 	}
 	
 	/// unselect content or window
@@ -836,14 +854,16 @@
 		
 		if (lastDraggingID) {
 			elem = document.getElementById(lastDraggingID);
-			metaData = metaDataDict[lastDraggingID];
-			if (metaData.type !== windowType && isVisible(metaData)) {
-				elem.style.border = "";
+			if (elem) {
+				metaData = metaDataDict[lastDraggingID];
+				if (metaData.type !== windowType && isVisible(metaData)) {
+					elem.style.border = "";
+				}
+				if (document.getElementById("onlist:" + lastDraggingID)) {
+					document.getElementById("onlist:" + lastDraggingID).style.borderColor = "white";
+				}
+				elem.style.borderColor = "black";
 			}
-			if (document.getElementById("onlist:" + lastDraggingID)) {
-				document.getElementById("onlist:" + lastDraggingID).style.borderColor = "white";
-			}
-			elem.style.borderColor = "black";
 			lastDraggingID = null;
 		}
 		manipulator.removeManipulator();
@@ -864,7 +884,7 @@
 		console.log("closeFunc");
 		if (metaDataDict.hasOwnProperty(id)) {
 			unselect();
-			elem = getElem(id);
+			elem = getElem(id, false);
 			
 			metaData = metaDataDict[id];
 			metaData.visible = false;
@@ -1012,7 +1032,8 @@
 			
 			// erase last border
 			unselect();
-			select(id);
+			select(id, isContentArea(evt));
+			
 			evt = (evt) || window.event;
 			dragOffsetTop = evt.clientY - rect.top;
 			dragOffsetLeft = evt.clientX - rect.left;
@@ -1110,9 +1131,10 @@
 		
 		if (draggingID) {
 			// detect content list area
-			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
-			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
-			if (isContentArea(px, py)) { return; }
+			if (isContentArea(evt)) {
+				elem = document.getElementById(draggingID);
+				return;
+			}
 
 			// clear splitwhole colors
 			clearSplitHightlight();
@@ -1128,6 +1150,9 @@
 
 			// translate
 			elem = document.getElementById(draggingID);
+			if (elem.style.display === "none") {
+				elem.style.display = "block";
+			}
 			metaData = metaDataDict[draggingID];
 			
 			metaData.posx = evt.clientX - dragOffsetLeft;
@@ -1142,6 +1167,7 @@
 			evt.stopPropagation();
 			evt.preventDefault();
 		} else if (lastDraggingID && manipulator.getDraggingManip()) {
+			console.log("iscontentarea");
 			// scaling
 			elem = document.getElementById(lastDraggingID);
 			metaData = metaDataDict[lastDraggingID];
@@ -1166,9 +1192,7 @@
 		if (draggingID && metaDataDict.hasOwnProperty(draggingID)) {
 			elem = document.getElementById(draggingID);
 			metaData = metaDataDict[draggingID];
-			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft);
-			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
-			if (!isContentArea(px, py)) {
+			if (!isContentArea(evt)) {
 				console.log("not onContentArea");
 				metaData.visible = true;
 				elem.style.color = "black";
@@ -1386,7 +1410,7 @@
 			screens = vscreen.getScreenAll(),
 			split_wholes = vscreen.getSplitWholes(),
 			s,
-			wholeElem = document.createElement('span'),
+			wholeElem,
 			previewArea = document.getElementById('display_preview_area'),
 			screenElem;
 		
@@ -1398,6 +1422,10 @@
 			}
 		}
 
+		wholeElem = document.getElementById(wholeWindowID);
+		if (!wholeElem) {
+			wholeElem = document.createElement('span');
+		}
 		console.log("screens:" + JSON.stringify(vscreen));
 		wholeElem.style.border = 'solid';
 		wholeElem.style.zIndex = -1000;
@@ -1412,6 +1440,7 @@
 				screenElem = document.createElement('div');
 				screenElem.className = "screen";
 				screenElem.style.zIndex = -100;
+				screenElem.style.display = "block";
 				screenElem.id = s;
 				console.log("screenElemID:" + JSON.stringify(screens[s]));
 				screenElem.style.border = 'solid';
@@ -1439,11 +1468,14 @@
 			metaData,
 			elem;
 		
+		console.log("updateScreen", windowData);
 		if (windowData) {
 			elem = document.getElementById(windowData.id);
 			if (elem) {
 				console.log("assignScreenRect");
 				vsutil.assignMetaData(elem, windowData, true);
+				elem.style.display = "block";
+				return;
 			}
 		} else {
 			// recreate all screens
@@ -1461,6 +1493,8 @@
 							if (elem) {
 								vsutil.assignMetaData(elem, metaData, true);
 							}
+						} else {
+							elem.style.display = "block";
 						}
 					}
 				}
@@ -1678,6 +1712,8 @@
 	 * @param {} windowData
 	 */
 	function importWindowToView(windowData) {
+		var displayArea,
+			screen;
 		if (windowData.type !== windowType) {
 			return;
 		}
@@ -1699,6 +1735,12 @@
 			vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
 			//console.log("import windowsc:", vscreen.getScreen(windowData.id));
 			updateScreen(windowData);
+		} else {
+			displayArea = document.getElementById("display_preview_area");
+			screen = document.getElementById(windowData.id);
+			if (displayArea && screen) {
+				screen.style.display = "none";
+			}
 		}
 	}
 	
@@ -1714,6 +1756,8 @@
 		
 		divElem = document.getElementById(onlistID);
 		if (divElem) { return; }
+		
+		console.log("importWindowToList");
 		
 		divElem = document.createElement("div");
 		divElem.innerHTML = "ID:" + windowData.id;

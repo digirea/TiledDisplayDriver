@@ -599,6 +599,21 @@
 		}
 	}
 	
+	function clearProperty() {
+		var transx = document.getElementById('content_transform_x'),
+			transy = document.getElementById('content_transform_y'),
+			transw = document.getElementById('content_transform_w'),
+			transh = document.getElementById('content_transform_h'),
+			transz = document.getElementById('content_transform_z'),
+			content_id = document.getElementById('content_id');
+		if (transx) { transx.value = 0; }
+		if (transy) { transy.value = 0; }
+		if (transw) { transw.value = 0; }
+		if (transh) { transh.value = 0; }
+		if (transz) { transz.value = 0; }
+		if (content_id) { content_id.innerHTML = ""; }
+	}
+	
 	/**
 	 * Description
 	 * @method assignVirtualDisplayProperty
@@ -832,6 +847,7 @@
 			lastDraggingID = null;
 		}
 		manipulator.removeManipulator();
+		clearProperty();
 	}
 	
 	/// close selected content or window
@@ -985,8 +1001,8 @@
 					}
 				}
 				if (topElement) {
-					console.log("left", elem.offsetLeft - topElement.offsetLeft);
-					console.log("top", elem.offsetTop - topElement.offsetTop);
+					//console.log("left", elem.offsetLeft - topElement.offsetLeft);
+					//console.log("top", elem.offsetTop - topElement.offsetTop);
 					topElement.onmousedown(evt);
 					dragOffsetTop = evt.clientY - topElement.getBoundingClientRect().top;
 					dragOffsetLeft = evt.clientX - topElement.getBoundingClientRect().left;
@@ -1002,7 +1018,6 @@
 			dragOffsetLeft = evt.clientX - rect.left;
 			//dragOffsetTop = evt.clientY - elem.offsetTop;
 			//dragOffsetLeft = evt.clientX - elem.offsetLeft;
-			console.log("STOP PROPERGATION");
 			evt.stopPropagation();
 			evt.preventDefault();
 		};
@@ -1521,7 +1536,7 @@
 
 		if (isVisible(metaData)) {
 			metaDataDict[metaData.id] = metaData;
-			console.log("doneGetContent:" + JSON.stringify(metaData));
+			console.log("importContentToView:" + JSON.stringify(metaData));
 
 			if (metaData.type === 'text') {
 				tagName = 'pre';

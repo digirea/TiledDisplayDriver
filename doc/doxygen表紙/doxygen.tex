@@ -1,0 +1,49 @@
+\documentclass[a4paper,10pt,oneside]{jsbook}
+%
+\usepackage{amsmath,amssymb,bm}
+\usepackage{bm}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{ascmac}
+\usepackage{makeidx}
+\usepackage{txfonts}
+\usepackage{indentfirst}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{comment}
+\AtBeginDvi{\special {pdf:tounicode EUC-UCS2}}
+\usepackage[dvipdfmx, setpagesize=false, bookmarks=true, bookmarksnumbered=true]{hyperref}
+%
+\makeindex
+%
+\newcommand{\diff}{\mathrm{d}}            %微分記号
+\newcommand{\divergence}{\mathrm{div}\,}  %ダイバージェンス
+\newcommand{\grad}{\mathrm{grad}\,}       %グラディエント
+\newcommand{\rot}{\mathrm{rot}\,}         %ローテーション
+%
+\setlength{\textwidth}{\fullwidth}
+\setlength{\textheight}{44\baselineskip}
+\addtolength{\textheight}{\topskip}
+\setlength{\voffset}{-0.6in}
+%
+
+\begin{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% 表紙
+\begin{titlepage}
+\noindent
+独立行政法人　理化学研究所　御中
+\begin{center}
+	\vspace{8cm}
+	{\Huge \textbf{協調ワークスペースドライバと\\協調フレームワークのプロトタイプ整備} } \\
+	\vspace{1cm}
+	{\Huge \textbf{doxygen}} \\
+	\vspace{10cm}
+	{\Large \textbf{2015年3月26日}} \\
+	\vspace{0.5cm}
+	{\Large \textbf{株式会社イマジカ デジタルスケープ}}
+\end{center}
+\end{titlepage}
+
+
+\end{document}

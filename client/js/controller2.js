@@ -77,7 +77,9 @@
 		var contentArea = document.getElementById('left_main_area'),
 			px = evt.clientX + (document.body.scrollLeft || document.documentElement.scrollLeft),
 			py = evt.clientY + (document.body.scrollTop || document.documentElement.scrollTop);
-		
+		if (!contentArea) {
+			return false;
+		}
 		return (px < (contentArea.scrollWidth) && py > 100 && py < (100 + contentArea.offsetTop + contentArea.scrollHeight));
 	}
 	

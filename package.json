@@ -11,6 +11,7 @@
     "redis": "*",
     "socket.io": "*",
     "websocket": "*",
-    "phantomjs": "*"
+    "phantomjs": "*",
+    "image-size": "*"
   }
 }

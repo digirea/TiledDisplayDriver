@@ -10,6 +10,7 @@
 	 */
 	var Operator = function () {},
 		redis = require("redis"),
+		image_size = require('image-size'),
 		client = redis.createClient(6379, '127.0.0.1', {'return_buffers': true}),
 		textClient = redis.createClient(6379, '127.0.0.1', {'return_buffers': false}),
 		contentIDStr = "content_id",
@@ -50,7 +51,9 @@
 		util.launchApp(command, null, function () {
 			if (fs.existsSync(output)) {
 				console.log("output found");
-				endCallback(fs.readFileSync(output));
+				image_size(output, function(err, dimensions) {
+					endCallback(fs.readFileSync(output), dimensions);
+				});
 			} else {
 				endCallback(null);
 			}
@@ -502,9 +505,15 @@
 	function commandAddContent(socket, ws_connection, metaData, binaryData, endCallback) {
 		console.log("commandAddContent");
 		if (metaData.type === 'url') {
-			renderURL(binaryData, function (image) {
+			renderURL(binaryData, function (image, dimension) {
 				if (image) {
 					//console.log(Command.doneAddContent);
+					metaData.posx = 0;
+					metaData.posy = 0;
+					metaData.width = dimension.width;
+					metaData.height = dimension.height;
+					metaData.orgWidth = dimension.width;
+					metaData.orgHeight = dimension.height;
 					addContent(metaData, image, function (metaData, contentData) {
 						sendMetaData(Command.doneAddContent, metaData, socket, ws_connection);
 						endCallback();

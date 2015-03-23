@@ -166,7 +166,6 @@
 				elem.id = uid;
 				child = document.getElementById(id).childNodes[0].cloneNode();
 				child.innerHTML = document.getElementById(id).childNodes[0].innerHTML;
-				child.src = document.getElementById(id).childNodes[0].src;
 				elem.appendChild(child);
 				
 				if (isDisplayTabSelected()) {

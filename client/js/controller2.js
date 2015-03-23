@@ -1554,6 +1554,7 @@
 				h = 100;
 			}
 		}
+		
 		if (s <= 0) {
 			s = 0.1;
 			scale_current.innerHTML = 0.1;
@@ -2168,6 +2169,12 @@
 		console.log('doneGetVirtualDisplay', reply, whole);
 		if (windowData.hasOwnProperty('orgWidth')) {
 			// set virtual displays
+			if (!windowData.orgHeight || isNaN(windowData.orgWidth)) {
+				windowData.orgWidth = initialWholeWidth;
+			}
+			if (!windowData.orgHeight || isNaN(windowData.orgHeight)) {
+				windowData.orgWidth = initialWholeHeight;
+			}
 			vscreen.assignWhole(windowData.orgWidth, windowData.orgHeight, cx, cy, vscreen.getWholeScale());
 			vscreen.splitWhole(windowData.splitX, windowData.splitY);
 			console.log("doneGetVirtualDisplay", vscreen.getWhole());

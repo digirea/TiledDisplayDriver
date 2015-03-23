@@ -19,7 +19,8 @@
 	 * @return LogicalExpression
 	 */
 	function isVisible(metaData) {
-		return (metaData.hasOwnProperty('visible') && metaData.visible === "true");
+		console.log(metaData);
+		return (metaData.hasOwnProperty('visible') && (metaData.visible === "true" || metaData.visible === true));
 	}
 	
 	/**
@@ -83,9 +84,10 @@
 			cx = wh.width / 2.0,
 			cy = wh.height / 2.0,
 			window_id = getCookie('window_id'),
-			visible = getCookie('visible'),
+			visible = (getCookie('visible') === "true"),
 			posx = getCookie('posx'),
 			posy = getCookie('posy');
+		console.log("visible", visible);
 		vscreen.assignWhole(wh.width, wh.height, cx, cy, 1.0);
 		
 		if (window_id !== "" && window_id.length === 8) {
@@ -127,6 +129,7 @@
 			previewArea.innerHTML = "";
 			client.send(JSON.stringify({ command : 'reqGetContent', type: 'all', id: ''}));
 		} else if (updateType === 'window') {
+			console.log("update winodow");
 			client.send(JSON.stringify({ command : 'reqGetWindow', id : windowData.id}));
 		} else {
 			console.log("update transform");
@@ -274,6 +277,21 @@
 		}
 	}
 	
+	
+	function assingVisible(json) {
+		var elem = document.getElementById("preview_area");
+		if (elem) {
+			if (isVisible(json)) {
+				console.log("isvisible");
+				vsutil.assignMetaData(elem, json, false);
+				elem.style.display = "block";
+			} else {
+				console.log("not isvisible");
+				elem.style.display = "none";
+			}
+		}
+	}
+	
 	/**
 	 * Description
 	 * @method onmessage
@@ -306,11 +324,13 @@
 				metaDataDict[json.id] = json;
 				if (json.hasOwnProperty('command')) {
 					if (json.command === "doneAddWindow") {
+						console.log("doneAddWindow");
 						windowData = json;
 						saveCookie();
 						window.parent.document.title = "Display ID:" + json.id;
 						document.getElementById('displayid').innerHTML = "ID:" + json.id;
 						updateWindow(windowData);
+						assingVisible(windowData);
 						return;
 					} else if (json.command === "doneGetWindow") {
 						console.log("doneGetWindow");
@@ -319,6 +339,7 @@
 						console.log(windowData);
 						setVisibleWindow(windowData);
 						resizeViewport(windowData);
+						assingVisible(windowData);
 						return;
 					}
 				}

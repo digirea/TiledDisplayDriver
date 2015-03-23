@@ -1605,7 +1605,7 @@
 			if (metaData.type === 'text') {
 				// contentData is text
 				elem.innerHTML = contentData;
-				elem.style.overflow = "auto";
+				elem.style.overflow = "visible"; // Show all text
 				vsutil.assignMetaData(elem, metaData, true);
 			} else {
 				// contentData is blob

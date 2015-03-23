@@ -304,6 +304,12 @@
 			splitY : split.y,
 			scale : vscreen.getWholeScale()
 		};
+		if (!windowData.orgWidth || isNaN(windowData.orgWidth)) {
+			windowData.orgWidth = initialWholeWidth;
+		}
+		if (!windowData.orgHeight || isNaN(windowData.orgHeight)) {
+			windowData.orgWidth = initialWholeHeight;
+		}
 		socket.emit('reqUpdateVirtualDisplay', JSON.stringify(windowData));
 	}
 	

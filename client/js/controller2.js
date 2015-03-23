@@ -1506,8 +1506,6 @@
 							if (elem) {
 								vsutil.assignMetaData(elem, metaData, true);
 							}
-						} else {
-							elem.style.display = "block";
 						}
 					}
 				}
@@ -2075,6 +2073,13 @@
 		});
 
 		document.getElementById('display_preview_area').addEventListener("mousedown", function (evt) {
+			// erase last border
+			if (lastDraggingID && !manipulator.getDraggingManip()) {
+				unselect();
+			}
+		});
+		
+		document.getElementById('content_area').addEventListener("mousedown", function (evt) {
 			// erase last border
 			if (lastDraggingID && !manipulator.getDraggingManip()) {
 				unselect();

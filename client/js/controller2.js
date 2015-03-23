@@ -1260,6 +1260,7 @@
 			textData = text;
 		} else {
 			textData = textInput.value;
+			textInput.value = "";
 		}
 		elem.style.position = "absolute";
 		elem.style.top = "0px";
@@ -1307,6 +1308,7 @@
 		
 		binary = metabinary.createMetaBinary({type : "url"}, urlInput.value);
 		addContent(binary);
+		urlInput.value = '';
 	}
 	
 	/// send image to server

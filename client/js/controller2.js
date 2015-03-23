@@ -180,6 +180,7 @@
 				previewArea.appendChild(elem);
 				setupContent(elem, uid);
 				elem.style.marginTop = "0px";
+				
 				return elem;
 			}
 		}
@@ -1296,11 +1297,6 @@
 			img = document.createElement('img'),
 			binary = metabinary.createMetaBinary({type : "url"}, urlInput.value);
 
-		img.style.position = "absolute";
-		img.style.top = "0px";
-		img.style.left = "0px";
-		previewArea.appendChild(img);
-		currentContent = img;
 		console.log(urlInput.value);
 		
 		addContent(binary);

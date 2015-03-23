@@ -34,10 +34,10 @@
 	 */
 	function toIntRect(metaData) {
 		return vscreen.makeRect(
-			parseInt(metaData.posx, 10),
-			parseInt(metaData.posy, 10),
-			parseInt(metaData.width, 10),
-			parseInt(metaData.height, 10)
+			Math.round(parseFloat(metaData.posx)),
+			Math.round(parseFloat(metaData.posy)),
+			Math.round(parseFloat(metaData.width)),
+			Math.round(parseFloat(metaData.height))
 		);
 	}
 	

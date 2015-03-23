@@ -1230,6 +1230,7 @@
 		// calculate width, height
 		width = elem.offsetWidth / vscreen.getWholeScale();
 		height = elem.offsetHeight / vscreen.getWholeScale();
+		/*
 		if (width > vscreen.getWhole().orgW) {
 			width = vscreen.getWhole().orgW;
 			elem.style.overflow = "auto";
@@ -1238,6 +1239,7 @@
 			height = vscreen.getWhole().orgH;
 			elem.style.overflow = "auto";
 		}
+		*/
 		previewArea.removeChild(elem);
 		binary = metabinary.createMetaBinary({type : "text", posx : 0, posy : 0, width : width, height : height}, textData);
 

@@ -336,6 +336,17 @@ p {
 	display: none;
 }
 
+.preview_area {
+	min-height: 100%;
+	min-width: 800px;
+	width: 100%;
+	height: auto;
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index:-1;
+}
+
 .content_dialog {
 	top: 50%;
 	left: 50%;
@@ -349,7 +360,7 @@ p {
 	border-radius:6px;
 	border-width:3px;
 	border-color:#AAAAAA;
-	z-index:4;;
+	z-index:4;
 	display: none;
 	overflow: auto;
 }

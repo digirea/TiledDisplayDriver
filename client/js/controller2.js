@@ -166,6 +166,7 @@
 				elem.id = uid;
 				child = document.getElementById(id).childNodes[0].cloneNode();
 				child.innerHTML = document.getElementById(id).childNodes[0].innerHTML;
+				child.src = document.getElementById(id).childNodes[0].src;
 				elem.appendChild(child);
 				
 				if (isDisplayTabSelected()) {
@@ -227,8 +228,10 @@
 	 * Description
 	 * @method deleteContent
 	 */
-	function deleteContent() {
-		socket.emit('reqDeleteContent', JSON.stringify({id : getSelectedID()}));
+	function deleteContent(evt) {
+		if (getSelectedID()) {
+			socket.emit('reqDeleteContent', JSON.stringify({id : getSelectedID()}));
+		}
 	}
 	
 	/**
@@ -236,8 +239,10 @@
 	 * @method deleteDisplay
 	 */
 	function deleteDisplay() {
-		console.log('reqDeleteWindow' + getSelectedID());
-		socket.emit('reqDeleteWindow', JSON.stringify({id : getSelectedID()}));
+		if (getSelectedID()) {
+			console.log('reqDeleteWindow' + getSelectedID());
+			socket.emit('reqDeleteWindow', JSON.stringify({id : getSelectedID()}));
+		}
 	}
 	
 	/**
@@ -1104,14 +1109,15 @@
 	}
 	
 	// add content mousedown event
+	/*
 	window.document.addEventListener("mousedown", function (evt) {
-		var elem,
-			metaData;
 		// erase last border
 		if (lastDraggingID && !manipulator.getDraggingManip()) {
-			unselect();
+			console.log("UNSELECT");
+			//unselect();
 		}
 	});
+	*/
 	
 	// add content mousemove event
 	window.document.addEventListener("mousemove", function (evt) {
@@ -1888,6 +1894,7 @@
 		};
 
 		displaySettingItem.onclick = function () {
+			unselect();
 			select(wholeWindowListID);
 			rightfunc(true);
 		};
@@ -2052,6 +2059,21 @@
 				updateScreen();
 			}, 200);
 		};
+		
+	
+		document.getElementById('content_preview_area').addEventListener("mousedown", function (evt) {
+			// erase last border
+			if (lastDraggingID && !manipulator.getDraggingManip()) {
+				unselect();
+			}
+		});
+
+		document.getElementById('display_preview_area').addEventListener("mousedown", function (evt) {
+			// erase last border
+			if (lastDraggingID && !manipulator.getDraggingManip()) {
+				unselect();
+			}
+		});
 		
 		updateScreen();
 		vscreen.dump();

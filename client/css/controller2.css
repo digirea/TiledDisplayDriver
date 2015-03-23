@@ -44,6 +44,12 @@ a.active {
 	color: white;
 }
 
+/*
+body {
+	overflow : hidden;
+}
+*/
+
 p {
 	color: white;
 }
@@ -183,8 +189,10 @@ p {
 }
 
 .rightArea {
+	/*
 	border: solid;
 	border-color: rgba(100, 100, 100, 0.5);
+	*/
 	background-color: rgba(55, 55, 55, 1.0);
 	position : absolute;
 	height : 800px;
@@ -201,11 +209,12 @@ p {
 	border: solid 1px;
 	border-radius:1px;
 	
-	-moz-transform-origin: 85% 50%;
-	-webkit-transform-origin: 85% 50%;
-	-o-transform-origin: 85% 50%;
-	-ms-transform-origin: 85% 50%;
-	transform-origin: 85% 50%;
+	top :92px;
+	-moz-transform-origin: 85% 63%;
+	-webkit-transform-origin: 85% 63%;
+	-o-transform-origin: 85% 63%;
+	-ms-transform-origin: 85% 63%;
+	transform-origin: 85% 63%;
 	-moz-transform: rotate(-90deg);
 	-webkit-transform: rotate(-90deg);
 	-o-transform: rotate(-90deg);
@@ -261,6 +270,7 @@ p {
 .content_id {
 	position: relative;
 	left: 20px;
+	padding-top: 10px;
 }
 
 .input-group {

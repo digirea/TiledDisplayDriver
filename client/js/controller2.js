@@ -418,7 +418,7 @@
 				screenElem.style.border = 'solid';
 				screenElem.style.borderWidth = '1px';
 				screenElem.style.borderColor = "gray";
-				screenElem.style.zIndex = -99;
+				screenElem.style.zIndex = -100000;
 				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(w));
 				previewArea.appendChild(screenElem);
 				setupWindow(screenElem, w.id);

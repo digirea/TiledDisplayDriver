@@ -2034,6 +2034,12 @@
 		var timer = null,
 			scale,
 			snap,
+			contentstab = window.animtab.create('left', {
+					'leftTab' : { min : '0px', max : 'auto' },
+				}, {
+					'leftArea' : { min : '0px', max : '250px' },
+				}, 'Contents'
+			),
 			bottomfunc = window.animtab.create('bottom',
 				{ 'bottomTab' : { min : '0px', max : 'auto' }},
 				{ 'bottomArea' : { min : '0px', max : '400px' }}, 'AddContent'),

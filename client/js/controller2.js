@@ -1320,34 +1320,32 @@
 		
 		if (windowData) {
 			screenElem = document.getElementById(windowData.id);
-			vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[windowData.id]));
-		} else {
-			console.log("screens:" + JSON.stringify(vscreen));
-
-			wholeElem.style.border = 'solid';
-			wholeElem.style.zIndex = -100;
-			wholeElem.className = "screen";
-			wholeElem.style.color = "black";
-			vsutil.assignScreenRect(wholeElem, whole);
-			previewArea.appendChild(wholeElem);
-
-			console.log("wholeElemwholeElem");
-
-			for (s in screens) {
-				if (screens.hasOwnProperty(s)) {
-					screenElem = document.createElement('div');
-					screenElem.className = "screen";
-					screenElem.id = s;
-					console.log("screenElemID:" + JSON.stringify(screens[s]));
-					screenElem.style.border = 'solid';
-					vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
-					previewArea.appendChild(screenElem);
-					setupWindow(screenElem, s);
-				}
+			if (screenElem) {
+				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[windowData.id]));
+				return;
 			}
-			
-			assignSplitWholes(vscreen.getSplitWholes());
 		}
+
+		console.log("screens:" + JSON.stringify(vscreen));
+		wholeElem.style.border = 'solid';
+		wholeElem.style.zIndex = -100;
+		wholeElem.className = "screen";
+		wholeElem.style.color = "black";
+		vsutil.assignScreenRect(wholeElem, whole);
+		previewArea.appendChild(wholeElem);
+		for (s in screens) {
+			if (screens.hasOwnProperty(s)) {
+				screenElem = document.createElement('div');
+				screenElem.className = "screen";
+				screenElem.id = s;
+				console.log("screenElemID:" + JSON.stringify(screens[s]));
+				screenElem.style.border = 'solid';
+				vsutil.assignScreenRect(screenElem, vscreen.transformScreen(screens[s]));
+				previewArea.appendChild(screenElem);
+				setupWindow(screenElem, s);
+			}
+		}
+		assignSplitWholes(vscreen.getSplitWholes());
 	}
 	
 	/// update all screens
@@ -1625,7 +1623,7 @@
 			vscreen.setScreenSize(windowData.id, windowData.width, windowData.height);
 			vscreen.setScreenPos(windowData.id, windowData.posx, windowData.posy);
 			//console.log("import windowsc:", vscreen.getScreen(windowData.id));
-			updateScreen();
+			updateScreen(windowData);
 		}
 	}
 	
@@ -1636,9 +1634,13 @@
 	 */
 	function importWindowToList(windowData) {
 		var displayArea = document.getElementById('display_area'),
-			divElem = document.createElement("div"),
+			divElem,
 			onlistID = "onlist:" + windowData.id;
 		
+		divElem = document.getElementById(onlistID);
+		if (divElem) { return; }
+		
+		divElem = document.createElement("div");
 		divElem.innerHTML = "ID:" + windowData.id;
 		divElem.id = onlistID;
 		divElem.className = "screen";
@@ -2011,8 +2013,9 @@
 	
 	socket.on('updateWindow', function () {
 		console.log('updateWindow');
+		//updateScreen();
 		//clearWindowList();
-		//socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
+		socket.emit('reqGetWindow', JSON.stringify({type: "all", id: ""}));
 	});
 	
 	socket.on('update', function () {

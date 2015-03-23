@@ -628,6 +628,7 @@
 			transw = document.getElementById('content_transform_w'),
 			transh = document.getElementById('content_transform_h'),
 			transz = document.getElementById('content_transform_z'),
+			dlbtn  = document.getElementById('download_button'),
 			content_id = document.getElementById('content_id');
 		if (transx) { transx.value = 0; }
 		if (transy) { transy.value = 0; }
@@ -635,6 +636,7 @@
 		if (transh) { transh.value = 0; }
 		if (transz) { transz.value = 0; }
 		if (content_id) { content_id.innerHTML = ""; }
+		if (dlbtn)  { dlbtn.style.display = 'none'; }
 	}
 	
 	/**

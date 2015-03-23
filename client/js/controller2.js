@@ -1567,9 +1567,11 @@
 				contentElem.src = URL.createObjectURL(blob);
 
 				contentElem.onload = function () {
+					var aspect;
 					if (contentElem.offsetHeight > 200) {
-						divElem.style.width = "";
+						aspect = contentElem.offsetWidth / contentElem.offsetHeight;
 						divElem.style.height = "100px";
+						divElem.style.width = 100 * aspect;
 					}
 				};
 			}

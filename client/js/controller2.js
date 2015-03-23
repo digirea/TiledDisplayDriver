@@ -1295,10 +1295,15 @@
 		var previewArea = document.getElementById('content_preview_area'),
 			urlInput = document.getElementById('url_input'),
 			img = document.createElement('img'),
-			binary = metabinary.createMetaBinary({type : "url"}, urlInput.value);
+			binary;
 
 		console.log(urlInput.value);
+		urlInput.value = urlInput.value.split(' ').join('');
+		if (urlInput.value.indexOf("http") < 0) {
+			return;
+		}
 		
+		binary = metabinary.createMetaBinary({type : "url"}, urlInput.value);
 		addContent(binary);
 	}
 	
@@ -1393,12 +1398,22 @@
 			i,
 			fileReader = new FileReader(),
 			binary,
-			id = document.getElementById('update_content_id').innerHTML;
+			id = document.getElementById('update_content_id').innerHTML,
+			previewArea = document.getElementById('content_preview_area'),
+			elem;
 
 		fileReader.onloadend = function (e) {
 			if (e.target.result) {
+				console.log("update_content_id", id);
 				binary = metabinary.createMetaBinary({type : "image", id : id}, e.target.result);
+				
+				elem = document.getElementById(id);
+				if (elem) {
+					previewArea.removeChild(elem);
+				}
+				
 				updateContent(binary);
+				
 			}
 		};
 		for (i = 0, file = files[i]; file; i = i + 1, file = files[i]) {

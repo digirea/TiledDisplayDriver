@@ -40,7 +40,7 @@
 	}
 	
 	/**
-	 * メタデータから表示中かを判定する
+	 * メタデータが表示中かを判定する
 	 * @method isVisible
 	 * @param {Object} metaData
 	 * @return LogicalExpression
@@ -59,7 +59,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 左リスト表示中かをIDから判別する
 	 * @method isUnvisibleID
 	 * @param {String} id
 	 * @return BinaryExpression
@@ -69,7 +69,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 発生したイベントが左リストビュー領域で発生しているかを判別する
 	 * @method isContentArea
 	 * @return LogicalExpression
 	 */
@@ -84,7 +84,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 左リストにて選択されたアクティブなタブを判別する。
 	 * @method isDisplayTabSelected
 	 * @return BinaryExpression
 	 */
@@ -130,9 +130,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されたタブに左リストdomの切り替えを行う。
+	 * onclickはinit時に設定される
 	 * @method changeLeftTab
-	 * @param {} type
+	 * @param {String} type WindowかContentのタブ名
 	 */
 	function changeLeftTab(type) {
 		var displayTabTitle = document.getElementById('display_tab_title'),
@@ -145,9 +146,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されたIDからElement取得
 	 * @method getElem
-	 * @param {} id
+	 * @param {String} id element id
+	 * @param {bool} isContentArea コンテンツエリアか
 	 * @return CallExpression
 	 */
 	function getElem(id, isContentArea) {
@@ -188,7 +190,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されているContentIDを返却する
 	 * @method getSelectedID
 	 * @return MemberExpression
 	 */
@@ -198,7 +200,7 @@
 	}
 	
 	/**
-	 * Description
+	 * メタデータの位置情報、サイズ情報をString -> Intへ変換する
 	 * @method toIntMetaData
 	 * @param {JSON} metaData メタデータ
 	 * @return metaData
@@ -1340,9 +1342,9 @@
 	
 	/// open image file
 	/**
-	 * 画像ファイルOpenハンドラ
+	 * 画像ファイルFileOpenハンドラ
 	 * @method openImage
-	 * @param {Object} evt Openイベント
+	 * @param {Object} evt FileOpenイベント
 	 */
 	function openImage(evt) {
 		var files = evt.target.files,
@@ -1379,9 +1381,9 @@
 	
 	/// open text file
 	/**
-	 * テキストファイルOpenハンドラ
+	 * テキストファイルFileOpenハンドラ
 	 * @method openText
-	 * @param {Object} evt Openイベント
+	 * @param {Object} evt FileOpenイベント
 	 */
 	function openText(evt) {
 		var files = evt.target.files,
@@ -1404,9 +1406,9 @@
 	
 	/// replace image file
 	/**
-	 * Description
+	 * 画像イメージ差し替えFileOpenハンドラ
 	 * @method replaceImage
-	 * @param {} evt
+	 * @param {Object} evt FileOpenイベント
 	 */
 	function replaceImage(evt) {
 		var files = evt.target.files,
@@ -1441,7 +1443,7 @@
 	
 	/// add all screens
 	/**
-	 * Description
+	 * VirualDisplayをVirtualScreenに設定
 	 * @method addScreenRect
 	 * @param {JSON} windowData ウィンドウデータ
 	 */
@@ -1494,7 +1496,7 @@
 	
 	/// update all screens
 	/**
-	 * Description
+	 * VirtualScreen更新
 	 * @method updateScreen
 	 * @param {JSON} windowData ウィンドウデータ
 	 */
@@ -1543,7 +1545,7 @@
 	}
 	
 	/**
-	 * Description
+	 * PropertyのDisplayパラメータ更新ハンドル
 	 * @method changeDisplayValue
 	 */
 	function changeDisplayValue() {
@@ -1597,7 +1599,8 @@
 	}
 	
 	/**
-	 * Description
+	 * 受領したメタデータからプレビューツリーにコンテンツを反映する。
+	 * doneGetContent時にコールされる。
 	 * @method importContentToView
 	 * @param {JSON} metaData メタデータ
 	 * @param {BLOB} contentData コンテンツデータ
@@ -1661,7 +1664,8 @@
 	}
 	
 	/**
-	 * Description
+	 * 受領したメタデータから左側コンテンツエリアに反映する。
+	 * doneGetContent時にコールされる。
 	 * @method importContentToList
 	 * @param {JSON} metaData メタデータ
 	 * @param {BLOB} contentData コンテンツデータ
@@ -1735,7 +1739,7 @@
 	
 	/// import content
 	/**
-	 * Description
+	 * メタデータからコンテンツをインポートする
 	 * @method importContent
 	 * @param {JSON} metaData メタデータ
 	 * @param {BLOB} contentData コンテンツデータ
@@ -1746,7 +1750,7 @@
 	}
 	
 	/**
-	 * Description
+	 * Displayを左リストビューにインポートする。
 	 * @method importWindowToView
 	 * @param {JSON} windowData ウィンドウデータ
 	 */
@@ -1784,7 +1788,7 @@
 	}
 	
 	/**
-	 * Description
+	 * Displayを左リストビューにインポートする。
 	 * @method importWindowToList
 	 * @param {JSON} windowData ウィンドウデータ
 	 */
@@ -1816,7 +1820,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 全Windowをリストビューに追加する
 	 * @method addWholeWindowToList
 	 */
 	function addWholeWindowToList() {
@@ -1840,7 +1844,7 @@
 	}
 	
 	/**
-	 * Description
+	 * リストビュー領域をクリアする
 	 * @method clearWindowList
 	 */
 	function clearWindowList() {
@@ -1850,7 +1854,7 @@
 	
 	/// import window
 	/**
-	 * Description
+	 * 指定されたWindowをリストビューにインポートする
 	 * @method importWindow
 	 * @param {JSON} windowData ウィンドウデータ
 	 */
@@ -1860,7 +1864,7 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツ追加ポップアップの初期化
 	 * @method initAddContentArea
 	 */
 	function initAddContentArea() {
@@ -1889,7 +1893,7 @@
 	}
 	
 	/**
-	 * Description
+	 * ビュー領域初期化。スケーリング表示、スナップ設定などのelementの初期化を行う。
 	 * @method initViewSettingArea
 	 */
 	function initViewSettingArea(rightfunc) {
@@ -1944,9 +1948,9 @@
 	}
 	
 	/**
-	 * Description
+	 * 左コンテンツタブ初期化
 	 * @method initContentArea
-	 * @param {} bottomfunc
+	 * @param {Function} bottomfunc addボタンコールバック
 	 */
 	function initContentArea(bottomfunc) {
 		var addButton = document.getElementById('content_add_button'),
@@ -1959,7 +1963,7 @@
 	}
 	
 	/**
-	 * Description
+	 * ディスプレイタブの初期化
 	 * @method initDisplayArea
 	 */
 	function initDisplayArea() {
@@ -1971,9 +1975,9 @@
 	
 	
 	/**
-	 * Description
+	 * 左メニュー領域[ディスプレイタブ、コンテンツタブ]の初期化
 	 * @method initLeftArea
-	 * @param {} bottomfunc
+	 * @param {Function} bottomfunc addボタンコールバック
 	 */
 	function initLeftArea(bottomfunc) {
 		var displayArea = document.getElementById('display_area'),
@@ -2039,7 +2043,7 @@
 	
 	/// initialize elemets, events
 	/**
-	 * Description
+	 * コントローラ初期化
 	 * @method init
 	 */
 	function init() {

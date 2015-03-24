@@ -76,23 +76,30 @@
 ポータルGUIの動作にはNode.jsのインストールが必要です.\\
 Node.jsの公式サイト(\verb+http://nodejs.org/+)からNode.js本体をダウンロードし,インストールします.
 
-\subsection{プログラムの展開}
-
-TODO:
 
 \subsection{Node.jsサブモジュールのインストール}
 アプリケーションを展開したディレクトリに,
 ポータルGUIで利用しているNode.jsの必要なサードパーティモジュールのインストールを行います.
 
-TODO:
+
+\chapter{アプリケーションのインストール方法}
+
+\subsection{Mac/Linuxの場合}
+bin配下の以下のシェルスクリプトを実行します.\\
 
 \begin{verbatim}
    $cd bin
-   $sh install.sh 
-   (Windows版は install.bat)
+   $sh install.sh
 \end{verbatim}
 
-\newpage
+
+\subsection{Windowsの場合}
+bin配下の以下のファイルを実行します.\\
+\begin{verbatim}
+   >cd bin
+   >install.bat
+\end{verbatim}
+
 
 \section{起動}
 起動スクリプトを実行するとポータルGUIサーバーが起動します.
@@ -103,21 +110,7 @@ TODO:
 
 \section{コントローラへアクセス}
 ポータルGUIは,Webブラウザのアドレス欄に「http://localhost:8080」と入力することでアクセス出来ます.\\
-
-TODO:
-
-\chapter{ホーム画面}
-\section{概要}
-ホーム画面では,以下の操作を行う事が出来ます.
-
-\begin{itemize}
-\item コントローラ画面へ
-\item ディスプレイ画面へ
-\end{itemize}
-
-\section{操作}
-
-TODO:
+アクセスすると、以下の画面が表示されます.\\
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -128,14 +121,21 @@ TODO:
 \end{figure}
 
 
-\chapter{動作環境とインストール}
-以下の環境で動作します.\\
-
-OS : Linux, Windows(Vista,7,8), MacOSX
-Web ブラウザ: Mozilla Firefox 15.x, Google Chrome 21.x, Apple Safari 6.x
-
 \chapter{アプリケーションの展開}
-XXXXXX.zipを解凍すると、以下の構成でファイルが作成されます.\\
+
+\subsection{Mac/Linuxの場合}
+以下のコマンドを実行し、解凍してください(アーカイブソフトなどで解凍しても大丈夫です).\\
+\begin{verbatim}
+   $unzip XXXXXX.zip
+\end{verbatim}
+
+
+\subsection{Windowsの場合}
+ダウンロードしたファイルを右クリックから、解凍を行ってください.\\
+
+
+\subsection{解凍後の構成}
+解凍すると、以下の構成でファイルが作成されます.\\
 
 \begin{tabbing}
 0123\=01234567890123\=0123456789\kill
@@ -148,23 +148,6 @@ XXXXXX.zipを解凍すると、以下の構成でファイルが作成されま�
 \end{tabbing}
 
 TiledDisplayDriverの起動にはbinフォルダに格納されているスクリプトを使用します.\\
-
-\chapter{アプリケーションのインストール方法}
-
-\subsection{Mac/Linuxの場合}
-bin配下の以下のシェルスクリプトを実行します.\\
-
-\begin{verbatim}
-   $cd bin
-   $sh install.sh
-\end{verbatim}
-
-\subsection{Windowsの場合}
-bin配下の以下のファイルを実行します.\\
-\begin{verbatim}
-   >cd bin
-   >install.bat
-\end{verbatim}
 
 
 
@@ -205,28 +188,37 @@ redisが起動しているterminalを終了させます.\\
 また、プロセスとして起動している場合は、プロセスをpsコマンドにて見つけて
 killします.\\
 
-\chapter{TiledDisplayDriverの選択}
+\chapter{TiledDisplayDriverのホーム画面}
+\section{概要}
 TDDは、以下の2つのコントローラ(Display, Controller制御)側か、
 Display側かを決定することができます.\\
+ホーム画面では,以下が表示されております。
 
-\chapter{TiledDisplayDriverへのアクセス}
-\section{概要}
-TiledDisplayDriverのアクセスは、Webブラウザのアドレス欄に
-「http://localhost:8080」と入力することでアクセス出来ます.
 
-アクセスすると、以下の画面が表示されます.\\
-★画面のスクリーンショット\\
-
+\begin{itemize}
+\item Controller: コントローラ画面へ.\\
+\item Display   : ディスプレイ画面へ.\\
+\end{itemize}
 
 \section{操作}
 ここで、アクセスしたPCを「コントローラ」として使用するか、
 ディスプレイとして使用するかを選択することができます.\\
 
 
+
+
 \chapter{コントローラ画面の操作}
 \section{概要}
 コントローラは以下の通りとなっております.\\
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 それぞれの機能について解説します.\\
 
@@ -237,26 +229,58 @@ TiledDisplayDriverのアクセスは、Webブラウザのアドレス欄に
 ディスプレイの操作、コンテンツの移動、操作、削除等を行う
 汎用スペースとなっております.\\
 
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 \newpage
 
 \section{コントローラの操作 : 左(Displayタブ)}
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 VirtualDisplayと、TDDサーバーに接続されているDisplayの一覧を表示します.\\
 コントローラは、このDisplayをVirtualDisplay上に配置し、コンテンツを追加することによって
 共有ワークスペースを実現します.\\
 Displayは以下の通りマウスドラッグドロップにより、VirtualDisplaySpaceに配置することができます.\\
 
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 ★画面分割数、解像度の事を記載する
 
 
 
 以下、4クライアントが接続された環境の例となります.\\
-★4クライアントが接続された状態のDisplayタブのスクリーンショット\\を記載する
+★4クライアントが接続された状態のDisplayタブのスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\を記載する
 
 
 Displayを正確に区画に配置するための機能として「snap機能」があります.\\
@@ -290,7 +314,15 @@ Displayを正確に区画に配置するための機能として「snap機能」
 
 \section{コントローラの操作 : 左(contentsタブ)}
 
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 各ボタンの機能は以下の通りとなります.\\
 
@@ -309,36 +341,89 @@ Displayを正確に区画に配置するための機能として「snap機能」
 以下追加例となります.\\
 \\
 
-★テキスト追加のスクリーンショット\\
+★テキスト追加のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 \subsection{テキストファイルの送信}
 テキストファイルをコンテンツに追加します.\\
 以下追加例となります.\\
 
-★テキストファイル例のスクリーンショット\\
-★テキストファイル追加したスクリーンショット\\
+★テキストファイル例のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
+★テキストファイル追加したスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 \subsection{URLの送信}
 入力されたURLのサイトの画像をコンテンツに追加します.\\
 以下例となります.\\
-★URL画像追加のスクリーンショット\\追加
+★URL画像追加のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\追加
 
 
 
 \subsection{画像の送信}
 任意の画像ファイルをコンテンツに追加します.\\
 対応している画像フォーマットは以下の通りです.\\
--- png, jpeg
+
+\begin{itemize}
+\item PNGフォーマット形式.
+\item JPEGフォーマット形式.
+\end{itemize}
+
 以下に表示例となります.\\
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 \subsection{画像の差し替え}
 contentsタブにて選択している画像の差し替えを行います.\\
 差し替え例を以下に示します.\\
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 \chapter{コントローラの操作 : 右 propartyウィンドウ }
@@ -350,13 +435,29 @@ propartyは以下の通りID以外を編集し、座標、表示全面の優先�
 指定することができます.\\
 以下操作例となります.\\
 
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 また、選択されたContentsはpropartyウィンドウ左下のダウンロードボタンから
 ダウンロードすることができます.\\
 
-★画面のスクリーンショット\\
+★画面のスクリーンショット
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+\\
 
 
 \chapter{コントローラの操作 : 上}
@@ -367,9 +468,24 @@ Displayウィンドウを表示します.\\
 \subsection{Displayボタン}
 Displayウィンドウを新しいタブで表示します.\\
 
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{ホーム画面}
+	\label{fig:home}
+\end{figure}
+
 
 \subsection{Virtual Display Settingボタン}
 Displayタブに操作をフォーカスします.\\
 
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{ホーム画面}
+	\label{fig:home}
+\end{figure}
 
 \end{document}

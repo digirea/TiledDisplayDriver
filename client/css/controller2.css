@@ -124,7 +124,7 @@ p {
 
 .head_select_mode_menu {
 	position:absolute;
-	left : 70px;
+	left : 20px;
 }
 
 .head_select_menu_text {
@@ -141,7 +141,7 @@ p {
 
 .head_vdisplay_menu {
 	position:absolute;
-	right : 40px;
+	right : 20px;
 }
 
 .head_vdisplay_menu_text {
@@ -270,7 +270,7 @@ p {
 }
 
 .bgcolor {
-	background-color: #CCC;
+	background-color: #AAA;
 	position: fixed;
 	left: 0px;
 	top: 0px;

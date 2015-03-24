@@ -13,9 +13,9 @@
 		windowType = "window";
 	
 	/**
-	 * Description
+	 * メタデータが表示中であるかを判別する
 	 * @method isVisible
-	 * @param {} metaData
+	 * @param {JSON} metaData 判別対象メタデータ
 	 * @return LogicalExpression
 	 */
 	function isVisible(metaData) {
@@ -24,9 +24,9 @@
 	}
 	
 	/**
-	 * Description
+	 * クライアントサイズを取得する
 	 * @method getWindowSize
-	 * @return ObjectExpression
+	 * @return ObjectExpression クライアントサイズ
 	 */
 	function getWindowSize() {
 		return {
@@ -36,10 +36,10 @@
 	}
 	
 	/**
-	 * Description
+	 * cookie取得
 	 * @method getCookie
-	 * @param {} key
-	 * @return Literal
+	 * @param {String} key cookieキー
+	 * @return Literal cookieデータ
 	 */
 	function getCookie(key) {
 		var i,
@@ -62,7 +62,7 @@
 	}
 	
 	/**
-	 * Description
+	 * cookie保存
 	 * @method saveCookie
 	 */
 	function saveCookie() {
@@ -76,7 +76,7 @@
 	}
 	
 	/**
-	 * Description
+	 * View側Window[Display]登録
 	 * @method registerWindow
 	 */
 	function registerWindow() {
@@ -98,7 +98,7 @@
 	}
 	
 	/**
-	 * Description
+	 * View側Window[Display]登録、サーバーにWindow登録通知
 	 * @method onopen
 	 */
 	client.onopen = function () {
@@ -109,7 +109,7 @@
 	};
 	
 	/**
-	 * Description
+	 * close
 	 * @method onclose
 	 */
 	client.onclose = function () {
@@ -118,7 +118,7 @@
 
 	/// update all contants
 	/**
-	 * Description
+	 * update contants.
 	 * @method update
 	 */
 	function update() {
@@ -138,10 +138,10 @@
 	}
 	
 	/**
-	 * Description
+	 * メタバイナリからコンテンツelementを作成してVirtualScreenに登録
 	 * @method assignMetaBinary
-	 * @param {} metaData
-	 * @param {} contentData
+	 * @param {JSON} metaData
+	 * @param {String} contentData
 	 */
 	function assignMetaBinary(metaData, contentData) {
 		var previewArea = document.getElementById('preview_area'),
@@ -185,9 +185,9 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたメタデータをvisibleにする
 	 * @method setVisibleWindow
-	 * @param {} metaData
+	 * @param {JSON} metaData
 	 */
 	function setVisibleWindow(metaData) {
 		if (metaData.hasOwnProperty('visible')) {
@@ -201,9 +201,9 @@
 	}
 	
 	/**
-	 * Description
+	 * VirtualDisplay更新
 	 * @method updateWindow
-	 * @param {} metaData
+	 * @param {JSON} metaData VirtualDisplayメタデータ
 	 */
 	function updateWindow(metaData) {
 		var cx = parseFloat(metaData.posx, 10),
@@ -225,9 +225,9 @@
 	}
 	
 	/**
-	 * Description
+	 * リサイズに伴うDisplayの更新
 	 * @method resizeViewport
-	 * @param {} windowData
+	 * @param {JSON} windowData
 	 */
 	function resizeViewport(windowData) {
 		var wh = getWindowSize(),

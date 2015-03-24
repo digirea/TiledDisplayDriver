@@ -29,7 +29,7 @@
 	});
 	
 	/**
-	 * Description
+	 * ドラッグ中のオフセット設定。Manipulatorにて使用される。
 	 * @method draggingOffsetFunc
 	 * @param {Function} top
 	 * @param {Function} left
@@ -40,7 +40,7 @@
 	}
 	
 	/**
-	 * Description
+	 * メタデータが表示中かを判定する
 	 * @method isVisible
 	 * @param {Object} metaData
 	 * @return LogicalExpression
@@ -50,7 +50,7 @@
 	}
 	
 	/**
-	 * Description
+	 * VirtualDisplayのモードがFreeModeかを判別する
 	 * @method isFreeMode
 	 * @return BinaryExpression
 	 */
@@ -59,7 +59,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 左リスト表示中かをIDから判別する
 	 * @method isUnvisibleID
 	 * @param {String} id
 	 * @return BinaryExpression
@@ -69,7 +69,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 発生したイベントが左リストビュー領域で発生しているかを判別する
 	 * @method isContentArea
 	 * @return LogicalExpression
 	 */
@@ -84,7 +84,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 左リストにて選択されたアクティブなタブを判別する。
 	 * @method isDisplayTabSelected
 	 * @return BinaryExpression
 	 */
@@ -93,9 +93,9 @@
 	}
 	
 	/**
-	 * Description
+	 * cookie取得
 	 * @method getCookie
-	 * @param {} key
+	 * @param {String} key cookieIDキー
 	 * @return Literal
 	 */
 	function getCookie(key) {
@@ -119,7 +119,7 @@
 	}
 	
 	/**
-	 * Description
+	 * cookie保存
 	 * @method saveCookie
 	 */
 	function saveCookie() {
@@ -130,9 +130,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されたタブに左リストdomの切り替えを行う。
+	 * onclickはinit時に設定される
 	 * @method changeLeftTab
-	 * @param {} type
+	 * @param {String} type WindowかContentのタブ名
 	 */
 	function changeLeftTab(type) {
 		var displayTabTitle = document.getElementById('display_tab_title'),
@@ -145,9 +146,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されたIDからElement取得
 	 * @method getElem
-	 * @param {} id
+	 * @param {String} id element id
+	 * @param {bool} isContentArea コンテンツエリアか
 	 * @return CallExpression
 	 */
 	function getElem(id, isContentArea) {
@@ -188,7 +190,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されているContentIDを返却する
 	 * @method getSelectedID
 	 * @return MemberExpression
 	 */
@@ -198,9 +200,9 @@
 	}
 	
 	/**
-	 * Description
+	 * メタデータの位置情報、サイズ情報をString -> Intへ変換する
 	 * @method toIntMetaData
-	 * @param {} metaData
+	 * @param {JSON} metaData メタデータ
 	 * @return metaData
 	 */
 	function toIntMetaData(metaData) {
@@ -213,7 +215,7 @@
 	
 	/// get image from server
 	/**
-	 * Description
+	 * get image from server
 	 * @method update
 	 */
 	function update() {
@@ -225,7 +227,7 @@
 	
 	/// delete content
 	/**
-	 * Description
+	 * delete content
 	 * @method deleteContent
 	 */
 	function deleteContent(evt) {
@@ -235,7 +237,7 @@
 	}
 	
 	/**
-	 * Description
+	 * Displayを削除する
 	 * @method deleteDisplay
 	 */
 	function deleteDisplay() {
@@ -246,7 +248,7 @@
 	}
 	
 	/**
-	 * Description
+	 * Displayを全削除する
 	 * @method deleteDisplayAll
 	 */
 	function deleteDisplayAll() {
@@ -254,18 +256,18 @@
 	}
 	
 	/**
-	 * Description
+	 * Content追加
 	 * @method addContent
-	 * @param {} binary
+	 * @param {BLOB} binary
 	 */
 	function addContent(binary) {
 		socket.emit('reqAddContent', binary);
 	}
 	
 	/**
-	 * Description
+	 * メタデータ(Display, 他コンテンツ)の幾何情報の更新通知を行う。
 	 * @method updateTransform
-	 * @param {} metaData
+	 * @param {JSON} metaData メタデータ
 	 */
 	function updateTransform(metaData) {
 		//console.log(JSON.stringify(metaData));
@@ -279,7 +281,7 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツ更新要求送信
 	 * @method updateContent
 	 * @param {} binary
 	 */
@@ -288,7 +290,7 @@
 	}
 	
 	/**
-	 * Description
+	 * VirtualDisplay情報更新要求送信
 	 * @method updateWindowData
 	 */
 	function updateWindowData() {
@@ -315,12 +317,12 @@
 	}
 	
 	/**
-	 * Description
+	 * Propertyタブに入力プロパティを追加する
 	 * @method addInputProperty
-	 * @param {} id
-	 * @param {} leftLabel
-	 * @param {} rightLabel
-	 * @param {} value
+	 * @param {Object} input element id
+	 * @param {String} leftLabel 左ラベル
+	 * @param {String} rightLabel 右ラベル
+	 * @param {String} value 初期入力値
 	 */
 	function addInputProperty(id, leftLabel, rightLabel, value) {
 		/*
@@ -355,11 +357,11 @@
 	}
 	
 	/**
-	 * Description
+	 * Propertyタブにボタン追加
 	 * @method addButtonProperty
-	 * @param {} id
-	 * @param {} value
-	 * @param {} func
+	 * @param {String} id ボタンID
+	 * @param {String} value ボタンinnerHTML
+	 * @param {Function} func onclick時コールバック
 	 */
 	function addButtonProperty(id, value, func) {
 		/*
@@ -379,10 +381,10 @@
 	}
 	
 	/**
-	 * Description
+	 * VirtualDisplayスケール設定ボタン追加
 	 * @method addScaleDropdown
-	 * @param {} id
-	 * @param {} value
+	 * @param {String} id ID
+	 * @param {String} value ボタンinnerHTML
 	 */
 	function addScaleDropdown(id, value) {
 		/*
@@ -423,7 +425,7 @@
 	}
 	
 	/**
-	 * Description
+	 * VirualDisplay分割設定
 	 * @method assignSplitWholes
 	 * @param {} splitWholes
 	 */
@@ -458,11 +460,11 @@
 	}
 	
 	/**
-	 * Description
+	 * VirualDisplay分割数変更
 	 * @method changeWholeSplit
-	 * @param {} x
-	 * @param {} y
-	 * @param {} withoutUpdate
+	 * @param {String} x x軸分割数
+	 * @param {String} y y軸分割数
+	 * @param {bool} withoutUpdate 設定後各Displayの更新をするかのフラグ
 	 */
 	function changeWholeSplit(x, y, withoutUpdate) {
 		var ix = parseInt(x, 10),
@@ -493,10 +495,10 @@
 	}
 	
 	/**
-	 * Description
+	 * Property表示領域初期化。selectされたtypeに応じて作成されるelementが変更される。
 	 * @method initPropertyArea
-	 * @param {} id
-	 * @param {} type
+	 * @param {String} id ContentもしくはDisplay ID
+	 * @param {String} type 設定タイプ
 	 */
 	function initPropertyArea(id, type) {
 		var contentX,
@@ -601,9 +603,9 @@
 	}
 	
 	/**
-	 * Description
+	 * メタデータをPropertyエリアに反映
 	 * @method assignContentProperty
-	 * @param {} metaData
+	 * @param {JSON} metaData メタデータ
 	 */
 	function assignContentProperty(metaData) {
 		console.log("assignContentProperty:" + JSON.stringify(metaData));
@@ -621,7 +623,11 @@
 			transz.value = parseInt(metaData.zIndex, 10);
 		}
 	}
-	
+
+	/**
+	 * Propertyエリアパラメータ消去
+	 * @method clearProperty
+	 */
 	function clearProperty() {
 		var transx = document.getElementById('content_transform_x'),
 			transy = document.getElementById('content_transform_y'),
@@ -640,7 +646,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 選択されているVirtualDisplayをPropertyエリアのパラメータに設定
 	 * @method assignVirtualDisplayProperty
 	 */
 	function assignVirtualDisplayProperty() {
@@ -666,7 +672,7 @@
 	}
 	
 	/**
-	 * Description
+	 * Viewスケール設定
 	 * @method assignViewSetting
 	 */
 	function assignViewSetting() {
@@ -683,9 +689,9 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツの四隅マニピュレーター移動。マウスmove時にコールされる
 	 * @method onManipulatorMove
-	 * @param {} evt
+	 * @param {Object} evt マウスイベント
 	 */
 	function onManipulatorMove(evt) {
 		var px, py,
@@ -751,9 +757,9 @@
 	}
 	
 	/**
-	 * Description
+	 * Deleteボタン有効化設定
 	 * @method enableDeleteButton
-	 * @param {} isEnable
+	 * @param {bool} isEnable ボタン有効化
 	 */
 	function enableDeleteButton(isEnable) {
 		if (isEnable) {
@@ -764,9 +770,9 @@
 	}
 	
 	/**
-	 * Description
+	 * DisplayDeleteボタン有効化設定
 	 * @method enableDisplayDeleteButton
-	 * @param {} isEnable
+	 * @param {bool} isEnable ボタン有効化
 	 */
 	function enableDisplayDeleteButton(isEnable) {
 		if (isEnable) {
@@ -777,9 +783,9 @@
 	}
 	
 	/**
-	 * Description
+	 * 画像更新ボタン有効化
 	 * @method enableUpdateImageButton
-	 * @param {} isEnable
+	 * @param {bool} isEnable ボタン有効化
 	 */
 	function enableUpdateImageButton(isEnable) {
 		if (isEnable) {
@@ -791,9 +797,9 @@
 	
 	/// select content or window
 	/**
-	 * Description
+	 * Content or Display選択。
 	 * @method select
-	 * @param {} id
+	 * @param {String} id 選択したID
 	 */
 	function select(id, isContentArea) {
 		var elem,
@@ -860,7 +866,7 @@
 	
 	/// unselect content or window
 	/**
-	 * Description
+	 * 現在選択されているContents, もしくはVirtualDisplayを非選択状態にする
 	 * @method unselect
 	 */
 	function unselect() {
@@ -887,7 +893,8 @@
 	
 	/// close selected content or window
 	/**
-	 * Description
+	 * クローズボタンハンドル。選択されているcontent or windowを削除する。
+	 * その後クローズされた結果をupdateTransformにて各Windowに通知する。
 	 * @method closeFunc
 	 */
 	function closeFunc() {
@@ -916,7 +923,7 @@
 	}
 	
 	/**
-	 * Description
+	 * PropertyエリアのコンテンツIDからElementを取得する
 	 * @method getSelectedElem
 	 * @return Literal
 	 */
@@ -930,9 +937,9 @@
 	
 	/// change zIndex
 	/**
-	 * Description
+	 * 選択中のコンテンツのzIndexを変更する
 	 * @method changeZIndex
-	 * @param {} index
+	 * @param {String} index 設定するzIndex
 	 */
 	function changeZIndex(index) {
 		var elem = getSelectedElem(),
@@ -948,10 +955,10 @@
 	
 	/// change rect
 	/**
-	 * Description
+	 * Content or Displayの矩形サイズ変更時ハンドラ。initPropertyAreaのコールバックとして指定されている。
 	 * @method changeRect
-	 * @param {} id
-	 * @param {} value
+	 * @param {String} id Content or Display ID
+	 * @param {String } value 変更値
 	 */
 	function changeRect(id, value) {
 		var elem = getSelectedElem(),
@@ -981,7 +988,14 @@
 			}
 		}
 	}
-	
+
+	/**
+	 * 指定された座標がContent or Displayの内部に存在するかを判定する。setupContentsにて使用されている。
+	 * @method changeRect
+	 * @param {String} id Content or Display ID
+	 * @param {String} x x座標値
+	 * @param {String} y y座標値
+	 */
 	function isInsideElement(elem, x, y) {
 		var posx = parseInt(elem.style.left.split("px").join(''), 10),
 			posy = parseInt(elem.style.top.split("px").join(''), 10),
@@ -997,10 +1011,10 @@
 	}
 
 	/**
-	 * Description
+	 * Content設定
 	 * @method setupContent
-	 * @param {} elem
-	 * @param {} id
+	 * @param {Object} elem 設定対象Object
+	 * @param {String} id ContentID
 	 */
 	function setupContent(elem, id) {
 		elem.onmousedown = function (evt) {
@@ -1061,21 +1075,21 @@
 	
 	///  setup window
 	/**
-	 * Description
+	 * Display設定
 	 * @method setupWindow
-	 * @param {} elem
-	 * @param {} id
-	 */
+	 * @param {Object} elem 設定対象Element
+	 * @param {String} id ContentID
+	*/
 	function setupWindow(elem, id) {
 		setupContent(elem, id);
 	}
 	
 	/**
-	 * Description
+	 * Content or Displayのスナップ処理
 	 * @method snapToSplitWhole
-	 * @param {} elem
-	 * @param {} metaData
-	 * @param {} splitWhole
+	 * @param {Object} elem スナップ対象Object
+	 * @param {JSON} metaData メタデータ
+	 * @param {Object} splitWhole スナップ先Object
 	 */
 	function snapToSplitWhole(elem, metaData, splitWhole) {
 		var orgWidth = parseFloat(metaData.orgWidth),
@@ -1101,7 +1115,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 分割されたVirtualDisplayの選択ハイライト解除
 	 * @method clearSplitHightlight
 	 */
 	function clearSplitHightlight() {
@@ -1243,9 +1257,9 @@
 	
 	/// send text to server
 	/**
-	 * Description
+	 * テキストデータ送信
 	 * @method sendText
-	 * @param {} text
+	 * @param {String} text
 	 */
 	function sendText(text) {
 		var previewArea = document.getElementById('content_preview_area'),
@@ -1290,7 +1304,7 @@
 	
 	/// send url to server
 	/**
-	 * Description
+	 * URLデータ送信
 	 * @method sendURL
 	 */
 	function sendURL() {
@@ -1313,11 +1327,11 @@
 	
 	/// send image to server
 	/**
-	 * Description
+	 * 画像データ送信
 	 * @method sendImage
-	 * @param {} imagebinary
-	 * @param {} width
-	 * @param {} height
+	 * @param {BLOB} imagebinary
+	 * @param {String} width
+	 * @param {String} height
 	 */
 	function sendImage(imagebinary, width, height) {
 		var metaData = {type : "image", posx : 0, posy : 0, width : width, height: height},
@@ -1328,9 +1342,9 @@
 	
 	/// open image file
 	/**
-	 * Description
+	 * 画像ファイルFileOpenハンドラ
 	 * @method openImage
-	 * @param {} evt
+	 * @param {Object} evt FileOpenイベント
 	 */
 	function openImage(evt) {
 		var files = evt.target.files,
@@ -1367,9 +1381,9 @@
 	
 	/// open text file
 	/**
-	 * Description
+	 * テキストファイルFileOpenハンドラ
 	 * @method openText
-	 * @param {} evt
+	 * @param {Object} evt FileOpenイベント
 	 */
 	function openText(evt) {
 		var files = evt.target.files,
@@ -1392,9 +1406,9 @@
 	
 	/// replace image file
 	/**
-	 * Description
+	 * 画像イメージ差し替えFileOpenハンドラ
 	 * @method replaceImage
-	 * @param {} evt
+	 * @param {Object} evt FileOpenイベント
 	 */
 	function replaceImage(evt) {
 		var files = evt.target.files,
@@ -1429,9 +1443,9 @@
 	
 	/// add all screens
 	/**
-	 * Description
+	 * VirualDisplayをVirtualScreenに設定
 	 * @method addScreenRect
-	 * @param {} windowData
+	 * @param {JSON} windowData ウィンドウデータ
 	 */
 	function addScreenRect(windowData) {
 		var whole = vscreen.getWhole(),
@@ -1482,9 +1496,9 @@
 	
 	/// update all screens
 	/**
-	 * Description
+	 * VirtualScreen更新
 	 * @method updateScreen
-	 * @param {} windowData
+	 * @param {JSON} windowData ウィンドウデータ
 	 */
 	function updateScreen(windowData) {
 		var whole = vscreen.getWhole(),
@@ -1531,7 +1545,7 @@
 	}
 	
 	/**
-	 * Description
+	 * PropertyのDisplayパラメータ更新ハンドル
 	 * @method changeDisplayValue
 	 */
 	function changeDisplayValue() {
@@ -1585,10 +1599,11 @@
 	}
 	
 	/**
-	 * Description
+	 * 受領したメタデータからプレビューツリーにコンテンツを反映する。
+	 * doneGetContent時にコールされる。
 	 * @method importContentToView
-	 * @param {} metaData
-	 * @param {} contentData
+	 * @param {JSON} metaData メタデータ
+	 * @param {BLOB} contentData コンテンツデータ
 	 */
 	function importContentToView(metaData, contentData) {
 		var previewArea = document.getElementById('content_preview_area'),
@@ -1651,10 +1666,11 @@
 	}
 	
 	/**
-	 * Description
+	 * 受領したメタデータから左側コンテンツエリアに反映する。
+	 * doneGetContent時にコールされる。
 	 * @method importContentToList
-	 * @param {} metaData
-	 * @param {} contentData
+	 * @param {JSON} metaData メタデータ
+	 * @param {BLOB} contentData コンテンツデータ
 	 */
 	function importContentToList(metaData, contentData) {
 		var hasVisible = metaData.hasOwnProperty('visible'),
@@ -1730,10 +1746,10 @@
 	
 	/// import content
 	/**
-	 * Description
+	 * メタデータからコンテンツをインポートする
 	 * @method importContent
-	 * @param {} metaData
-	 * @param {} contentData
+	 * @param {JSON} metaData メタデータ
+	 * @param {BLOB} contentData コンテンツデータ
 	 */
 	function importContent(metaData, contentData) {
 		importContentToList(metaData, contentData);
@@ -1741,9 +1757,9 @@
 	}
 	
 	/**
-	 * Description
+	 * Displayを左リストビューにインポートする。
 	 * @method importWindowToView
-	 * @param {} windowData
+	 * @param {JSON} windowData ウィンドウデータ
 	 */
 	function importWindowToView(windowData) {
 		var displayArea,
@@ -1779,9 +1795,9 @@
 	}
 	
 	/**
-	 * Description
+	 * Displayを左リストビューにインポートする。
 	 * @method importWindowToList
-	 * @param {} windowData
+	 * @param {JSON} windowData ウィンドウデータ
 	 */
 	function importWindowToList(windowData) {
 		var displayArea = document.getElementById('display_area'),
@@ -1811,7 +1827,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 全Windowをリストビューに追加する
 	 * @method addWholeWindowToList
 	 */
 	function addWholeWindowToList() {
@@ -1836,7 +1852,7 @@
 	}
 	
 	/**
-	 * Description
+	 * リストビュー領域をクリアする
 	 * @method clearWindowList
 	 */
 	function clearWindowList() {
@@ -1846,9 +1862,9 @@
 	
 	/// import window
 	/**
-	 * Description
+	 * 指定されたWindowをリストビューにインポートする
 	 * @method importWindow
-	 * @param {} windowData
+	 * @param {JSON} windowData ウィンドウデータ
 	 */
 	function importWindow(windowData) {
 		importWindowToView(windowData);
@@ -1856,7 +1872,7 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツ追加ポップアップの初期化
 	 * @method initAddContentArea
 	 * @param {Function} bottomfunc
 	 */
@@ -1890,7 +1906,7 @@
 	}
 	
 	/**
-	 * Description
+	 * ビュー領域初期化。スケーリング表示、スナップ設定などのelementの初期化を行う。
 	 * @method initViewSettingArea
 	 */
 	function initViewSettingArea(rightfunc) {
@@ -1945,9 +1961,9 @@
 	}
 	
 	/**
-	 * Description
+	 * 左コンテンツタブ初期化
 	 * @method initContentArea
-	 * @param {} bottomfunc
+	 * @param {Function} bottomfunc addボタンコールバック
 	 */
 	function initContentArea(bottomfunc) {
 		var addButton = document.getElementById('content_add_button'),
@@ -1960,7 +1976,7 @@
 	}
 	
 	/**
-	 * Description
+	 * ディスプレイタブの初期化
 	 * @method initDisplayArea
 	 */
 	function initDisplayArea() {
@@ -1972,9 +1988,9 @@
 	
 	
 	/**
-	 * Description
+	 * 左メニュー領域[ディスプレイタブ、コンテンツタブ]の初期化
 	 * @method initLeftArea
-	 * @param {} bottomfunc
+	 * @param {Function} bottomfunc addボタンコールバック
 	 */
 	function initLeftArea(bottomfunc) {
 		var displayArea = document.getElementById('display_area'),
@@ -2040,7 +2056,7 @@
 	
 	/// initialize elemets, events
 	/**
-	 * Description
+	 * コントローラ初期化
 	 * @method init
 	 */
 	function init() {

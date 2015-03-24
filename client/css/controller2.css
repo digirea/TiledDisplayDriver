@@ -223,7 +223,8 @@ p {
 	border-color: #04B431;
 }
 .content_area pre {
-	padding: 14px;
+	padding: 0px;
+	overflow: auto;
 }
 
 .display_area {

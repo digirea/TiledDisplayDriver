@@ -224,7 +224,7 @@ p {
 }
 .content_area pre {
 	padding: 0px;
-	overflow: auto;
+	overflow-y: auto;
 }
 
 .display_area {

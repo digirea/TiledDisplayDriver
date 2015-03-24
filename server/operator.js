@@ -51,7 +51,7 @@
 		util.launchApp(command, null, function () {
 			if (fs.existsSync(output)) {
 				console.log("output found");
-				image_size(output, function(err, dimensions) {
+				image_size(output, function (err, dimensions) {
 					endCallback(fs.readFileSync(output), dimensions);
 				});
 			} else {

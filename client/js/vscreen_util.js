@@ -107,7 +107,7 @@
 	 * @method assignMetaData
 	 * @param {Element} elem エレメント
 	 * @param {Object} metaData メタデータ
-	 * @param {} useOrg 
+	 * @param {Object} useOrg ユーザーデータ
 	 */
 	function assignMetaData(elem, metaData, useOrg) {
 		var rect;
@@ -128,8 +128,8 @@
 	/**
 	 * Description
 	 * @method assignScreenRect
-	 * @param {} elem
-	 * @param {} rect
+	 * @param {Element} elem エレメント
+	 * @param {Object} rect 矩形領域
 	 */
 	function assignScreenRect(elem, rect) {
 		if (elem && rect) {
@@ -145,7 +145,7 @@
 	/**
 	 * Description
 	 * @method transInv
-	 * @param {} metaData
+	 * @param {Object} metaData
 	 * @return metaData
 	 */
 	function transInv(metaData) {
@@ -160,8 +160,8 @@
 	/**
 	 * Description
 	 * @method trans
-	 * @param {} metaData
-	 * @return metaData
+	 * @param {Object} metaData メタデータ
+	 * @return metaData メタデータ
 	 */
 	function trans(metaData) {
 		var rect = vscreen.transformOrg(toFloatRect(metaData));
@@ -175,7 +175,7 @@
 	/**
 	 * Description
 	 * @method transPosInv
-	 * @param {} metaData
+	 * @param {Object} metaData メタデータ
 	 */
 	function transPosInv(metaData) {
 		var rect = vscreen.transformOrgInv(

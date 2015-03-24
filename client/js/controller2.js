@@ -31,8 +31,8 @@
 	/**
 	 * Description
 	 * @method draggingOffsetFunc
-	 * @param {} top
-	 * @param {} left
+	 * @param {Function} top
+	 * @param {Function} left
 	 */
 	function draggingOffsetFunc(top, left) {
 		dragOffsetTop = top;
@@ -42,7 +42,7 @@
 	/**
 	 * Description
 	 * @method isVisible
-	 * @param {} metaData
+	 * @param {Object} metaData
 	 * @return LogicalExpression
 	 */
 	function isVisible(metaData) {
@@ -61,7 +61,7 @@
 	/**
 	 * Description
 	 * @method isUnvisibleID
-	 * @param {} id
+	 * @param {String} id
 	 * @return BinaryExpression
 	 */
 	function isUnvisibleID(id) {

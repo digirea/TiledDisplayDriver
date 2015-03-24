@@ -96,7 +96,7 @@
 	/**
 	 * Description
 	 * @method toIntRect
-	 * @param {} metaData
+	 * @param {Object} metaData
 	 * @return CallExpression
 	 */
 	function toIntRect(metaData) {
@@ -112,7 +112,7 @@
 	 * Description
 	 * @method assignMetaData
 	 * @param {} elem
-	 * @param {} metaData
+	 * @param {Object} metaData
 	 */
 	function assignMetaData(elem, metaData) {
 		elem.style.left = Number(metaData.posx) + "px";
@@ -177,7 +177,7 @@
 	/**
 	 * Description
 	 * @method onmessage
-	 * @param {} message
+	 * @param {String} message
 	 */
 	client.onmessage = function (message) {
 		var json;

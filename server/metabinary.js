@@ -15,10 +15,10 @@
 	/// -  0xfefefe                - binarydata (blob)
 	/// --------------------------------------------------------
 	/**
-	 * Description
+	 * メタバイナリの作成
 	 * @method createMetaBinary
-	 * @param {} metaData
-	 * @param {} binary
+	 * @param {BLOB} metaData メタデータ
+	 * @param {BLOB} binary   バイナリデータ
 	 * @return buffer
 	 */
 	function createMetaBinary(metaData, binary) {
@@ -49,10 +49,10 @@
 	}
 	
 	/**
-	 * Description
+	 * メタバイナリのロード
 	 * @method loadMetaBinary
-	 * @param {} binary
-	 * @param {} endCallback
+	 * @param {BLOB} binary バイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function loadMetaBinary(binary, endCallback) {
 		var head = binary.slice(0, headerStr.length).toString('ascii'),

@@ -126,7 +126,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたelementを矩形情報でstyleを割り当て
 	 * @method assignScreenRect
 	 * @param {Element} elem エレメント
 	 * @param {Object} rect 矩形領域
@@ -143,7 +143,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたメタデータの情報を座標逆変換
 	 * @method transInv
 	 * @param {Object} metaData
 	 * @return metaData
@@ -158,7 +158,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたメタデータの矩形情報を初期仮想スクリーンに変換
 	 * @method trans
 	 * @param {Object} metaData メタデータ
 	 * @return metaData メタデータ
@@ -173,7 +173,7 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたメタデータのザ行位置を逆変換
 	 * @method transPosInv
 	 * @param {Object} metaData メタデータ
 	 */

@@ -17,7 +17,7 @@
 	/**
 	 * メタバイナリの作成
 	 * @method createMetaBinary
-	 * @param {BLOB} metaData メタデータ
+	 * @param {Object} metaData メタデータ
 	 * @param {BLOB} binary   バイナリデータ
 	 * @return buffer
 	 */

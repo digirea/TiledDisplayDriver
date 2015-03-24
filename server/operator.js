@@ -179,7 +179,7 @@
 	/**
 	 * コンテンツ追加
 	 * @method addContent
-	 * @param {BLOB} metaData メタデータ
+	 * @param {Object} metaData メタデータ
 	 * @param {BLOB} data バイナリデータ
 	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
@@ -277,7 +277,7 @@
 	/**
 	 * コンテンツ更新
 	 * @method updateContent
-	 * @param {BLOB} metaData メタバイナリ
+	 * @param {Object} metaData メタバイナリ
 	 * @param {BLOB} data     バイナリデータ
 	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
@@ -462,7 +462,7 @@
 	 * send metadata with command using socket.io or ws.
 	 * @method sendMetaData
 	 * @param {String} command
-	 * @param {BLOB} metaData メタデータ
+	 * @param {Object} metaData メタデータ
 	 * @param {BLOB} socket socket.ioオブジェクト
 	 * @param {BLOB} ws_connection WebSocketコネクション
 	 */
@@ -498,7 +498,7 @@
 	 * @method commandAddContent
 	 * @param {BLOB} socket socket.ioオブジェクト
 	 * @param {BLOB} ws_connection WebSocketコネクション
-	 * @param {BLOB} metaData メタデータ
+	 * @param {Object} metaData メタデータ
 	 * @param {BLOB} binaryData バイナリデータ
 	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
@@ -592,7 +592,7 @@
 	 * @method commandUpdateContent
 	 * @param {BLOB} socket socket.ioオブジェクト
 	 * @param {BLOB} ws_connection WebSocketコネクション(null)
-	 * @param {BLOB} metaData loadMetaBinaryから受領したメタデータ
+	 * @param {Object} metaData loadMetaBinaryから受領したメタデータ
 	 * @param {BLOB} binaryData loadMetaBinaryから受領したバイナリデータ
 	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */

@@ -185,7 +185,6 @@
 				document.createElement('span')
 			],
 			manip,
-			previewArea,
 			i;
 		
 		moveManipulator(manips, elem);

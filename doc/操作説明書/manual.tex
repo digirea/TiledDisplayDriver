@@ -49,6 +49,8 @@
 \end{center}
 \end{titlepage}
 
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % 目次
 \tableofcontents
@@ -57,12 +59,10 @@
 % 本文
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{はじめに}
-本書では協調ワークスペースドライバと協調動作フレームワークのプロトタイプの操作方法について解説します.
+本書では協調ワークスペースドライバと協調動作フレームワークのプロトタイプの操作方法について解説します.\\
 
 \section{動作環境とインストール}
 以下の環境で動作します.
-
-[TODO]
 
 \begin{tabbing}
 0123\=01234567890123\=0123456789\kill
@@ -128,5 +128,248 @@ TODO:
 \end{figure}
 
 
-\end{document}
+\chapter{動作環境とインストール}
+以下の環境で動作します.\\
 
+OS : Linux, Windows(Vista,7,8), MacOSX
+Web ブラウザ: Mozilla Firefox 15.x, Google Chrome 21.x, Apple Safari 6.x
+
+\chapter{アプリケーションの展開}
+XXXXXX.zipを解凍すると、以下の構成でファイルが作成されます.\\
+
+\begin{tabbing}
+0123\=01234567890123\=0123456789\kill
+\>bin        \> : 実行スクリプトフォルダ\\
+\>client     \> : TDDクライアントアプリケーションフォルダ\\
+\>doc        \> : ドキュメントフォルダ\\
+\>redis      \> : redisアプリケーションフォルダ\\
+\>server     \> : TDDサーバーアプリケーションフォルダ\\
+\>package.json
+\end{tabbing}
+
+TiledDisplayDriverの起動にはbinフォルダに格納されているスクリプトを使用します.\\
+
+\chapter{アプリケーションのインストール方法}
+
+\subsection{Mac/Linuxの場合}
+bin配下の以下のシェルスクリプトを実行します.\\
+
+\begin{verbatim}
+   $cd bin
+   $sh install.sh
+\end{verbatim}
+
+\subsection{Windowsの場合}
+bin配下の以下のファイルを実行します.\\
+\begin{verbatim}
+   >cd bin
+   >install.bat
+\end{verbatim}
+
+
+
+\chapter{アプリケーションの起動方法}
+
+
+\subsection{Mac/Linuxの場合}
+bin配下の以下のシェルスクリプトを実行します.\\
+./run.sh
+
+
+
+\subsection{Windowsの場合}
+bin配下の以下のファイルを実行します.\\
+\begin{verbatim}
+   >cd bin
+   >run.bat
+\end{verbatim}
+
+
+※
+Windowsの場合、仮想メモリを0KByteにしていると、
+redisが正常に起動しない場合があります.\\
+その場合は一時的に仮想メモリを有効にしてご利用ください.\\
+
+
+\chapter{アプリケーションの終了方法}
+
+以下2点にて終了させます.\\
+
+\subsection{1.サーバープログラムの終了}\
+run.sh(bat)を起動したterminalをCTRL+Cで終了するか、
+serverプログラムをkillします.\\
+
+
+\subsection{2.redisの終了}
+redisが起動しているterminalを終了させます.\\
+また、プロセスとして起動している場合は、プロセスをpsコマンドにて見つけて
+killします.\\
+
+\chapter{TiledDisplayDriverの選択}
+TDDは、以下の2つのコントローラ(Display, Controller制御)側か、
+Display側かを決定することができます.\\
+
+\chapter{TiledDisplayDriverへのアクセス}
+\section{概要}
+TiledDisplayDriverのアクセスは、Webブラウザのアドレス欄に
+「http://localhost:8080」と入力することでアクセス出来ます.
+
+アクセスすると、以下の画面が表示されます.\\
+★画面のスクリーンショット\\
+
+
+\section{操作}
+ここで、アクセスしたPCを「コントローラ」として使用するか、
+ディスプレイとして使用するかを選択することができます.\\
+
+
+\chapter{コントローラ画面の操作}
+\section{概要}
+コントローラは以下の通りとなっております.\\
+★画面のスクリーンショット\\
+
+それぞれの機能について解説します.\\
+
+\newpage
+
+\section{コントローラの操作 : 中央}
+中央はVirtualDisplaySpaceと呼ばれ、TiledDisplayServerに接続された
+ディスプレイの操作、コンテンツの移動、操作、削除等を行う
+汎用スペースとなっております.\\
+
+★画面のスクリーンショット\\
+
+
+\newpage
+
+\section{コントローラの操作 : 左(Displayタブ)}
+★画面のスクリーンショット\\
+VirtualDisplayと、TDDサーバーに接続されているDisplayの一覧を表示します.\\
+コントローラは、このDisplayをVirtualDisplay上に配置し、コンテンツを追加することによって
+共有ワークスペースを実現します.\\
+Displayは以下の通りマウスドラッグドロップにより、VirtualDisplaySpaceに配置することができます.\\
+
+★画面のスクリーンショット\\
+
+★画面分割数、解像度の事を記載する
+
+
+
+以下、4クライアントが接続された環境の例となります.\\
+★4クライアントが接続された状態のDisplayタブのスクリーンショット\\を記載する
+
+
+Displayを正確に区画に配置するための機能として「snap機能」があります.\\
+画面右側の以下のボタンとなります.\\
+
+\begin{tabbing}
+0123\=01234567890123\=0123456789\kill
+\>Free    \> : 自由配置となります.\\
+\>Display \> : 分割した区画に沿ってDisplayがスナップするようになります.
+\end{tabbing}
+
+またVirtualDisplaySpaceの拡大縮小オプションとして、Scale機能があります.\\
+画面右側の以下のボタンとなります.\\
+デフォルトは0.5となっております.\\
+
+\subsection{Show Display ID}
+接続されたDisplayのIDを各接続されたDisplay上に表示し、識別できるようにします.\\
+尚、IDは、接続された端末固有であり、1端末につき1IDが割り当てられます.\\
+
+\subsection{Delete}
+選択したDisplayを削除(TDDサーバーから切断)します.\\
+尚、VirtualDisplayは削除することはできません.\\
+
+
+
+\subsection{DeleteAll}
+接続されているDisplayすべてを削除(TDDサーバーから切断)します.\\
+尚、VirtualDisplayは削除することはできません.\\
+
+\newpage
+
+\section{コントローラの操作 : 左(contentsタブ)}
+
+★画面のスクリーンショット\\
+
+各ボタンの機能は以下の通りとなります.\\
+
+\subsection{Addボタン}
+コンテンツの追加を行います.\\
+押下することで、AddContentウィンドウを開きます
+
+
+
+\subsection{Deleteボタン}
+選択されたコンテンツを削除します.\\
+
+\chapter{コントローラの操作 : AddContentウィンドウ}
+\subsection{テキストの送信}
+入力されたテキストをコンテンツに追加します.\\
+以下追加例となります.\\
+\\
+
+★テキスト追加のスクリーンショット\\
+
+
+\subsection{テキストファイルの送信}
+テキストファイルをコンテンツに追加します.\\
+以下追加例となります.\\
+
+★テキストファイル例のスクリーンショット\\
+★テキストファイル追加したスクリーンショット\\
+
+
+\subsection{URLの送信}
+入力されたURLのサイトの画像をコンテンツに追加します.\\
+以下例となります.\\
+★URL画像追加のスクリーンショット\\追加
+
+
+
+\subsection{画像の送信}
+任意の画像ファイルをコンテンツに追加します.\\
+対応している画像フォーマットは以下の通りです.\\
+-- png, jpeg
+以下に表示例となります.\\
+★画面のスクリーンショット\\
+
+
+\subsection{画像の差し替え}
+contentsタブにて選択している画像の差し替えを行います.\\
+差し替え例を以下に示します.\\
+★画面のスクリーンショット\\
+
+
+\chapter{コントローラの操作 : 右 propartyウィンドウ }
+
+propartyウィンドウは選択されたコンテンツ、Display、ContentsのID、
+およびそれぞれのpropartyを表示します.\\
+
+propartyは以下の通りID以外を編集し、座標、表示全面の優先順位 Zindex を
+指定することができます.\\
+以下操作例となります.\\
+
+★画面のスクリーンショット\\
+
+
+また、選択されたContentsはpropartyウィンドウ左下のダウンロードボタンから
+ダウンロードすることができます.\\
+
+★画面のスクリーンショット\\
+
+
+\chapter{コントローラの操作 : 上}
+\subsection{Controllerボタン}
+Displayウィンドウを表示します.\\
+現状は押下しても特に意味を持ちません.\\
+
+\subsection{Displayボタン}
+Displayウィンドウを新しいタブで表示します.\\
+
+
+\subsection{Virtual Display Settingボタン}
+Displayタブに操作をフォーカスします.\\
+
+
+\end{document}

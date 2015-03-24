@@ -10,10 +10,10 @@ var fs = require('fs'),
 // Utility functions
 //-------------------------------------
 /**
- * Description
+ * 指定されたディレクトリのファイル一覧取得
  * @method getFiles
- * @param {} dir
- * @param {} list
+ * @param {String} dir 取得対象ディレクトリ
+ * @param {Array} list ファイル一覧
  */
 function getFiles(dir, list) {
 	"use strict";
@@ -50,9 +50,9 @@ function getFiles(dir, list) {
 }
 
 /**
- * Description
+ * 指定された文字列から拡張子取得
  * @method getExtention
- * @param {} fileName
+ * @param {String} 取得対象文字列
  * @return CallExpression
  */
 function getExtention(fileName) {
@@ -73,9 +73,9 @@ function getExtention(fileName) {
 }
 
 /**
- * Description
+ * ファイル削除
  * @method removeFile
- * @param {} filePath
+ * @param {String} 削除対象ファイルフルパス
  */
 function removeFile(filePath) {
 	"use strict";
@@ -85,9 +85,9 @@ function removeFile(filePath) {
 }
 
 /**
- * Description
+ * ディレクトリ削除
  * @method removeDir
- * @param {} dirPath
+ * @param {String} 削除対象ディレクトリフルパス
  */
 function removeDir(dirPath) {
 	"use strict";
@@ -97,9 +97,9 @@ function removeDir(dirPath) {
 }
 
 /**
- * Description
+ * ディレクトリ作成
  * @method mkdirSync
- * @param {} path
+ * @param {String} 作成するディレクトリ名
  */
 var mkdirSync = function (path) {
 	"use strict";
@@ -115,12 +115,12 @@ var mkdirSync = function (path) {
 /// launch application
 /// @param command list with args e.g. [ "hoge.exe", "arg1", "arg2" ]
 /**
- * Description
+ * アプリケーション起動
  * @method launchApp
- * @param {} command
- * @param {} startcallback
- * @param {} endcallback
- * @param {} logname
+ * @param {String} command アプリケーション実行コマンド
+ * @param {Function} startcallback 開始時コールバック
+ * @param {Function} endcallback 終了時コールバック
+ * @param {String} logname ログファイル名
  * @return proc
  */
 function launchApp(command, startcallback, endcallback, logname) {
@@ -171,9 +171,9 @@ function launchApp(command, startcallback, endcallback, logname) {
 }
 
 /**
- * Description
+ * プロセスキル
  * @method kill
- * @param {} proc
+ * @param {JSON} proc プロセス情報
  */
 function kill(proc) {
 	"use strict";
@@ -186,9 +186,9 @@ function kill(proc) {
 }
 
 /**
- * Description
+ * isRelative
  * @method isRelative
- * @param {} p
+ * @param {String} p Path
  * @return BinaryExpression
  */
 function isRelative(p) {
@@ -199,9 +199,9 @@ function isRelative(p) {
 }
 
 /**
- * Description
+ * 指定されたバイト列からUUID生成
  * @method uuidFromBytes
- * @param {} rnd
+ * @param {Bytes} rnd バイト列
  * @return CallExpression
  */
 function uuidFromBytes(rnd) {
@@ -214,9 +214,9 @@ function uuidFromBytes(rnd) {
 }
 
 /**
- * Description
+ * UUID生成。callbackの指定が存在しない場合は無作為な乱数列から生成
  * @method generateUUID
- * @param {} callback
+ * @param {Function} callback 暗号化する場合に指定するコールバック関数
  */
 function generateUUID(callback) {
 	"use strict";
@@ -230,7 +230,7 @@ function generateUUID(callback) {
 }
 
 /**
- * Description
+ * 8ケタのUUID生成
  * @method generateUUID8
  * @return CallExpression
  */
@@ -240,10 +240,10 @@ function generateUUID8() {
 }
 
 /**
- * Description
+ * 画像ファイル形式判別
  * @method detectImageType
- * @param {} binary
- * @return Literal
+ * @param {BLOB} binary バイナリデータ
+ * @return Literal mimeタイプ
  */
 function detectImageType(binary) {
 	"use strict";

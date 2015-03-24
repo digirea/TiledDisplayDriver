@@ -10,7 +10,8 @@
 
 body {
 	overflow:hidden;
-	background-color: #CCC;
+	background-color: #AAA;
+	margin: 0px;
 }
 
 div {
@@ -46,4 +47,65 @@ pre {
 	margin-top:-160px;
 	color : white;
 	font-size: 140px;
+}
+
+
+.head_menu {
+	background : rgb(14,133,251);
+	height : 50px;
+}
+
+
+.head_mode_menu {
+	text-align: center;
+	padding: 8px;
+}
+.head_mode_text {
+	color: #EEE;
+	font-size: 24px;
+	font-weight: 700;
+}
+
+.stopselect{
+	-webkit-touch-callout: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+.head_select_mode_menu {
+	position:absolute;
+	left : 20px;
+}
+
+.head_select_menu_text {
+	color: #EEE;
+	text-decoration: none;
+	position : relative;
+	top : 12px;
+	height : 30px;
+	font-size: 18px;
+	
+	border-style : solid;
+	padding : 5px 10px 5px 10px;
+	border-width: 2px;
+	border-radius: 6px;
+}
+.head_select_menu_text:hover {
+	color: #FFF;
+}
+
+
+.menu_anim {
+	-webkit-transition: all 1s;
+	-moz-transition: all 1s;
+	-ms-transition: all 1s;
+	-o-transition: all 1s;
+	transition: all 1s;
+	opacity: 1;
+}
+.hide {
+	opacity: 0;
 }

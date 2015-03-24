@@ -386,7 +386,18 @@
 			}, 200);
 		};
 		*/
-		
+
+		var registered = false;
+		window.addEventListener('mousemove', function (evt) {
+			document.getElementById('menu').classList.remove('hide');
+			if (!registered) {
+				registered = true;
+				setTimeout(function() {
+					document.getElementById('menu').classList.add('hide');
+					registered = false;
+				}, 3000);
+			}
+		});
 	}
 	
 	window.onload = init;

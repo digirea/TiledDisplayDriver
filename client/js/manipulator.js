@@ -124,13 +124,15 @@
 			cursor = "ne-resize";
 		} else if (manip.id === '_manip_4') {
 			// x button
-			manip.style.cursor = "pointer";
+			/*manip.style.cursor = "pointer";
 			manip.innerHTML = "<pre>x</pre>";
 			manip.style.textAlign = "center";
 			manip.style.background = "red";
-			manip.style.borderRadius = "3px";
-			manip.style.width = "20px";
-			manip.style.height = "20px";
+			manip.style.borderRadius = "3px";*/
+			manip.setAttribute("style", ""); // clear
+			manip.style.position = "absolute";
+			manip.style.zIndex = '10';
+			manip.classList.add('close_button');
 		}
 		if (manip.id === '_manip_4') {
 			manip.onmousedown = function (evt) {

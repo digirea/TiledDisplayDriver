@@ -59,7 +59,7 @@ p {
 }
 
 .textcontent {
-	padding: 14px;
+	padding: 0px;
 }
 
 .screen {
@@ -222,6 +222,9 @@ p {
 	border : solid 4px;
 	border-color: #04B431;
 }
+.content_area pre {
+	padding: 14px;
+}
 
 .display_area {
 	display: block;
@@ -365,6 +368,17 @@ p {
 	border: none;
 	background-color: transparent;
 }
+
+.close_button {
+	width:20px;
+	height:20px;
+	background-image:url("../image/closebutton.png");
+	background-repeat:no-repeat;
+	background-size: contain;
+	border: none;
+	background-color: transparent;
+}
+
 
 .top_control {
 	width : 800px;

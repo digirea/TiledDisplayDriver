@@ -1610,7 +1610,6 @@
 			elem,
 			tagName,
 			blob,
-			classname,
 			mime = "image/jpeg";
 
 		if (isVisible(metaData)) {

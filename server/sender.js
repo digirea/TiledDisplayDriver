@@ -5,7 +5,7 @@
 	"use strict";
 	
 	/**
-	 * Description
+	 * Sender
 	 * @method Sender
 	 */
 	var Sender = function () {},
@@ -14,7 +14,7 @@
 		Command = require('./command.js');
 	
 	/**
-	 * Description
+	 * オペレータ(operator.js)設定
 	 * @method setOperator
 	 * @param {} ope
 	 */
@@ -23,11 +23,11 @@
 	}
 	
 	/**
-	 * Description
+	 * WebSocketイベント登録
 	 * @method registerWSEvent
-	 * @param {} ws_connection
-	 * @param {} io
-	 * @param {} ws
+	 * @param {Socket} ws_connection WebSocketコネクション
+	 * @param {Socket} io socket.io オブジェクト
+	 * @param {Socket} ws WebSocketServerオブジェクト
 	 */
 	function registerWSEvent(ws_connection, io, ws) {
 		ws_connection.on('message', function (message) {

@@ -5,7 +5,7 @@
 	"use strict";
 	
 	/**
-	 * Description
+	 * Operator生成
 	 * @method Operator
 	 */
 	var Operator = function () {},
@@ -34,10 +34,10 @@
 	});
 	
 	/**
-	 * Description
+	 * 指定されたURLをレンダリングする
 	 * @method renderURL
-	 * @param {} url
-	 * @param {} endCallback
+	 * @param {String} url URL文字列
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function renderURL(url, endCallback) {
 		var output = "out.png",
@@ -61,9 +61,9 @@
 	}
 	
 	/**
-	 * Description
+	 * ContentID生成。generateUUID8を用いる。
 	 * @method generateContentID
-	 * @param {} endCallback
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function generateContentID(endCallback) {
 		var id = util.generateUUID8();
@@ -82,9 +82,9 @@
 	}
 	
 	/**
-	 * Description
+	 * WindowID生成。generateUUID8を用いる。
 	 * @method generateWindowID
-	 * @param {} endCallback
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function generateWindowID(endCallback) {
 		var id = util.generateUUID8();
@@ -103,12 +103,12 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたタイプ、idのメタデータ設定
 	 * @method setMetaData
-	 * @param {} type
-	 * @param {} id
+	 * @param {String} type メタデータタイプ
+	 * @param {String} id ContentsID
 	 * @param {} data
-	 * @param {} endCallback
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function setMetaData(type, id, data, endCallback) {
 		var metaData = data;
@@ -141,11 +141,11 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたタイプ、idのメタデータ取得
 	 * @method getMetaData
-	 * @param {} type
-	 * @param {} id
-	 * @param {} endCallback
+	 * @param {String} type メタデータタイプ
+	 * @param {String} id ContentsID
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function getMetaData(type, id, endCallback) {
 		if (type === 'all') {
@@ -177,11 +177,11 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツ追加
 	 * @method addContent
-	 * @param {} metaData
-	 * @param {} data
-	 * @param {} endCallback
+	 * @param {BLOB} metaData メタデータ
+	 * @param {BLOB} data バイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function addContent(metaData, data, endCallback) {
 		var contentData = null;
@@ -224,11 +224,11 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたデータタイプ、idのコンテンツ取得
 	 * @method getContent
-	 * @param {} type
-	 * @param {} id
-	 * @param {} endCallback
+	 * @param {String} type データタイプ
+	 * @param {String} id ContentsID
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function getContent(type, id, endCallback) {
 		if (type === 'all') {
@@ -255,10 +255,10 @@
 	}
 	
 	/**
-	 * Description
+	 * 指定されたidのコンテンツ削除
 	 * @method deleteContent
-	 * @param {} id
-	 * @param {} endCallback
+	 * @param {String} id ContentsID
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function deleteContent(id, endCallback) {
 		client.exists(contentPrefix + id, function (err, doesExist) {
@@ -275,11 +275,11 @@
 	}
 	
 	/**
-	 * Description
+	 * コンテンツ更新
 	 * @method updateContent
-	 * @param {} metaData
-	 * @param {} data
-	 * @param {} endCallback
+	 * @param {BLOB} metaData メタバイナリ
+	 * @param {BLOB} data     バイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function updateContent(metaData, data, endCallback) {
 		var contentData = null;
@@ -310,11 +310,11 @@
 	}
 	
 	/**
-	 * Description
+	 * Window追加
 	 * @method addWindow
-	 * @param {} socketid
-	 * @param {} windowData
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクトid
+	 * @param {JSON} windowData 追加するWindowデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function addWindow(socketid, windowData, endCallback) {
 		generateWindowID(function (id) {
@@ -335,10 +335,10 @@
 	}
 	
 	/**
-	 * Description
+	 * VirtualDisplay設定
 	 * @method setVirtualDisplay
-	 * @param {} windowData
-	 * @param {} endCallback
+	 * @param {JSON} windowData VirtualDisplayのWindowデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function setVirtualDisplay(windowData, endCallback) {
 		if (windowData) {
@@ -349,9 +349,9 @@
 	}
 	
 	/**
-	 * Description
+	 * VirtualDisplay取得
 	 * @method getVirtualDisplay
-	 * @param {} endCallback
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function getVirtualDisplay(endCallback) {
 		textClient.hgetall(virtualDisplayIDStr, function (err, data) {
@@ -364,10 +364,10 @@
 	}
 	
 	/**
-	 * Description
+	 * Window削除
 	 * @method deleteWindow
-	 * @param {} id
-	 * @param {} endCallback
+	 * @param {String} id ContentsID
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function deleteWindow(id, endCallback) {
 		client.del(windowPrefix + id, function (err) {
@@ -381,10 +381,10 @@
 	}
 	
 	/**
-	 * Description
+	 * SocketIDで指定されたWindow削除
 	 * @method deleteWindowBySocketID
-	 * @param {} socketid
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクトid
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function deleteWindowBySocketID(socketid, endCallback) {
 		var id;
@@ -402,10 +402,10 @@
 	}
 	
 	/**
-	 * Description
+	 * Window取得
 	 * @method getWindow
-	 * @param {} windowData
-	 * @param {} endCallback
+	 * @param {JSON} windowData windowデータJSON
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function getWindow(windowData, endCallback) {
 		if (windowData.hasOwnProperty('type') && windowData.type === 'all') {
@@ -432,11 +432,11 @@
 	}
 	
 	/**
-	 * Description
+	 * Window更新
 	 * @method updateWindow
-	 * @param {} socketid
-	 * @param {} windowData
-	 * @param {} endCallback
+	 * @param {BLOB} socketid socket.ioオブジェクトid
+	 * @param {JSON} windowデータJSON
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function updateWindow(socketid, windowData, endCallback) {
 		if (!windowData.hasOwnProperty("id")) { return; }
@@ -446,7 +446,7 @@
 	}
 	
 	/**
-	 * Description
+	 * セッションリスト取得。registerWSEventにてコールされる。
 	 * @method getSessionList
 	 */
 	function getSessionList() {
@@ -459,12 +459,12 @@
 	
 	/// send metadata with command using socket.io or ws.
 	/**
-	 * Description
+	 * send metadata with command using socket.io or ws.
 	 * @method sendMetaData
-	 * @param {} command
-	 * @param {} metaData
-	 * @param {} socket
-	 * @param {} ws_connection
+	 * @param {String} command
+	 * @param {BLOB} metaData メタデータ
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
 	 */
 	function sendMetaData(command, metaData, socket, ws_connection) {
 		metaData.command = command;
@@ -477,12 +477,12 @@
 	
 	/// send binary with command using socket.io or ws.
 	/**
-	 * Description
+	 * send binary with command using socket.io or ws.
 	 * @method sendBinary
-	 * @param {} command
-	 * @param {} binary
-	 * @param {} socket
-	 * @param {} ws_connection
+	 * @param {String} command getMetaDataのendCallbackにて受領したコマンド
+	 * @param {BLOB} binary createMetaBinaryにて作成されたバイナリデータ
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
 	 */
 	function sendBinary(command, binary, socket, ws_connection) {
 		if (socket) {
@@ -494,13 +494,13 @@
 	
 	/// do addContent command
 	/**
-	 * Description
+	 * do addContent command
 	 * @method commandAddContent
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} metaData
-	 * @param {} binaryData
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {BLOB} metaData メタデータ
+	 * @param {BLOB} binaryData バイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandAddContent(socket, ws_connection, metaData, binaryData, endCallback) {
 		console.log("commandAddContent");
@@ -531,12 +531,12 @@
 	
 	/// do GetContent command
 	/**
-	 * Description
+	 * do GetContent command
 	 * @method commandGetContent
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqGetContent時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandGetContent(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetContent:" + json.id);
@@ -554,12 +554,12 @@
 	
 	/// do GetMetaData command
 	/**
-	 * Description
+	 * do GetMetaData command
 	 * @method commandGetMetaData
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqGetMetaData時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandGetMetaData(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetMetaData:" + json.type + "/" + json.id);
@@ -571,12 +571,12 @@
 	
 	/// do DeleteContent command
 	/**
-	 * Description
+	 * do DeleteContent command
 	 * @method commandDeleteContent
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqDeleteContent時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandDeleteContent(socket, ws_connection, json, endCallback) {
 		//console.log("commandDeleteContent:" + json.id);
@@ -588,13 +588,13 @@
 	
 	/// do UpdateContent command
 	/**
-	 * Description
+	 * do UpdateContent command
 	 * @method commandUpdateContent
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} metaData
-	 * @param {} binaryData
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション(null)
+	 * @param {BLOB} metaData loadMetaBinaryから受領したメタデータ
+	 * @param {BLOB} binaryData loadMetaBinaryから受領したバイナリデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandUpdateContent(socket, ws_connection, metaData, binaryData, endCallback) {
 		//console.log("commandUpdateContent");
@@ -606,12 +606,12 @@
 	
 	/// do UpdateTransform command
 	/**
-	 * Description
+	 * do UpdateTransform command
 	 * @method commandUpdateTransform
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqUpdateTransform時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandUpdateTransform(socket, ws_connection, json, endCallback) {
 		//console.log("commandUpdateTransform:" + json.id);
@@ -623,12 +623,12 @@
 	
 	/// do AddWindow command
 	/**
-	 * Description
+	 * do AddWindow command
 	 * @method commandAddWindow
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqAddWindow時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandAddWindow(socket, ws_connection, json, endCallback) {
 		console.log("commandAddWindow : " + JSON.stringify(json));
@@ -643,12 +643,12 @@
 	
 	/// do DeleteWindow
 	/**
-	 * Description
+	 * do DeleteWindow
 	 * @method commandDeleteWindow
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqUpdateWindow時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandDeleteWindow(socket, ws_connection, json, endCallback) {
 		var socketid = -1;
@@ -689,12 +689,12 @@
 	
 	/// do UpdateVirtualDisplay command
 	/**
-	 * Description
+	 * do UpdateVirtualDisplay command
 	 * @method commandUpdateVirtualDisplay
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:XXXXXXXXX時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandUpdateVirtualDisplay(socket, ws_connection, json, endCallback) {
 		if (json) {
@@ -704,13 +704,14 @@
 		}
 	}
 	
+	/// do commandGetVirtualDisplay command
 	/**
-	 * Description
+	 * do commandGetVirtualDisplay command
 	 * @method commandGetVirtualDisplay
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:XXXXXXXXX時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandGetVirtualDisplay(socket, ws_connection, json, endCallback) {
 		getVirtualDisplay(function (data) {
@@ -721,12 +722,12 @@
 	
 	/// do GetWindow command
 	/**
-	 * Description
+	 * do GetWindow command
 	 * @method commandGetWindow
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqGetWindow時JSONデータ
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandGetWindow(socket, ws_connection, json, endCallback) {
 		//console.log("commandGetWindow : " + JSON.stringify(json));
@@ -738,12 +739,12 @@
 	
 	/// do UpdateWindow command
 	/**
-	 * Description
+	 * do UpdateWindow command
 	 * @method commandUpdateWindow
-	 * @param {} socket
-	 * @param {} ws_connection
-	 * @param {} json
-	 * @param {} endCallback
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {JSON} json socket.io.on:reqUpdateWindow時JSONデータ,
+	 * @param {Function} endCallback 終了時に呼ばれるコールバック
 	 */
 	function commandUpdateWindow(socket, ws_connection, json, endCallback) {
 		var id = -1;
@@ -762,9 +763,9 @@
 	/**
 	 * Description
 	 * @method registerEvent
-	 * @param {} socket
-	 * @param {} io
-	 * @param {} ws
+	 * @param {BLOB} socket socket.ioオブジェクト
+	 * @param {BLOB} io socket.ioオブジェクト
+	 * @param {BLOB} ws WebSocketオブジェクト
 	 */
 	function registerEvent(socket, io, ws) {
 		
@@ -861,11 +862,11 @@
 	/// @param io
 	/// @param ws display's ws instance
 	/**
-	 * Description
+	 * register websockets events
 	 * @method registerWSEvent
-	 * @param {} ws_connection
-	 * @param {} io
-	 * @param {} ws
+	 * @param {BLOB} ws_connection WebSocketコネクション
+	 * @param {BLOB} io socket.ioオブジェクト
+	 * @param {BLOB} ws WebSocketオブジェクト
 	 */
 	function registerWSEvent(ws_connection, io, ws) {
 		
@@ -936,9 +937,9 @@
 	
 	/// @param id server's id
 	/**
-	 * Description
+	 * registerUUID.
 	 * @method registerUUID
-	 * @param {} id
+	 * @param {String} id ContentsID
 	 */
 	function registerUUID(id) {
 		uuidPrefix = id + ":";

@@ -1560,8 +1560,8 @@
 			s = parseFloat(scale_current.innerHTML),
 			ix = parseInt(wholeSplitX.value, 10),
 			iy = parseInt(wholeSplitY.value, 10),
-			cx = document.body.scrollWidth / 2,
-			cy = document.body.scrollHeight / 2;
+			cx = window.innerWidth / 2,
+			cy = window.innerHeight / 2;
 
 		if (!wholeWidth || !whole.hasOwnProperty('w')) {
 			w = initialWholeWidth;
@@ -2115,8 +2115,8 @@
 			}
 			timer = setTimeout(function () {
 				var whole = vscreen.getWhole(),
-					cx = document.body.scrollWidth / 2,
-					cy = document.body.scrollHeight / 2;
+					cx = window.innerWidth / 2,
+					cy = window.innerHeight / 2;
 				
 				vscreen.assignWhole(whole.orgW, whole.orgH, cx, cy, vscreen.getWholeScale());
 				manipulator.removeManipulator();
@@ -2231,8 +2231,8 @@
 		var windowData = JSON.parse(reply),
 			whole = vscreen.getWhole(),
 			split = vscreen.getSplitCount(),
-			cx = document.body.scrollWidth / 2,
-			cy = document.body.scrollHeight / 2;
+			cx = window.innerWidth / 2,
+			cy = window.innerHeight / 2;
 		
 		console.log('doneGetVirtualDisplay', reply, whole);
 		if (windowData.hasOwnProperty('orgWidth')) {

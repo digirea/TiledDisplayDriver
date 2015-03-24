@@ -34,35 +34,36 @@ span {
 a {
 	text-decoration: none;
 	border:none;
-	color: #CCC;
+	color: #eee;
 }
 a:link {
-	color: #CCC;
+	color: #eee;
 }
 a:visited {
-	color: #CCC;
+	color: #eee;
 }
 a:hover {
 	color: white;
-	border-bottom:none;
 }
 a.active {
 	color: white;
 }
-
-/*
-body {
-	overflow : hidden;
-}
-*/
 
 p {
 	color: white;
 }
 
 .head_menu {
-	background : black;
+	background : rgb(44,177,58);
 	height : 50px;
+}
+
+.textcontent {
+	padding: 14px;
+}
+
+.screen {
+	padding: 12px;
 }
 
 .stopselect{
@@ -88,6 +89,16 @@ p {
 	height : 30px;
 }
 
+.head_mode_menu {
+	text-align: center;
+	padding: 8px;
+}
+.head_mode_text {
+	color: #EEE;
+	font-size: 24px;
+	font-weight: 700;
+}
+
 .head_menu_content {
 	position:absolute;
 	left : 200px;
@@ -111,15 +122,38 @@ p {
 	margin-left : 20px;
 }
 
+.head_select_mode_menu {
+	position:absolute;
+	left : 70px;
+}
+
+.head_select_menu_text {
+	position : relative;
+	top : 12px;
+	height : 30px;
+	font-size: 18px;
+	
+	border-style : solid;
+	padding : 5px 10px 5px 10px;
+	border-width: 2px;
+	border-radius: 6px;
+}
+
 .head_vdisplay_menu {
 	position:absolute;
-	right : 20px;
+	right : 40px;
 }
 
 .head_vdisplay_menu_text {
 	position : relative;
 	top : 12px;
 	height : 30px;
+	font-size: 18px;
+	
+	border-style : solid;
+	padding : 5px 10px 5px 10px;
+	border-width: 2px;
+	border-radius: 6px;
 }
 
 .leftArea {
@@ -144,37 +178,40 @@ p {
 	position : absolute;
 	text-align: center;
 	background-color: #0080FF;
-	border-bottom: 0px;
-	border-top-right-radius:8px;
+	border-style: none;
+	border-top-right-radius:4px;
+	border-top-left-radius:4px;
+	left: 30px;
 	width : 80px;
 	height : 30px;
+	padding-top: 8px;
+	font-size: 13px;
 }
 
 .display_tab_title.active {
-	border: solid;
 	text-align: center;
 	background-color: #0080FF;
-	border-bottom: 0px;
-	border-top-right-radius:8px;
+	border: 0px 0px 0px 0px;
 }
 
 .content_tab_title {
 	position : absolute;
 	text-align: center;
-	background: #04B431;
-	border-bottom: 0px;
-	border-top-right-radius:8px;
-	left : 82px;
+	background: rgb(44,177,58);
+	border-style: none;
+	border-top-right-radius:4px;
+	border-top-left-radius:4px;
+	left : 140px;
 	width : 80px;
 	height : 30px;
+	padding-top: 8px;
+	font-size: 13px;
 }
 
 .content_tab_title.active {
-	border: solid;
 	text-align: center;
 	background: #04B431;
-	border-bottom: 0px;
-	border-top-right-radius:8px;
+	border: 0px 0px 0px 0px;
 }
 
 .content_area {
@@ -209,24 +246,34 @@ p {
 }
 
 .rightTab {
-	background-color: rgba(100, 100, 100, 0.5);
-	padding: 3px;
+	background-color: #AAA;
+	padding: 0px 20px 0px 20px;
 
 	border: solid 1px;
 	border-radius:1px;
 	
-	top :92px;
-	-moz-transform-origin: 85% 63%;
-	-webkit-transform-origin: 85% 63%;
-	-o-transform-origin: 85% 63%;
-	-ms-transform-origin: 85% 63%;
-	transform-origin: 85% 63%;
+	top :114px;
+	-moz-transform-origin: 91% 63%;
+	-webkit-transform-origin: 91% 63%;
+	-o-transform-origin: 91% 63%;
+	-ms-transform-origin: 91% 63%;
+	transform-origin: 91% 63%;
 	-moz-transform: rotate(-90deg);
 	-webkit-transform: rotate(-90deg);
 	-o-transform: rotate(-90deg);
 	-ms-transform: rotate(-90deg);
 	transform: rotate(-90deg);
 	z-index: 100000;
+}
+
+.bgcolor {
+	background-color: #CCC;
+	position: fixed;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	z-index: -10000;
 }
 
 .overallBlock {
@@ -239,14 +286,14 @@ p {
 	z-index: 100001;
 }
 .bottomArea {
-	/*
+	
 	border: solid;
-	border-color: rgba(100, 100, 100, 0.5);
-	*/
-	padding: 20px;
+	border-color: rgb(44,177,58);
+	
+	/*padding: 20px;*/
 	background-color: rgba(55, 55, 55, 1.0);
 	position : absolute;
-	height : 600px;
+	height : 520px;
 	width : 800px;
 	bottom : 0px;
 	top: 150px;
@@ -257,27 +304,30 @@ p {
 }
 
 .bottomTab {
-	background-color: rgba(100, 100, 100, 0.5);
-	padding: 3px;
-
+	color: #EEE;
+	background-color: #AAA;
+	padding: 0px 20px 0px 20px;
+	width: 130px;
+	position: absolute;
+	top:128px;
 	left: 50%;
 	margin-left:-380px;
 	border: solid 1px;
 	border-radius:1px;
-	z-index: 100000;
+	z-index: 100002;
 }
 
 .leftTab {
-	top : 117px;
-	background-color: rgba(100, 100, 100, 0.5);
-	padding: 3px;
+	top : 140px;
+	background-color: #AAA;
+	padding: 0px 20px 0px 20px;
 	border: solid 1px;
 	border-radius:1px;
-	-moz-transform-origin: 10% 70%;
-	-webkit-transform-origin: 10% 70%;
-	-o-transform-origin: 10% 70%;
-	-ms-transform-origin: 10% 70%;
-	transform-origin: 10% 70%;
+	-moz-transform-origin: 6% 70%;
+	-webkit-transform-origin: 6% 70%;
+	-o-transform-origin: 6% 70%;
+	-ms-transform-origin: 6% 70%;
+	transform-origin: 6% 70%;
 	-moz-transform: rotate(90deg);
 	-webkit-transform: rotate(90deg);
 	-o-transform: rotate(90deg);
@@ -288,14 +338,14 @@ p {
 
 .content_id {
 	position: relative;
-	left: 20px;
-	padding-top: 10px;
+	left: 40px;
+	margin: 10px;
 }
 
 .input-group {
-	width: 200px;
-	padding-top: 10px;
-	padding-left: 20px;
+	width: 220px;
+	margin: 10px;
+	padding-left: 40px;
 	padding-right: 20px;
 }
 
@@ -304,11 +354,11 @@ p {
 }
 
 .download_button {
-	width:32px;
-	height:32px;
+	width:164px;
+	height:34px;
 	position: absolute;
-	left: 5px;
-	bottom: 5px;
+	left: 50px;
+	bottom: 20px;
 	background-image:url("../image/download.png");
 	background-repeat:no-repeat;
 	background-size: contain;
@@ -327,14 +377,14 @@ p {
 
 .topmenu1 {
 	position: absolute;
-	right : 150px;
+	right : 130px;
 	padding-top : 10px;
 	z-index: 100001;
 }
 
 .topmenu2 {
 	position: absolute;
-	right : 30px;
+	right : 10px;
 	padding-top : 10px;
 	z-index: 100001;
 }
@@ -386,7 +436,7 @@ p {
 	display : none;
 	position :absolute;
 	width : 160px;
-	bottom : 20px;
+	bottom : 24px;
 }
 
 .content_button {
@@ -398,7 +448,7 @@ p {
 	display : block;
 	position :absolute;
 	width : 160px;
-	bottom : 20px;
+	bottom : 22px;
 }
 
 .display_button {
@@ -408,6 +458,15 @@ p {
 
 .blacktext {
 	color : black;
+}
+
+.whitetext {
+	font-size: 14px;
+	color : #eee;
+}
+
+.bold {
+	font-weight: 700;
 }
 
 .virtual_display_property {

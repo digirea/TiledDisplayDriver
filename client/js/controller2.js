@@ -1595,6 +1595,7 @@
 			elem,
 			tagName,
 			blob,
+			classname,
 			mime = "image/jpeg";
 
 		if (isVisible(metaData)) {
@@ -1616,6 +1617,7 @@
 				setupContent(elem, metaData.id);
 				previewArea.appendChild(elem);
 			}
+			
 			console.log("id=" + metaData.id);
 			if (metaData.type === 'text') {
 				// contentData is text
@@ -1660,6 +1662,7 @@
 			contentElem,
 			divElem,
 			tagName,
+			classname,
 			blob,
 			mime = "image/jpeg",
 			onlistID = "onlist:" + metaData.id;
@@ -1667,8 +1670,10 @@
 		metaDataDict[metaData.id] = metaData;
 		if (metaData.type === 'text') {
 			tagName = 'pre';
+			classname = 'textcontent';
 		} else {
 			tagName = 'img';
+			classname = 'imagecontent';
 		}
 		if (document.getElementById(onlistID)) {
 			divElem = document.getElementById(onlistID);
@@ -1683,6 +1688,8 @@
 			divElem.appendChild(contentElem);
 			contentArea.appendChild(divElem);
 		}
+		contentElem.classList.add(classname);
+
 		//console.log("id=" + metaData.id);
 		if (metaData.type === 'text') {
 			// contentData is text
@@ -1823,6 +1830,7 @@
 		divElem.style.borderColor = "white";
 		divElem.style.marginTop = "5px";
 		divElem.style.color = "white";
+		divElem.classList.add("screen");
 		setupContent(divElem, onlistID);
 		displayArea.appendChild(divElem);
 	}
@@ -1850,8 +1858,9 @@
 	/**
 	 * Description
 	 * @method initAddContentArea
+	 * @param {Function} bottomfunc
 	 */
-	function initAddContentArea() {
+	function initAddContentArea(bottomfunc) {
 		var textSendButton = document.getElementById('text_send_button'),
 			urlSendButton = document.getElementById('url_send_button'),
 			imageFileInput = document.getElementById('image_file_input'),
@@ -1862,17 +1871,21 @@
 		updateImageInput.addEventListener('change', function (evt) {
 			replaceImage(evt);
 			updateImageInput.value = "";
+			bottomfunc(false);
 		}, false);
 		imageFileInput.addEventListener('change', function (evt) {
 			openImage(evt);
 			imageFileInput.value = "";
+			bottomfunc(false);
 		}, false);
 		textFileInput.addEventListener('change', function (evt) {
 			openText(evt);
 			textFileInput.value = "";
+			bottomfunc(false);
 		}, false);
 		textSendButton.onclick = function (evt) {
 			sendText(null);
+			bottomfunc(false);
 		};
 	}
 	
@@ -2047,9 +2060,11 @@
 				if (show) {
 					$show($('overall_block'));
 					$show($('bottomArea'));
+					$show($('bottomTab'));
 				} else {
 					$hide($('overall_block'));
 					$hide($('bottomArea'));
+					$hide($('bottomTab'));
 				}
 			},
 			rightfunc = window.animtab.create('right',
@@ -2075,7 +2090,7 @@
 		
 		initPropertyArea(wholeWindowListID, "whole_window");
 		initLeftArea(bottomfunc);
-		initAddContentArea();
+		initAddContentArea(bottomfunc);
 		initViewSettingArea(rightfunc);
 		
 		// resize event

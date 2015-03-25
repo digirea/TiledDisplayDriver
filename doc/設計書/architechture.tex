@@ -75,10 +75,10 @@
 
 \subsection{サーバの役割}
 \begin{itemize}
-\item HTTP - クライアントに対してHTMLページなどを送信する
-\item Socket.IO - node.jsによる通信機能で, クライアントのコントローラとの間で通信を行う.
-\item Websocket - websocketプロトコルにより, クライアントのコントローラ及びディスプレイとの間で通信を行う
-\item データベース - クライアントから送信された画像データやテキストデータをredisに保存し, 永続化する.
+\item HTTP通信 - クライアントに対してHTMLページなどを送信する
+\item Socket.IO通信 - node.jsによる通信機能で, クライアントのコントローラとの間で通信を行う.
+\item Websocket通信 - websocketプロトコルにより, クライアントのコントローラ及びディスプレイとの間で通信を行う
+\item データベース入出力 - クライアントから送信された画像データやテキストデータをredisに保存し, 永続化する.
 \item サーバサイドレンダリング - 送信されたURLのウェブサイトをphantomjsを用いてサーバサイドでレンダリングし, png画像として保存する.
 \end{itemize}
 
@@ -94,8 +94,8 @@
 
 \subsection{クライアント - ディスプレイの役割}
 \begin{itemize}
-\item 自身のウィンドウをディスプレイとしてサーバへ登録する
-\item コントローラで設定されたとおりにコンテンツを表示する.
+\item 自身のウィンドウをディスプレイとしてサーバへ登録
+\item コントローラで設定されたとおりにコンテンツを表示.
 \end{itemize}
 
 \section{サーバの構成}
@@ -116,26 +116,30 @@
 \hline
 ポートB & websocket & websocketを用いたディスプレイによって使用される & - \\
 \hline
-ポートC & websocket & websocketを用いたディスプレイによって使用される & - \\
+ポートC & websocket & websocketを用いたコントローラによって使用される & - \\
 \hline
 
 \end{tabular}
 \end{center}
 \end{table}
 
+ポートA, ポートB, 及びポートCは, 連番になっており, デフォルトではポートA: 8080, ポートB: 8081 ポートC: 8082となっている.
+ポート番号は, 起動バッチファイル内のnodeコマンドの引数を記述することにより, 変更することができる.
 
 \subsection{データベース}
 データベースはredisを使用して高速なレスポンスを実現している. 
+データの格納方法については, \ref{redisdb}章を参照.
 
 \subsection{その他ソフトウェア}
 ウェブページレンダリング用にPhantomJS, 及びphantom.jsのnpmラッパーであるphantomjsを使用している.
+ウェブページレンダリングはサーバサイドレンダリングを行っている.
 
 \subsection{クライアントの構成}
 クライアントサイドは, 仮想ディスプレイに対してコンテンツの追加登録等の操作を行う「コントローラ」と, 表示のみを行う「ディスプレイ」から構成されている.
 
 \subsection{コントローラ}
 コントローラは, socket.ioを用いてサーバと通信を行っている. 
-
+サーバとの通信用 API の仕様については, \ref{connectionapi}章を参照.
 コントローラの画面イメージを図\ref{fig:display}に示す.
 
 \begin{figure}[htbp]
@@ -158,6 +162,7 @@
 \end{figure}
 
 \chapter{通信用APIの仕様}
+\label{connectionapi}
 クライアントサーバ間の通信についての仕様を記載する.
 
 サーバではクライアントからwebsocketまたはsocekt.ioでメタバイナリを受け取り, メタデータに記載されているコマンドによって処理を行う. 処理を実行した後, クライアントに対して, レスポンスを含んだメタバイナリをwebsocketまたはsoceket.ioにて送信する.
@@ -328,7 +333,8 @@ metadata = {
 
 \begin{verbatim}
 Metadata = {
-    "command": "reqAddContent", 
+    "command": "doneAddContent", 
+    "id": "8ba1dwm", 
     "type": "image", 
     "posx": 100, 
     "posy": 200, 
@@ -341,6 +347,7 @@ Metadata = {
 
 
 \chapter{データ構造について}
+\label{redisdb}
 
 \section{DBのデータ構造}
 
@@ -475,20 +482,6 @@ URL	& png & サーバサイドレンダリング \\
 
 \section{ディスプレイの登録について}
 サーバが起動した状態でディスプレイページを開くと, websocketのAPIを用いて自動的にサーバに登録される. 登録後は, コントローラにてコンテンツと同様に配置, 移動することができ, ディスプレイページを閉じると自動的に登録が解除される. 
-
-\chapter{画面操作について}
-
-操作中の画面を図\ref{fig:operation}に示す. 
-
-画面操作については, 別紙「利用説明書」を参照の事.
-
-%\begin{figure}[htbp]
-%	\begin{center}
-%		\includegraphics[width=11.5cm]{image/operation.png}
-%	\end{center}
-%	\caption{操作画面}
-%	\label{fig:operation}
-%\end{figure}
 
 \chapter{動作環境について}
 Windows, Linux, MacOSXのGoogleChrome, Firefox及びSafariで動作する.

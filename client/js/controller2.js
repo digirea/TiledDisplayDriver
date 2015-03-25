@@ -1171,8 +1171,11 @@
 			
 			// detect spilt screen area
 			if (!isFreeMode()) {
+				px = rect.left + dragOffsetLeft;
+				py = rect.top + dragOffsetTop;
 				orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
 				splitWhole = vscreen.getSplitWholeByPos(orgPos.x, orgPos.y);
+				console.log("px py whole", px, py, splitWhole);
 				if (splitWhole) {
 					document.getElementById(splitWhole.id).style.background = "red";
 				}
@@ -1217,6 +1220,7 @@
 			elem,
 			px,
 			py,
+			rect = evt.target.getBoundingClientRect(),
 			orgPos,
 			splitWhole;
 		if (draggingID && metaDataDict.hasOwnProperty(draggingID)) {
@@ -1230,6 +1234,8 @@
 					vsutil.assignMetaData(elem, metaData, true);
 					updateTransform(metaData);
 				} else {
+					px = rect.left + dragOffsetLeft;
+					py = rect.top + dragOffsetTop;
 					orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
 					splitWhole = vscreen.getSplitWholeByPos(orgPos.x, orgPos.y);
 					//console.log(splitWhole);

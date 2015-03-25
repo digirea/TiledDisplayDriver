@@ -992,6 +992,7 @@
 					updateTransform(metaData);
 				}
 			}
+			manipulator.removeManipulator();
 		}
 	}
 

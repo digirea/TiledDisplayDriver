@@ -257,7 +257,7 @@ TDDへのアクセスは、前述のアプリケーション起動を行った�
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{コントローラの操作 : VirtualDisplayScreenについて}
 中央はVirtualDisplayScreenと呼ばれ、TiledDisplayServerに接続された
-ディスプレイの操作、コンテンツの移動、操作、削除等を行う
+ディスプレイの操作、Contentsの移動、操作、削除等を行う
 汎用スペースとなっております.\\
 
 \begin{figure}[htbp]
@@ -287,7 +287,7 @@ TDDへのアクセスは、前述のアプリケーション起動を行った�
 VirtualDisplayと、TDDサーバーに接続されているDisplayの一覧を表示します.\\
 コントローラは、このDisplayをVirtualDisplay上に配置することができます.\\
 
-配置したDisplay上にコンテンツを追加することによってコンテンツを共有するワークスペースを実現します.\\
+配置したDisplay上にContentsを追加することによってContentsを共有するワークスペースを実現します.\\
 Displayはマウスドラッグドロップにより、VirtualDisplaySpaceに配置することができます.\\
 \\　
 図\ref{fig:contentstab}は、2クライアントが接続された環境の例となります.
@@ -316,7 +316,7 @@ Displayを正確に区画に配置するための機能として「snap機能」
 \begin{tabbing}
 0123\=01234567890123\=0123456789\kill
 \>Free    \> : 自由配置となります.\\
-\>Display \> : 分割した区画に沿ってDisplay及びコンテンツがスナップするようになります.
+\>Display \> : 分割した区画に沿ってDisplay及びContentsがスナップするようになります.
 \end{tabbing}
 
 図\ref{fig:snapdrag}にsnap機能を用いて配置する凡例を示します。.\\
@@ -401,21 +401,21 @@ Displayを正確に区画に配置するための機能として「snap機能」
 % sub コントローラの操作
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{コントローラの操作 : 左(contentsタブ)}
-本アプリケーションでは, ディスプレイへのコンテンツの表示は, 左側のコンテンツタブからディスプレイにコンテンツをドラッグアンドドロップすることにより行います.
+本アプリケーションでは, ディスプレイへのContentsの表示は, 左側のContentsタブからディスプレイにContentsをドラッグアンドドロップすることにより行います.
 
-\subsection{コンテンツの表示}
-コンテンツ一覧から, 中央のVirtualScreenの領域へ, ドラッグアンドドロップすることで, 表示させることができます.\\
+\subsection{Contentsの表示}
+Contents一覧から, 中央のVirtualScreenの領域へ, ドラッグアンドドロップすることで, 表示させることができます.\\
 
 \begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=11.5cm]{image/DragAndDropContent.png}
 	\end{center}
-	\caption{コンテンツの表示}
+	\caption{Contentsの表示}
 	\label{fig:draganddropcontent}
 \end{figure}
 
-\subsection{コンテンツ一覧への追加}
-コンテンツの追加を行います.\\
+\subsection{Contents一覧への追加}
+Contentsの追加を行います.\\
 Addボタンを押下することで, Add\ Contentウィンドウを開きます
 
 
@@ -424,7 +424,7 @@ Addボタンを押下することで, Add\ Contentウィンドウを開きます
 % sub テキストファイルの追加
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{テキストファイルの追加}
-Add\ Contentポップアップからテキストファイルをコンテンツに追加します.\\
+Add\ ContentポップアップからテキストファイルをContentsに追加します.\\
 以下追加例となります.\\
 
 \begin{figure}[htbp]
@@ -452,7 +452,7 @@ Add\ Contentポップアップからテキストファイルをコンテンツ�
 % sub　URLの送信
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{URLの送信}
-Contentポップアップから入力されたURLのサイトの画像をコンテンツに追加します.\\
+Contentポップアップから入力されたURLのサイトの画像をContentsに追加します.\\
 以下例となります.\\
 \begin{figure}[htbp]
 	\begin{center}
@@ -484,7 +484,7 @@ Contentポップアップから入力されたURLのサイトの画像をコン�
 % sub　画像の送信
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{画像の送信}
-Contentポップアップから任意の画像ファイルをコンテンツに追加します.\\
+Contentポップアップから任意の画像ファイルをContentsに追加します.\\
 対応している画像フォーマットは以下の通りです.\\
 
 \begin{itemize}
@@ -520,7 +520,7 @@ contentsタブにて選択している画像の差し替えを行います.\\
 	\label{fig:replaceimagebutton}
 \end{figure}
 
-図\ref{fig:replaceimage}の通り指定すると、コンテンツタブに存在するコンテンツが差し替わります。\\
+図\ref{fig:replaceimage}の通り指定すると、Contentsタブに存在するContentsが差し替わります。\\
 
 \begin{figure}[htbp]
 	\begin{center}
@@ -556,7 +556,7 @@ contentsタブにて選択している画像の差し替えを行います.\\
 	\label{fig:propall}
 \end{wrapfigure}
 
-propartyウィンドウは選択されたコンテンツ、Display、ContentsのID、
+propartyウィンドウは選択されたContents、Display、ContentsID、
 およびそれぞれのpropartyを表示します.\\
 
 propartyは以下の通りID以外を編集し、座標、表示全面の優先順位 Zindex を

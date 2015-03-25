@@ -69,7 +69,7 @@
 \begin{tabbing}
 0123\=01234567890123\=0123456789\kill
 \> OS \> : Linux, Windows(Vista,7,8), MacOSX \\
-\> Webブラウザ \> : Mozilla Firefox 15.x, Google Chrome 21.x, Apple Safari 6.x, Windows Internet Explorer 10.x 
+\> Webブラウザ \> : Mozilla Firefox 15.x, Google Chrome 21.x, Apple Safari 6.x, Windows Internet Explorer 11 
 \end{tabbing}
 
 \newpage
@@ -220,16 +220,7 @@ killコマンドにて終了させます.\\
 \section{ホーム画面説明}
 TiledDisplayDriver(以下TDDと略記)は、以下の2つのコントローラ(Display, Controller制御)側か、Display側かを決定します.\\
 TDDへのアクセスは、前述のアプリケーション起動を行った後、Webブラウザのアドレス欄に「http://localhost:8080」と入力することでアクセス出来ます.\\
-
-
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{ホーム画面}
-	\label{fig:home}
-\end{figure}
-
+アクセスすると図\ref{fig:home}が表示されます.
 
 \begin{itemize}
 \item Controller: コントローラ画面へと遷移します.\\
@@ -253,7 +244,7 @@ TDDへのアクセスは、前述のアプリケーション起動を行った�
 		\includegraphics[width=15.5cm]{image/cont_1.PNG}
 	\end{center}
 	\caption{コントローラ画面概要}
-	\label{fig:home}
+	\label{fig:controller}
 \end{figure}
 
 それぞれのタブ、ウィンドウ等、機能について解説します.\\
@@ -274,7 +265,7 @@ TDDへのアクセスは、前述のアプリケーション起動を行った�
 		\includegraphics[width=15.5cm]{image/TDD_View.PNG}
 	\end{center}
 	\caption{VirtualDisplayScreenの凡例}
-	\label{fig:home}
+	\label{fig:vds}
 \end{figure}
 
 
@@ -290,7 +281,7 @@ TDDへのアクセスは、前述のアプリケーション起動を行った�
 		\includegraphics[width=5.5cm]{image/Display_TAB_2conn.PNG}
 	\end{center}
 	\caption{Contentsタブ(Displayタブ)}
-	\label{fig:home}
+	\label{fig:contentstab}
 \end{wrapfigure}
 
 VirtualDisplayと、TDDサーバーに接続されているDisplayの一覧を表示します.\\
@@ -326,7 +317,7 @@ Displayを正確に区画に配置するための機能として「snap機能」
 		\includegraphics[width=15.5cm]{image/Snap1.png}
 	\end{center}
 	\caption{Snap機能ドラッグ時凡例}
-	\label{fig:}
+	\label{fig:snapdrag}
 \end{figure}
 
 
@@ -358,7 +349,7 @@ Displayを正確に区画に配置するための機能として「snap機能」
 		\includegraphics[width=7.5cm]{image/3Button1.PNG}
 	\end{center}
 	\caption{Show Display ID}
-	\label{fig:home}
+	\label{fig:showdisplayid}
 \end{figure}
 
 
@@ -372,7 +363,7 @@ Displayを正確に区画に配置するための機能として「snap機能」
 		\includegraphics[width=7.5cm]{image/3Button2.PNG}
 	\end{center}
 	\caption{Deleteボタン}
-	\label{fig:home}
+	\label{fig:deletebutton}
 \end{figure}
 
 ※尚、VirtualDisplayは削除することはできません.\\
@@ -390,7 +381,7 @@ Displayを正確に区画に配置するための機能として「snap機能」
 		\includegraphics[width=7.5cm]{image/3Button3.PNG}
 	\end{center}
 	\caption{DeleteAllボタン}
-	\label{fig:home}
+	\label{fig:deleteallbutton}
 \end{figure}
 
 \newpage
@@ -429,7 +420,7 @@ Contentポップアップからテキストファイルをコンテンツに追�
 		\includegraphics[width=15.5cm]{image/AddContent_TextFile_View.png}
 	\end{center}
 	\caption{テキストファイルのVirtualScreenへの追加}
-	\label{fig:home}
+	\label{fig:addtextfile}
 \end{figure}
 
 \newpage
@@ -459,7 +450,7 @@ Contentポップアップから入力されたURLのサイトの画像をコン�
 		\includegraphics[width=12.5cm]{image/AddContent_URL_View.PNG}
 	\end{center}
 	\caption{URL送信後View}
-	\label{fig:home}
+	\label{fig:sendurl}
 \end{figure}
 
 \newpage
@@ -486,7 +477,7 @@ Contentポップアップから任意の画像ファイルをコンテンツに�
 		\includegraphics[width=11.5cm]{image/AddContent_Picture_View.PNG}
 	\end{center}
 	\caption{画像の追加凡例}
-	\label{fig:home}
+	\label{fig:addimage}
 \end{figure}
 
 
@@ -505,7 +496,7 @@ contentsタブにて選択している画像の差し替えを行います.\\
 		\includegraphics[width=11.5cm]{image/home.png}
 	\end{center}
 	\caption{画像の差し替え凡例}
-	\label{fig:home}
+	\label{fig:replaceimage}
 \end{figure}
 
 
@@ -552,19 +543,19 @@ SelectModeボタンは、再びホーム画面に戻るボタンとなります�
 		\includegraphics[width=8.5cm]{image/Upper.PNG}
 	\end{center}
 	\caption{画面上部領域}
-	\label{fig:home}
+	\label{fig:upperarea}
 \end{figure}
 
 
 \subsection{Virtual Display Settingボタン}
 
-\begin{wrapfigure}{r}{60mm}
+\begin{figure}[htbp]
 	\begin{center}
 		\includegraphics[width=8.5cm]{image/Left_Display.PNG}
 	\end{center}
 	\caption{Virtual Display Settingボタン押下時フォーカス}
-	\label{fig:home}
-\end{wrapfigure}
+	\label{fig:vdsfocus}
+\end{figure}
 
 
 

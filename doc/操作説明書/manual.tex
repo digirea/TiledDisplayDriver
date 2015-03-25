@@ -14,6 +14,8 @@
 \usepackage[dvipdfmx, setpagesize=false, bookmarks=true, bookmarksnumbered=true]{hyperref}
 \usepackage{nameref}
 \usepackage{url}
+\usepackage{wrapfig}
+
 %
 \makeindex
 %
@@ -62,7 +64,7 @@
 本書では協調ワークスペースドライバと協調動作フレームワークのプロトタイプの操作方法について解説します.\\
 
 \section{動作環境とインストール}
-以下の環境で動作します.
+以下の環境で動作確認を行っております.\\
 
 \begin{tabbing}
 0123\=01234567890123\=0123456789\kill
@@ -70,61 +72,15 @@
 \> Webブラウザ \> : Mozilla Firefox 15.x, Google Chrome 21.x, Apple Safari 6.x, Windows Internet Explorer 10.x 
 \end{tabbing}
 
-\section{インストール}
+\newpage
 
-\subsection{Node.jsのインストール}
-ポータルGUIの動作にはNode.jsのインストールが必要です.\\
-Node.jsの公式サイト(\verb+http://nodejs.org/+)からNode.js本体をダウンロードし,インストールします.
-
-
-\subsection{Node.jsサブモジュールのインストール}
-アプリケーションを展開したディレクトリに,
-ポータルGUIで利用しているNode.jsの必要なサードパーティモジュールのインストールを行います.
-
-
-\chapter{アプリケーションのインストール方法}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% アプリケーションの展開
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{アプリケーションの展開方法}
 
 \subsection{Mac/Linuxの場合}
-bin配下の以下のシェルスクリプトを実行します.\\
-
-\begin{verbatim}
-   $cd bin
-   $sh install.sh
-\end{verbatim}
-
-
-\subsection{Windowsの場合}
-bin配下の以下のファイルを実行します.\\
-\begin{verbatim}
-   >cd bin
-   >install.bat
-\end{verbatim}
-
-
-\section{起動}
-起動スクリプトを実行するとポータルGUIサーバーが起動します.
-\begin{verbatim}
-   $sh run.sh
-   (Windows版は run.bat)
-\end{verbatim}
-
-\section{コントローラへアクセス}
-ポータルGUIは,Webブラウザのアドレス欄に「http://localhost:8080」と入力することでアクセス出来ます.\\
-アクセスすると、以下の画面が表示されます.\\
-
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{ホーム画面}
-	\label{fig:home}
-\end{figure}
-
-
-\chapter{アプリケーションの展開}
-
-\subsection{Mac/Linuxの場合}
-以下のコマンドを実行し、解凍してください(アーカイブソフトなどで解凍しても大丈夫です).\\
+以下のコマンドを実行し解凍してください。
 \begin{verbatim}
    $unzip XXXXXX.zip
 \end{verbatim}
@@ -132,6 +88,7 @@ bin配下の以下のファイルを実行します.\\
 
 \subsection{Windowsの場合}
 ダウンロードしたファイルを右クリックから、解凍を行ってください.\\
+※他アーカイブ制御アプリケーションから解凍にても大丈夫です。\\
 
 
 \subsection{解凍後の構成}
@@ -149,16 +106,65 @@ bin配下の以下のファイルを実行します.\\
 
 TiledDisplayDriverの起動にはbinフォルダに格納されているスクリプトを使用します.\\
 
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% インストール
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\chapter{アプリケーションのインストール方法}
+
+\section{インストール}
+
+\subsection{Node.jsのインストール}
+ポータルGUIの動作にはNode.jsのインストールが必要です.\\
+Node.jsの公式サイト(\verb+http://nodejs.org/+)からNode.js本体をダウンロードし,インストールします.
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=15.5cm]{image/NodeJS.png}
+	\end{center}
+	\caption{node.jsのinstall画面}
+	\label{fig:nodejs_home}
+\end{figure}
+
+\newpage
 
 
+\subsection{Node.jsサブモジュールのインストール}
+アプリケーションを展開したディレクトリに,
+ポータルGUIで利用しているNode.jsの必要なサードパーティモジュールのインストールを行います.
+
+\section{インストールスクリプトの実行}
+
+\subsection{Mac/Linuxの場合}
+bin配下の以下のシェルスクリプトを実行します.\\
+
+\begin{verbatim}
+   $cd bin
+   $sh install.sh
+\end{verbatim}
+
+
+\subsection{Windowsの場合}
+bin配下の以下のファイルを実行します.\\
+\begin{verbatim}
+   >cd bin
+   >install.bat
+\end{verbatim}
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% アプリケーションの起動方法
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{アプリケーションの起動方法}
 
 
 \subsection{Mac/Linuxの場合}
 bin配下の以下のシェルスクリプトを実行します.\\
 ./run.sh
-
-
 
 \subsection{Windowsの場合}
 bin配下の以下のファイルを実行します.\\
@@ -173,10 +179,39 @@ Windowsの場合、仮想メモリを0KByteにしていると、
 redisが正常に起動しない場合があります.\\
 その場合は一時的に仮想メモリを有効にしてご利用ください.\\
 
+\newpage
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% アプリケーションの起動確認
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{起動確認}
+起動スクリプトを実行するとポータルGUIサーバーが起動します.
+\begin{verbatim}
+   $sh run.sh
+   (Windows版は run.bat)
+\end{verbatim}
+
+\section{コントローラへアクセス}
+TDDへのアクセスは、Webブラウザのアドレス欄に「http://localhost:8080」と入力することでアクセス出来ます.\\
+アクセスし、以下の画面が表示されたらインストールは完了となります。.\\
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=15.5cm]{image/home.png}
+	\end{center}
+	\caption{insall終了後ホーム画面}
+	\label{fig:home}
+\end{figure}
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% アプリケーションの終了方法
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{アプリケーションの終了方法}
 
-以下2点にて終了させます.\\
+以下2点の操作にて終了させます.\\
 
 \subsection{1.サーバープログラムの終了}\
 run.sh(bat)を起動したterminalをCTRL+Cで終了するか、
@@ -186,103 +221,107 @@ serverプログラムをkillします.\\
 \subsection{2.redisの終了}
 redisが起動しているterminalを終了させます.\\
 また、プロセスとして起動している場合は、プロセスをpsコマンドにて見つけて
-killします.\\
+killコマンドにて終了させます.\\
 
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% TiledDisplayDriverのホーム画面
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{TiledDisplayDriverのホーム画面}
-\section{概要}
-TDDは、以下の2つのコントローラ(Display, Controller制御)側か、
-Display側かを決定することができます.\\
-ホーム画面では,以下が表示されております。
+\section{ホーム画面説明}
+TDDは、以下の2つのコントローラ(Display, Controller制御)側か、Display側かを決定します.\\
+TDDへのアクセスは、前述のアプリケーション起動を行った後、Webブラウザのアドレス欄に「http://localhost:8080」と入力することでアクセス出来ます.\\
+
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/home.png}
+	\end{center}
+	\caption{ホーム画面}
+	\label{fig:home}
+\end{figure}
 
 
 \begin{itemize}
-\item Controller: コントローラ画面へ.\\
-\item Display   : ディスプレイ画面へ.\\
+\item Controller: コントローラ画面へと遷移します.\\
+\item Display   : ディスプレイ画面へと遷移します.\\
 \end{itemize}
 
-\section{操作}
-ここで、アクセスしたPCを「コントローラ」として使用するか、
-ディスプレイとして使用するかを選択することができます.\\
+上記の通り、アクセスしたPCを「コントローラ」として使用するか、
+「ディスプレイ」として使用するかを選択することができます.\\
+
+\newpage
 
 
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% コントローラ画面の操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{コントローラ画面の操作}
 \section{概要}
 コントローラは以下の通りとなっております.\\
-★画面のスクリーンショット
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=15.5cm]{image/cont_1.PNG}
 	\end{center}
 	\caption{dummy}
 	\label{fig:home}
 \end{figure}
-\\
 
-それぞれの機能について解説します.\\
+それぞれのタブ、ウィンドウ等、機能について解説します.\\
 
 \newpage
 
-\section{コントローラの操作 : 中央}
-中央はVirtualDisplaySpaceと呼ばれ、TiledDisplayServerに接続された
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% コントローラ画面の操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{コントローラの操作 : VirtualDisplayScreenについて}
+中央はVirtualDisplayScreenと呼ばれ、TiledDisplayServerに接続された
 ディスプレイの操作、コンテンツの移動、操作、削除等を行う
 汎用スペースとなっております.\\
 
-★画面のスクリーンショット
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=15.5cm]{image/TDD_View.PNG}
 	\end{center}
-	\caption{dummy}
+	\caption{VirtualDisplayScreenの凡例}
 	\label{fig:home}
 \end{figure}
-\\
 
 
 \newpage
 
-\section{コントローラの操作 : 左(Displayタブ)}
-★画面のスクリーンショット
-\begin{figure}[htbp]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% コントローラ画面の操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{コントローラの操作 : Contentsタブ(Displayタブ)}
+\begin{wrapfigure}{r}{60mm}
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=5.5cm]{image/Display_TAB_2conn.PNG}
 	\end{center}
-	\caption{dummy}
+	\caption{Contentsタブ(Displayタブ)}
 	\label{fig:home}
-\end{figure}
-\\
+\end{wrapfigure}
+
 VirtualDisplayと、TDDサーバーに接続されているDisplayの一覧を表示します.\\
-コントローラは、このDisplayをVirtualDisplay上に配置し、コンテンツを追加することによって
-共有ワークスペースを実現します.\\
-Displayは以下の通りマウスドラッグドロップにより、VirtualDisplaySpaceに配置することができます.\\
+コントローラは、このDisplayをVirtualDisplay上に配置することができます.\\
 
-★画面のスクリーンショット
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{dummy}
-	\label{fig:home}
-\end{figure}
-\\
+配置したDisplay上にコンテンツを追加することによってコンテンツを共有するワークスペースを実現します.\\
+Displayはマウスドラッグドロップにより、VirtualDisplaySpaceに配置することができます.\\
+\\　
+右図は、2クライアントが接続された環境の例となります.
 
-★画面分割数、解像度の事を記載する
+
+\clearpage 
 
 
 
-以下、4クライアントが接続された環境の例となります.\\
-★4クライアントが接続された状態のDisplayタブのスクリーンショット
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{dummy}
-	\label{fig:home}
-\end{figure}
-\\を記載する
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub snap機能
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{snap機能}
 Displayを正確に区画に配置するための機能として「snap機能」があります.\\
 画面右側の以下のボタンとなります.\\
 
@@ -292,38 +331,87 @@ Displayを正確に区画に配置するための機能として「snap機能」
 \>Display \> : 分割した区画に沿ってDisplayがスナップするようになります.
 \end{tabbing}
 
-またVirtualDisplaySpaceの拡大縮小オプションとして、Scale機能があります.\\
-画面右側の以下のボタンとなります.\\
-デフォルトは0.5となっております.\\
+以下にsnap機能を用いて配置する凡例を示します。.\\
 
-\subsection{Show Display ID}
-接続されたDisplayのIDを各接続されたDisplay上に表示し、識別できるようにします.\\
-尚、IDは、接続された端末固有であり、1端末につき1IDが割り当てられます.\\
-
-\subsection{Delete}
-選択したDisplayを削除(TDDサーバーから切断)します.\\
-尚、VirtualDisplayは削除することはできません.\\
-
-
-
-\subsection{DeleteAll}
-接続されているDisplayすべてを削除(TDDサーバーから切断)します.\\
-尚、VirtualDisplayは削除することはできません.\\
-
-\newpage
-
-\section{コントローラの操作 : 左(contentsタブ)}
-
-★画面のスクリーンショット
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=15.5cm]{image/Snap1.png}
+	\end{center}
+	\caption{Snap機能ドラッグ時凡例}
+	\label{fig:}
+\end{figure}
+
+
+またVirtualDisplaySpaceの拡大縮小オプションとして、Scale機能があります。図\ref{fig:scale}のボタンとなります.\\
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=7.5cm]{image/MIGIUE_Scale.PNG}
+	\end{center}
+	\caption{dummy}
+	\label{fig:scale}
+\end{figure}
+
+デフォルトは0.5となっております.\\
+
+
+
+\clearpage 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub Show Display IDボタン
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Show Display IDボタン}
+接続されたDisplayのIDを各接続されたDisplay上に表示し、識別できるようにします.\\
+尚、IDは、接続された端末固有であり、1端末につき1IDが割り当てられます.\\
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=7.5cm]{image/3Button1.PNG}
+	\end{center}
+	\caption{Show Display ID}
+	\label{fig:home}
+\end{figure}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub Deleteボタン
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Delete}
+選択したDisplayを削除(TDDサーバーから切断)します.\\
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=7.5cm]{image/3Button2.PNG}
 	\end{center}
 	\caption{dummy}
 	\label{fig:home}
 \end{figure}
-\\
 
+※尚、VirtualDisplayは削除することはできません.\\
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub DeleteAllボタン
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{DeleteAllボタン}
+接続されているDisplayすべてを削除(TDDサーバーから切断)します.\\
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=7.5cm]{image/3Button3.PNG}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub コントローラの操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{コントローラの操作 : 左(contentsタブ)}
 各ボタンの機能は以下の通りとなります.\\
 
 \subsection{Addボタン}
@@ -332,67 +420,71 @@ Displayを正確に区画に配置するための機能として「snap機能」
 
 
 
-\subsection{Deleteボタン}
-選択されたコンテンツを削除します.\\
-
-\chapter{コントローラの操作 : AddContentウィンドウ}
-\subsection{テキストの送信}
-入力されたテキストをコンテンツに追加します.\\
-以下追加例となります.\\
-\\
-
-★テキスト追加のスクリーンショット
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{dummy}
-	\label{fig:home}
-\end{figure}
-\\
-
-
-\subsection{テキストファイルの送信}
-テキストファイルをコンテンツに追加します.\\
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub テキストファイルの追加
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{テキストファイルの追加}
+Contentポップアップからテキストファイルをコンテンツに追加します.\\
 以下追加例となります.\\
 
-★テキストファイル例のスクリーンショット
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=11.5cm]{image/AddContent_TextFile_Select.png}
 	\end{center}
-	\caption{dummy}
+	\caption{テキストファイルを選択}
 	\label{fig:home}
 \end{figure}
-\\
-★テキストファイル追加したスクリーンショット
+
+
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=15.5cm]{image/AddContent_TextFile_View.png}
 	\end{center}
-	\caption{dummy}
+	\caption{テキストファイルのVirtualScreenへの追加}
 	\label{fig:home}
 \end{figure}
-\\
+
+\newpage
 
 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub　URLの送信
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{URLの送信}
-入力されたURLのサイトの画像をコンテンツに追加します.\\
+Contentポップアップから入力されたURLのサイトの画像をコンテンツに追加します.\\
 以下例となります.\\
-★URL画像追加のスクリーンショット
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=12.5cm]{image/AddContent_URL.PNG}
+
 	\end{center}
 	\caption{dummy}
 	\label{fig:home}
 \end{figure}
-\\追加
+
+追加すると以下の通りとなります.\\
+
+
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=12.5cm]{image/AddContent_URL_View.PNG}
+	\end{center}
+	\caption{dummy}
+	\label{fig:home}
+\end{figure}
+
+\newpage
 
 
 
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub　画像の送信
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{画像の送信}
-任意の画像ファイルをコンテンツに追加します.\\
+Contentポップアップから任意の画像ファイルをコンテンツに追加します.\\
 対応している画像フォーマットは以下の通りです.\\
 
 \begin{itemize}
@@ -400,18 +492,22 @@ Displayを正確に区画に配置するための機能として「snap機能」
 \item JPEGフォーマット形式.
 \end{itemize}
 
-以下に表示例となります.\\
-★画面のスクリーンショット
+以下は表示例となります.\\
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=11.5cm]{image/AddContent_Picture_View.PNG}
 	\end{center}
-	\caption{dummy}
+	\caption{画像の追加凡例}
 	\label{fig:home}
 \end{figure}
-\\
 
 
+
+\newpage
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% sub　画像の差し替え
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{画像の差し替え}
 contentsタブにて選択している画像の差し替えを行います.\\
 差し替え例を以下に示します.\\
@@ -420,47 +516,46 @@ contentsタブにて選択している画像の差し替えを行います.\\
 	\begin{center}
 		\includegraphics[width=11.5cm]{image/home.png}
 	\end{center}
-	\caption{dummy}
+	\caption{画像の差し替え凡例}
 	\label{fig:home}
 \end{figure}
-\\
 
 
-\chapter{コントローラの操作 : 右 propartyウィンドウ }
+
+
+\clearpage 
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% プロパティタブ
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{コントローラの操作 : propartyウィンドウ }
+\begin{wrapfigure}{r}{60mm}
+	\begin{center}
+		\includegraphics[width=5.5cm]{image/Prop_Down.PNG}
+	\end{center}
+	\caption{propartyウィンドウ}
+	\label{fig:propall}
+\end{wrapfigure}
 
 propartyウィンドウは選択されたコンテンツ、Display、ContentsのID、
 およびそれぞれのpropartyを表示します.\\
 
 propartyは以下の通りID以外を編集し、座標、表示全面の優先順位 Zindex を
 指定することができます.\\
-以下操作例となります.\\
-
-★画面のスクリーンショット
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{dummy}
-	\label{fig:home}
-\end{figure}
-\\
 
 
 また、選択されたContentsはpropartyウィンドウ左下のダウンロードボタンから
 ダウンロードすることができます.\\
 
-★画面のスクリーンショット
-\begin{figure}[htbp]
-	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
-	\end{center}
-	\caption{dummy}
-	\label{fig:home}
-\end{figure}
-\\
+
+\clearpage 
 
 
-\chapter{コントローラの操作 : 上}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% コントローラの操作 : 上記操作
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{コントローラの操作 : 上部表示領域}
 \subsection{Controllerボタン}
 Displayウィンドウを表示します.\\
 現状は押下しても特に意味を持ちません.\\

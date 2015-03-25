@@ -422,6 +422,12 @@
 		};
 		li.appendChild(a);
 		dropDown.appendChild(li);
+		
+		// for ie, safari
+		a.addEventListener('mousedown', function (evt) {
+			a.click();
+			document.getElementById('dropdown2').className = "dropdown2";
+		});
 	}
 	
 	/**
@@ -686,6 +692,8 @@
 		} else {
 			snap_current.innerHTML = 'Display';
 		}
+		
+		manipulator.removeManipulator();
 	}
 	
 	/**
@@ -967,7 +975,11 @@
 		if (elem) {
 			metaData = metaDataDict[elem.id];
 			if (metaData) {
-				aspect = elem.naturalHeight / elem.naturalWidth;
+				if (metaData.orgHeight) {
+					aspect = metaData.orgHeight / metaData.orgWidth;
+				} else {
+					aspect = elem.naturalHeight / elem.naturalWidth;
+				}
 				if (id === 'content_transform_x') {
 					metaData.posx = value;
 					updateTransform(metaData);
@@ -986,6 +998,7 @@
 					updateTransform(metaData);
 				}
 			}
+			manipulator.removeManipulator();
 		}
 	}
 
@@ -1171,8 +1184,11 @@
 			
 			// detect spilt screen area
 			if (!isFreeMode()) {
+				px = rect.left + dragOffsetLeft;
+				py = rect.top + dragOffsetTop;
 				orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
 				splitWhole = vscreen.getSplitWholeByPos(orgPos.x, orgPos.y);
+				console.log("px py whole", px, py, splitWhole);
 				if (splitWhole) {
 					document.getElementById(splitWhole.id).style.background = "red";
 				}
@@ -1217,6 +1233,7 @@
 			elem,
 			px,
 			py,
+			rect = evt.target.getBoundingClientRect(),
 			orgPos,
 			splitWhole;
 		if (draggingID && metaDataDict.hasOwnProperty(draggingID)) {
@@ -1230,6 +1247,8 @@
 					vsutil.assignMetaData(elem, metaData, true);
 					updateTransform(metaData);
 				} else {
+					px = rect.left + dragOffsetLeft;
+					py = rect.top + dragOffsetTop;
 					orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
 					splitWhole = vscreen.getSplitWholeByPos(orgPos.x, orgPos.y);
 					//console.log(splitWhole);
@@ -2147,6 +2166,17 @@
 		});
 		document.getElementById('overall_block').addEventListener('click', function (evt) {
 			bottomfunc(false);
+		});
+		
+		// for ie, safari
+		document.getElementById('dropdown_item1').addEventListener('mousedown', function (evt) {
+			document.getElementById('dropdown_item1').click();
+			document.getElementById('dropdown1').className = "dropdown1";
+		});
+		// for ie, safari
+		document.getElementById('dropdown_item2').addEventListener('mousedown', function (evt) {
+			document.getElementById('dropdown_item2').click();
+			document.getElementById('dropdown1').className = "dropdown1";
 		});
 		
 		updateScreen();

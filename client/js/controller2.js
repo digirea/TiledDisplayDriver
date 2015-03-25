@@ -422,6 +422,11 @@
 		};
 		li.appendChild(a);
 		dropDown.appendChild(li);
+		
+		// for ie
+		a.addEventListener('mousedown', function (evt) {
+			a.click();
+		});
 	}
 	
 	/**
@@ -2153,6 +2158,15 @@
 		});
 		document.getElementById('overall_block').addEventListener('click', function (evt) {
 			bottomfunc(false);
+		});
+		
+		// for ie
+		document.getElementById('dropdown_item1').addEventListener('mousedown', function (evt) {
+			document.getElementById('dropdown_item1').click();
+		});
+		// for ie
+		document.getElementById('dropdown_item2').addEventListener('mousedown', function (evt) {
+			document.getElementById('dropdown_item2').click();
 		});
 		
 		updateScreen();

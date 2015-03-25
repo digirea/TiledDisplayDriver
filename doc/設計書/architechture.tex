@@ -61,15 +61,15 @@
 
 \chapter{システム構成について}
 \section{全体の構成}
-本システムは, node.js及びwebsocketsを用いたクライアントサーバプログラムであり, 複数のアプリケーションや,複数のユーザが共同作業を行える, 巨大なスクリーンスペースを, 仮想ディスプレイとして提供する. 以下に構成図を示す.
+本システムは, node.js及びwebsocketsを用いたクライアントサーバプログラムであり, 複数のアプリケーションや,複数のユーザが共同作業を行える, 巨大なスクリーンスペースを, 仮想ディスプレイとして提供する. 構成図を図\ref{fig:system}に示す.
 
-%\begin{figure}[htbp]
-%	\begin{center}
-%		\includegraphics[width=11.5cm]{image/system.png}
-%	\end{center}
-%	\caption{ホーム画面}
-%	\label{fig:home}
-%\end{figure}
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=11.5cm]{image/system.png}
+	\end{center}
+	\caption{構成図}
+	\label{fig:system}
+\end{figure}
 
 \section{サーバとクライアントの役割}
 
@@ -138,24 +138,24 @@
 
 コントローラの画面イメージを図\ref{fig:display}に示す.
 
-%\begin{figure}[htbp]
-%	\begin{center}
-%		\includegraphics[width=11.5cm]{image/controller.png}
-%	\end{center}
-%	\caption{ホーム画面}
-%	\label{fig:controller}
-%\end{figure}
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=14.5cm]{image/controller.png}
+	\end{center}
+	\caption{コントローラ画面}
+	\label{fig:controller}
+\end{figure}
 
 \subsection{ディスプレイ}
 ディスプレイは, コントローラで設定したコンテンツを表示する. HTML5の機能であるwebsocketを用いてサーバと通信している. ディスプレイのイメージを図\ref{fig:display}に示す. 
 
-%\begin{figure}[htbp]
-%	\begin{center}
-%		\includegraphics[width=11.5cm]{image/display.png}
-%	\end{center}
-%	\caption{ディスプレイ}
-%	\label{fig:display}
-%\end{figure}
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=14.5cm]{image/display.png}
+	\end{center}
+	\caption{ディスプレイ画面}
+	\label{fig:display}
+\end{figure}
 
 \chapter{通信用APIの仕様}
 クライアントサーバ間の通信についての仕様を記載する.
@@ -167,14 +167,15 @@
 
 また, ディスプレイ新規表示時には, ディスプレイからサーバへ, ディスプレイ登録リクエストを発行し, 自身のディスプレイを登録する.
 
-%\begin{figure}[htbp]
-%	\begin{center}
-%		\includegraphics[width=11.5cm]{image/connection.png}
-%	\end{center}
-%	\caption{ホーム画面}
-%	\label{fig:home}
-%\end{figure}
+\begin{figure}[htbp]
+	\begin{center}
+		\includegraphics[width=14.5cm]{image/connection.png}
+	\end{center}
+	\caption{更新通知}
+	\label{fig:connection}
+\end{figure}
 
+\newpage
 
 \section{メタバイナリ}
 
@@ -257,6 +258,9 @@ reqShowWindowID & doneShowWindowID & \shortstack[l]{ウィンドウIDを画面�
 \end{center}
 \end{table}
 
+
+\newpage
+
 \section{更新通知コマンド}
 
 サーバから送信される更新通知コマンドの一覧を表\ref{responsecommands}に示す.
@@ -282,6 +286,8 @@ showWindowID & ウィンドウIDを表示する必要があることを通知し
 \end{tabular}
 \end{center}
 \end{table}
+
+\newpage
 
 \section{コマンド送信例}
 \subsection{画像登録の例}
@@ -407,8 +413,8 @@ tiled\_server:s:tiled\_server:sessions & default & セッションID \\
 
 \begin{table}[htbp]
 \begin{center}
-\caption{DBのデータ構造}
-\label{dbstructure}
+\caption{コンテンツの種類}
+\label{contentstype}
 \begin{tabular}{|l|l|l|}
 \hline
 コンテンツの種類 & 形式 & 備考 \\

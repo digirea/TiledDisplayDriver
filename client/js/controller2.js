@@ -975,7 +975,11 @@
 		if (elem) {
 			metaData = metaDataDict[elem.id];
 			if (metaData) {
-				aspect = elem.naturalHeight / elem.naturalWidth;
+				if (metaData.orgHeight) {
+					aspect = metaData.orgHeight / metaData.orgWidth;
+				} else {
+					aspect = elem.naturalHeight / elem.naturalWidth;
+				}
 				if (id === 'content_transform_x') {
 					metaData.posx = value;
 					updateTransform(metaData);

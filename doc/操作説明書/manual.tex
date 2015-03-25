@@ -79,19 +79,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{アプリケーションの展開方法}
 
-\subsection{Mac/Linuxの場合}
-以下のコマンドを実行し解凍してください。
-\begin{verbatim}
-   $unzip XXXXXX.zip
-\end{verbatim}
-
-
-\subsection{Windowsの場合}
-ダウンロードしたファイルを右クリックから、解凍を行ってください.\\
-※他アーカイブ制御アプリケーションから解凍にても大丈夫です。\\
-
-
-\subsection{解凍後の構成}
+アーカイブファイルの解凍を行ってください.\\
 解凍すると、以下の構成でファイルが作成されます.\\
 
 \begin{tabbing}
@@ -230,7 +218,7 @@ killコマンドにて終了させます.\\
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{TiledDisplayDriverのホーム画面}
 \section{ホーム画面説明}
-TDDは、以下の2つのコントローラ(Display, Controller制御)側か、Display側かを決定します.\\
+TiledDisplayDriver(以下TDDと略記)は、以下の2つのコントローラ(Display, Controller制御)側か、Display側かを決定します.\\
 TDDへのアクセスは、前述のアプリケーション起動を行った後、Webブラウザのアドレス欄に「http://localhost:8080」と入力することでアクセス出来ます.\\
 
 
@@ -556,31 +544,37 @@ propartyは以下の通りID以外を編集し、座標、表示全面の優先�
 % コントローラの操作 : 上記操作
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{コントローラの操作 : 上部表示領域}
-\subsection{Controllerボタン}
-Displayウィンドウを表示します.\\
-現状は押下しても特に意味を持ちません.\\
-
-\subsection{Displayボタン}
-Displayウィンドウを新しいタブで表示します.\\
+\subsection{SelectModeボタン}
+SelectModeボタンは、再びホーム画面に戻るボタンとなります。
 
 \begin{figure}[htbp]
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=8.5cm]{image/Upper.PNG}
 	\end{center}
-	\caption{ホーム画面}
+	\caption{画面上部領域}
 	\label{fig:home}
 \end{figure}
 
 
 \subsection{Virtual Display Settingボタン}
-Displayタブに操作をフォーカスします.\\
 
-\begin{figure}[htbp]
+\begin{wrapfigure}{r}{60mm}
 	\begin{center}
-		\includegraphics[width=11.5cm]{image/home.png}
+		\includegraphics[width=8.5cm]{image/Left_Display.PNG}
 	\end{center}
-	\caption{ホーム画面}
+	\caption{Virtual Display Settingボタン押下時フォーカス}
 	\label{fig:home}
-\end{figure}
+\end{wrapfigure}
+
+
+
+
+Virtual Display Settingボタンを押下すると、Displayタブに操作をフォーカスします.\\
+
+
+
+\clearpage 
+
+
 
 \end{document}

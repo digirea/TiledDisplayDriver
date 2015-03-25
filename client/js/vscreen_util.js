@@ -134,10 +134,10 @@
 	function assignScreenRect(elem, rect) {
 		if (elem && rect) {
 			elem.style.position = 'absolute';
-			elem.style.left = parseInt(rect.x, 10) + 'px';
-			elem.style.top = parseInt(rect.y, 10) + 'px';
-			elem.style.width = parseInt(rect.w, 10) + 'px';
-			elem.style.height = parseInt(rect.h, 10) + 'px';
+			elem.style.left = Math.round(rect.x) + 'px';
+			elem.style.top = Math.round(rect.y) + 'px';
+			elem.style.width = Math.round(rect.w) + 'px';
+			elem.style.height = Math.round(rect.h) + 'px';
 			console.log("assignScreenRect:" + JSON.stringify(rect));
 		}
 	}

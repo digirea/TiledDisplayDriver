@@ -692,6 +692,8 @@
 		} else {
 			snap_current.innerHTML = 'Display';
 		}
+		
+		manipulator.removeManipulator();
 	}
 	
 	/**

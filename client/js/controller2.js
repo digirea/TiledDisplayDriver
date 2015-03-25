@@ -423,9 +423,10 @@
 		li.appendChild(a);
 		dropDown.appendChild(li);
 		
-		// for ie
+		// for ie, safari
 		a.addEventListener('mousedown', function (evt) {
 			a.click();
+			document.getElementById('dropdown2').className = "dropdown2";
 		});
 	}
 	
@@ -2160,13 +2161,15 @@
 			bottomfunc(false);
 		});
 		
-		// for ie
+		// for ie, safari
 		document.getElementById('dropdown_item1').addEventListener('mousedown', function (evt) {
 			document.getElementById('dropdown_item1').click();
+			document.getElementById('dropdown1').className = "dropdown1";
 		});
-		// for ie
+		// for ie, safari
 		document.getElementById('dropdown_item2').addEventListener('mousedown', function (evt) {
 			document.getElementById('dropdown_item2').click();
+			document.getElementById('dropdown1').className = "dropdown1";
 		});
 		
 		updateScreen();

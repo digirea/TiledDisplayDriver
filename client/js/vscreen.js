@@ -186,6 +186,32 @@
 	}
 	
 	/**
+	 * 位置から、スクリーンを取得する.
+	 * @method getScreeByPos
+	 * @param {Number} px x座標
+	 * @param {Number} py y座標
+	 * @param {String} withoutID このIDのものを除く
+	 * @return スクリーン
+	 */
+	function getScreeByPos(px, py, withoutID) {
+		var i,
+			w;
+		for (i in screens) {
+			if (screens.hasOwnProperty(i)) {
+				w = screens[i];
+				if (w.id !== withoutID) {
+					if (w.x <= px && px < (w.x + w.w)) {
+						if (w.y <= py && py < (w.y + w.h)) {
+							return w;
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	
+	/**
 	 * 分割数を返す
 	 * @method getSplitCount
 	 * @return 分割数
@@ -456,6 +482,7 @@
 	window.vscreen.setScreenSize = setScreenSize;
 	window.vscreen.setScreenPos = setScreenPos;
 	window.vscreen.clearScreenAll = clearScreenAll;
+	window.vscreen.getScreeByPos = getScreeByPos;
 	// transform
 	window.vscreen.transform = transform;
 	window.vscreen.transformOrg = transformOrg;

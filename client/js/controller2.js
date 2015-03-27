@@ -59,6 +59,24 @@
 	}
 	
 	/**
+	 * VirtualDisplayのモードがGridModeかを判別する
+	 * @method isGridMode
+	 * @return BinaryExpression
+	 */
+	function isGridMode() {
+		return snapSetting === 'grid';
+	}
+	
+	/**
+	 * VirtualDisplayのモードがDisplayModeかを判別する
+	 * @method isDisplayMode
+	 * @return BinaryExpression
+	 */
+	function isDisplayMode() {
+		return snapSetting === 'display';
+	}
+	
+	/**
 	 * 左リスト表示中かをIDから判別する
 	 * @method isUnvisibleID
 	 * @param {String} id
@@ -689,8 +707,11 @@
 		scale_current.innerHTML = scale;
 		if (isFreeMode()) {
 			snap_current.innerHTML = 'Free';
-		} else {
+		} else if (isDisplayMode()) {
 			snap_current.innerHTML = 'Display';
+		} else {
+			// grid
+			snap_current.innerHTML = 'Grid';
 		}
 		
 		manipulator.removeManipulator();
@@ -1108,8 +1129,7 @@
 		var orgWidth = parseFloat(metaData.orgWidth),
 			orgHeight = parseFloat(metaData.orgHeight),
 			vaspect = splitWhole.w / splitWhole.h,
-			aspect = orgWidth / orgHeight,
-			longValue;
+			aspect = orgWidth / orgHeight;
 		
 		metaData.posx = splitWhole.x;
 		metaData.posy = splitWhole.y;
@@ -1127,18 +1147,30 @@
 		manipulator.moveManipulator(elem);
 	}
 	
+	function snapToScreen(elem, metaData, screen) {
+		return snapToSplitWhole(elem, metaData, screen);
+	}
+	
 	/**
-	 * 分割されたVirtualDisplayの選択ハイライト解除
-	 * @method clearSplitHightlight
+	 * Snapハイライト解除
+	 * @method clearSnapHightlight
 	 */
-	function clearSplitHightlight() {
+	function clearSnapHightlight() {
 		var splitWholes,
-			i;
+			i,
+			screens;
 		splitWholes = vscreen.getSplitWholes();
 		//console.log("splitWholes", splitWholes);
 		for (i in splitWholes) {
 			if (splitWholes.hasOwnProperty(i)) {
 				document.getElementById(splitWholes[i].id).style.background = "transparent";
+			}
+		}
+		
+		screens = vscreen.getScreenAll();
+		for (i in screens) {
+			if (screens.hasOwnProperty(i)) {
+				document.getElementById(screens[i].id).style.background = "transparent";
 			}
 		}
 	}
@@ -1168,7 +1200,8 @@
 			leftArea = document.getElementById('leftArea'),
 			rect = evt.target.getBoundingClientRect(),
 			orgPos,
-			splitWhole;
+			splitWhole,
+			screen;
 		
 		evt = (evt) || window.event;
 		
@@ -1180,10 +1213,10 @@
 			}
 
 			// clear splitwhole colors
-			clearSplitHightlight();
+			clearSnapHightlight();
 			
 			// detect spilt screen area
-			if (!isFreeMode()) {
+			if (isGridMode()) {
 				px = rect.left + dragOffsetLeft;
 				py = rect.top + dragOffsetTop;
 				orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
@@ -1191,6 +1224,17 @@
 				console.log("px py whole", px, py, splitWhole);
 				if (splitWhole) {
 					document.getElementById(splitWhole.id).style.background = "red";
+				}
+			}
+			
+			if (isDisplayMode()) {
+				px = rect.left + dragOffsetLeft;
+				py = rect.top + dragOffsetTop;
+				orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
+				screen = vscreen.getScreeByPos(orgPos.x, orgPos.y, draggingID);
+				console.log("px py whole", px, py, screen);
+				if (screen) {
+					document.getElementById(screen.id).style.background = "red";
 				}
 			}
 
@@ -1235,7 +1279,8 @@
 			py,
 			rect = evt.target.getBoundingClientRect(),
 			orgPos,
-			splitWhole;
+			splitWhole,
+			screen;
 		if (draggingID && metaDataDict.hasOwnProperty(draggingID)) {
 			elem = document.getElementById(draggingID);
 			metaData = metaDataDict[draggingID];
@@ -1246,7 +1291,19 @@
 				if (isFreeMode()) {
 					vsutil.assignMetaData(elem, metaData, true);
 					updateTransform(metaData);
+				} else if (isDisplayMode()) {
+					px = rect.left + dragOffsetLeft;
+					py = rect.top + dragOffsetTop;
+					orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
+					screen = vscreen.getScreeByPos(orgPos.x, orgPos.y, draggingID);
+					if (screen) {
+						snapToScreen(elem, metaData, screen);
+					}
+					vsutil.assignMetaData(elem, metaData, true);
+					updateTransform(metaData);
+					manipulator.moveManipulator(elem);
 				} else {
+					// grid mode
 					px = rect.left + dragOffsetLeft;
 					py = rect.top + dragOffsetTop;
 					orgPos = vscreen.transformOrgInv(vscreen.makeRect(px, py, 0, 0));
@@ -1260,7 +1317,7 @@
 					manipulator.moveManipulator(elem);
 				}
 			}
-			clearSplitHightlight();
+			clearSnapHightlight();
 		}
 		if (manipulator.getDraggingManip() && lastDraggingID) {
 			metaData = metaDataDict[lastDraggingID];
@@ -1933,6 +1990,7 @@
 			dropdownMenu2 = document.getElementById('dropdownMenu2'),
 			free = document.getElementById('dropdown_item1'),
 			display = document.getElementById('dropdown_item2'),
+			grid = document.getElementById('dropdown_item3'),
 			displaySettingItem = document.getElementById('virtual_display_setting'),
 			i;
 		
@@ -1956,6 +2014,13 @@
 			dropDownCurrent.innerHTML = this.innerHTML;
 			console.log("display mode");
 			snapSetting = 'display';
+			saveCookie();
+		};
+		
+		grid.onclick = function () {
+			dropDownCurrent.innerHTML = this.innerHTML;
+			console.log("grid mode");
+			snapSetting = 'grid';
 			saveCookie();
 		};
 

@@ -162,6 +162,30 @@
 			contentTabTitle.onclick();
 		}
 	}
+
+	function insertElementWithDictionarySort(area, elem) {
+		var i,
+			child,
+			isFoundIDNode = false;
+		if (!area.childNodes || area.childNodes.lendth === 0) {
+			area.appendChild(elem);
+			return;
+		}
+		for (i = 0; i < area.childNodes.length; i = i + 1) {
+			child = area.childNodes[i];
+			if (child.hasOwnProperty('id') && child.id.indexOf('_manip') < 0) {
+				if (elem.id < child.id) {
+					isFoundIDNode = true;
+					area.insertBefore(elem, child);
+					break;
+				}
+			}
+		}
+		if (!isFoundIDNode) {
+			area.appendChild(elem);
+			return;
+		}
+	}
 	
 	/**
 	 * 選択されたIDからElement取得
@@ -174,7 +198,8 @@
 		var elem,
 			uid,
 			previewArea,
-			child;
+			child,
+			srcElem;
 		
 		if (id === wholeWindowListID) { return null; }
 		if (isUnvisibleID(id)) {
@@ -182,10 +207,11 @@
 			if (document.getElementById(uid)) {
 				return document.getElementById(uid);
 			} else {
-				elem = document.getElementById(id).cloneNode();
+				srcElem = document.getElementById(id);
+				elem = srcElem.cloneNode();
 				elem.id = uid;
-				child = document.getElementById(id).childNodes[0].cloneNode();
-				child.innerHTML = document.getElementById(id).childNodes[0].innerHTML;
+				child = srcElem.childNodes[0].cloneNode();
+				child.innerHTML = srcElem.childNodes[0].innerHTML;
 				elem.appendChild(child);
 				
 				if (isDisplayTabSelected()) {
@@ -196,8 +222,8 @@
 				if (isContentArea) {
 					elem.style.display = "none";
 				}
-				
-				previewArea.appendChild(elem);
+
+				insertElementWithDictionarySort(previewArea, elem);
 				setupContent(elem, uid);
 				elem.style.marginTop = "0px";
 				
@@ -1705,7 +1731,9 @@
 				elem.id = metaData.id;
 				elem.style.position = "absolute";
 				setupContent(elem, metaData.id);
-				previewArea.appendChild(elem);
+				
+				insertElementWithDictionarySort(previewArea, elem);
+				//previewArea.appendChild(elem);
 			}
 			
 			console.log("id=" + metaData.id);

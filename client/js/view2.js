@@ -35,6 +35,30 @@
 		};
 	}
 	
+	function insertElementWithDictionarySort(area, elem) {
+		var i,
+			child,
+			isFoundIDNode = false;
+		if (!area.childNodes || area.childNodes.lendth === 0) {
+			area.appendChild(elem);
+			return;
+		}
+		for (i = 0; i < area.childNodes.length; i = i + 1) {
+			child = area.childNodes[i];
+			if (child.hasOwnProperty('id') && child.id.indexOf('_manip') < 0) {
+				if (elem.id < child.id) {
+					isFoundIDNode = true;
+					area.insertBefore(elem, child);
+					break;
+				}
+			}
+		}
+		if (!isFoundIDNode) {
+			area.appendChild(elem);
+			return;
+		}
+	}
+	
 	/**
 	 * cookie取得
 	 * @method getCookie
@@ -165,7 +189,9 @@
 				elem = document.createElement(tagName);
 				elem.id = metaData.id;
 				elem.style.position = "absolute";
-				previewArea.appendChild(elem);
+				
+				insertElementWithDictionarySort(previewArea, elem);
+				//previewArea.appendChild(elem);
 			}
 			if (metaData.type === 'text') {
 				// contentData is text

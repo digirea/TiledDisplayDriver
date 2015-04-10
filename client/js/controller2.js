@@ -2257,7 +2257,7 @@
 		metaDataDict[json.id] = json;
 		if (isVisible(json)) {
 			vsutil.assignMetaData(document.getElementById(json.id), json, true);
-			if (draggingID === json.id) {
+			if (draggingID === json.id || (manipulator.getDraggingManip() && lastDraggingID === json.id)) {
 				assignContentProperty(json);
 			}
 		}
@@ -2320,6 +2320,9 @@
 		console.log('doneGetWindow:');
 		var windowData = JSON.parse(reply);
 		importWindow(windowData);
+		if (draggingID === windowData.id || (manipulator.getDraggingManip() && lastDraggingID === windowData.id)) {
+			assignContentProperty(windowData);
+		}
 	});
 	
 	socket.on('doneGetVirtualDisplay', function (reply) {

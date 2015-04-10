@@ -54,10 +54,10 @@
 	 */
 	function makeRect(left, top, width, height) {
 		return {
-			x : left,
-			y : top,
-			w : width,
-			h : height
+			x : parseFloat(left),
+			y : parseFloat(top),
+			w : parseFloat(width),
+			h : parseFloat(height)
 		};
 	}
 	
@@ -71,8 +71,8 @@
 		return {
 			x : scalePos(vscreen_rect.x + rect.x, center_x),
 			y : scalePos(vscreen_rect.y + rect.y, center_y),
-			w : rect.w * vscreen_scale,
-			h : rect.h * vscreen_scale
+			w : parseFloat(rect.w) * vscreen_scale,
+			h : parseFloat(rect.h) * vscreen_scale
 		};
 	}
 	
@@ -86,8 +86,8 @@
 		return {
 			x : scalePos(vscreen_rect.orgX + rect.x, center_x),
 			y : scalePos(vscreen_rect.orgY + rect.y, center_y),
-			w : rect.w * vscreen_scale,
-			h : rect.h * vscreen_scale
+			w : parseFloat(rect.w) * vscreen_scale,
+			h : parseFloat(rect.h) * vscreen_scale
 		};
 	}
 	
@@ -101,8 +101,8 @@
 		return {
 			x : scalePosInv(rect.x - vscreen_rect.orgX * vscreen_scale, center_x),
 			y : scalePosInv(rect.y - vscreen_rect.orgY * vscreen_scale, center_y),
-			w : rect.w / vscreen_scale,
-			h : rect.h / vscreen_scale
+			w : parseFloat(rect.w) / vscreen_scale,
+			h : parseFloat(rect.h) / vscreen_scale
 		};
 	}
 	
@@ -116,8 +116,8 @@
 	function setWholeSize(w, h, s) {
 		vscreen_rect.x = scalePos(center_x - w * 0.5, center_x);
 		vscreen_rect.y = scalePos(center_y - h * 0.5, center_y);
-		vscreen_rect.w = w * s;
-		vscreen_rect.h = h * s;
+		vscreen_rect.w = parseFloat(w * s);
+		vscreen_rect.h = parseFloat(h * s);
 		console.log("w:" + w);
 		console.log("s:" + s);
 		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
@@ -136,8 +136,8 @@
 			subW = vscreen_rect.orgW / parseFloat(xcount),
 			subH = vscreen_rect.orgH / parseFloat(ycount);
 			
-		split_x = xcount;
-		split_y = ycount;
+		split_x = parseInt(xcount, 10);
+		split_y = parseInt(ycount, 10);
 		
 		for (k = 1; k <= ycount; k = k + 1) {
 			for (i = 1; i <= xcount; i = i + 1) {
@@ -238,8 +238,8 @@
 	 * @param {Number} y y座標
 	 */
 	function translateWhole(x, y) {
-		vscreen_rect.x = vscreen_rect.x + x;
-		vscreen_rect.y = vscreen_rect.y + y;
+		vscreen_rect.x = vscreen_rect.x + parseFloat(x);
+		vscreen_rect.y = vscreen_rect.y + parseFloat(y);
 	}
 	
 	/**
@@ -249,8 +249,8 @@
 	 * @param {Number} y y座標
 	 */
 	function setWholePos(x, y) {
-		vscreen_rect.x = x;
-		vscreen_rect.y = y;
+		vscreen_rect.x = parseFloat(x);
+		vscreen_rect.y = parseFloat(y);
 	}
 	
 	/**
@@ -277,14 +277,14 @@
 		var i,
 			screen,
 			rect;
-		center_x = cx;
-		center_y = cy;
-		vscreen_scale = s;
+		center_x = parseFloat(cx);
+		center_y = parseFloat(cy);
+		vscreen_scale = parseFloat(s);
 		setWholeSize(w, h, s);
-		vscreen_rect.orgX = center_x - w * 0.5;
-		vscreen_rect.orgY = center_y - h * 0.5;
-		vscreen_rect.orgW = w;
-		vscreen_rect.orgH = h;
+		vscreen_rect.orgX = parseFloat(center_x - w * 0.5);
+		vscreen_rect.orgY = parseFloat(center_y - h * 0.5);
+		vscreen_rect.orgW = parseFloat(w);
+		vscreen_rect.orgH = parseFloat(h);
 		console.log("vscreen_rect" + JSON.stringify(vscreen_rect));
 	}
 	
@@ -295,7 +295,7 @@
 	 * @param {Boolean} isApply 即適用して全体のRectを再計算するかどうか
 	 */
 	function setWholeScale(s, isApply) {
-		vscreen_scale = s;
+		vscreen_scale = parseFloat(s);
 		if (isApply) {
 			assignWhole(vscreen_rect.orgW, vscreen_rect.orgH, center_x, center_y, s);
 		}
@@ -329,8 +329,8 @@
 	 * @param {Number} y y座標
 	 */
 	function setWholeCenter(x, y) {
-		center_x = x;
-		center_y = y;
+		center_x = parseFloat(x);
+		center_y = parseFloat(y);
 	}
 	
 	/// assign single screen
@@ -349,14 +349,14 @@
 	function assignScreen(id, x, y, w, h) {
 		screens[id] = {
 			id : id,
-			x : x,
-			y : y,
-			w : w * vscreen_scale,
-			h : h * vscreen_scale,
-			orgX : x,
-			orgY : y,
-			orgW : w,
-			orgH : h
+			x : parseFloat(x),
+			y : parseFloat(y),
+			w : parseFloat(w * vscreen_scale),
+			h : parseFloat(h * vscreen_scale),
+			orgX : parseFloat(x),
+			orgY : parseFloat(y),
+			orgW : parseFloat(w),
+			orgH : parseFloat(h)
 		};
 	}
 	
@@ -392,8 +392,8 @@
 	function setScreenSize(id, w, h) {
 		var screen = getScreen(id);
 		if (screen) {
-			screen.w = w;
-			screen.h = h;
+			screen.w = parseFloat(w);
+			screen.h = parseFloat(h);
 		}
 	}
 	
@@ -407,8 +407,8 @@
 	function setScreenPos(id, x, y) {
 		var screen = getScreen(id);
 		if (screen) {
-			screen.x = x;
-			screen.y = y;
+			screen.x = parseFloat(x);
+			screen.y = parseFloat(y);
 		}
 	}
 	

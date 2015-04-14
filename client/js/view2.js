@@ -45,7 +45,7 @@
 		}
 		for (i = 0; i < area.childNodes.length; i = i + 1) {
 			child = area.childNodes[i];
-			if (child.hasOwnProperty('id') && child.id.indexOf('_manip') < 0) {
+			if (child.id && child.id.indexOf('_manip') < 0) {
 				if (elem.id < child.id) {
 					isFoundIDNode = true;
 					area.insertBefore(elem, child);

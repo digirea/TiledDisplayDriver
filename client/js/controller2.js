@@ -1581,7 +1581,10 @@
 		previewArea.appendChild(wholeElem);
 		for (s in screens) {
 			if (screens.hasOwnProperty(s)) {
-				screenElem = document.createElement('div');
+				screenElem = document.getElementById(s);
+				if (!screenElem) {
+					screenElem = document.createElement('div');
+				}
 				screenElem.className = "screen";
 				screenElem.style.zIndex = -100;
 				screenElem.style.display = "block";
